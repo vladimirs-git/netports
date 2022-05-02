@@ -7,9 +7,10 @@ from datetime import datetime
 
 # noinspection PyProtectedMember
 from netports import __title__
-from setup import ROOT
+from setup import ROOT, README
+
 CHANGELOG = "CHANGELOG.rst"
-README = "README.rst"
+
 
 class Test(unittest.TestCase):
     """unittests package"""

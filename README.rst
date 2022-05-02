@@ -201,6 +201,7 @@ line         	*str*						Range of numbers, can be unsorted and with duplicates.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
+
 Return
 	Ranges *object*.
 
@@ -236,7 +237,7 @@ Range with custom splitter and range_splitter.
 
 
 iports(items, splitter, range_splitter)
-......................................
+.......................................
 
 **integer ports** - Sort numbers and remove duplicates.
 
@@ -247,6 +248,7 @@ items         	*str, List[int] List[str]*	Range of numbers or *List[int]*, can b
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
+
 Return
 	*List[int]* of unique sorted numbers.
 
@@ -280,7 +282,7 @@ Convert unsorted range to *List[int]* with custom splitters.
 
 
 sports(items, splitter, range_splitter)
-......................................
+.......................................
 
 **string ports** - Sort numbers and remove duplicates.
 
@@ -291,6 +293,7 @@ items         	*str, List[int] List[str]*	Range of numbers or *List[int]*, can b
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
+
 Return
 	*str* of unique sorted numbers.
 
@@ -333,6 +336,7 @@ Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int] List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
+
 Return
 	*List[int]* of unique sorted TCP/UDP ports.
 	Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
@@ -370,6 +374,7 @@ Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int] List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
+
 Return
 	*str* of unique sorted TCP/UDP ports.
 	Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
@@ -409,6 +414,7 @@ items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be 
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
+
 Return
 	*List[int]* of unique sorted VLANs.
 	Raise *ValueError* if VLANs are outside valid range 1...4094.
@@ -458,6 +464,7 @@ Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
+
 Return
 	*List[int]* of unique sorted VLANs, for Hewlett Packard Enterprise.
 	Raise *ValueError* if VLANs are outside valid range 1...4094.
@@ -504,6 +511,7 @@ items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be 
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
+
 Return
 	*str* of unique sorted VLANs.
 	Raise *ValueError* if VLANs are outside valid range 1...4094.
@@ -545,6 +553,7 @@ Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
+
 Return
 	*str* of unique sorted VLANs, for Hewlett Packard Enterprise.
 	Raise *ValueError* if VLANs are outside valid range 1...4094.

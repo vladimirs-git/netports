@@ -9,6 +9,7 @@ import netports as packet
 VERSION = "0.1.1"
 PACKAGE = packet.__title__
 ROOT = pathlib.Path(__file__).parent.resolve()
+README = "README.rst"
 
 if __name__ == "__main__":
     setup(
@@ -18,7 +19,7 @@ if __name__ == "__main__":
         version=VERSION,
         description=packet.__summary__,
         license=packet.__license__,
-        long_description=open("README.rst").read(),
+        long_description=open(README).read(),
         long_description_content_type="text/x-rst",
         author=packet.__author__,
         author_email=packet.__email__,
