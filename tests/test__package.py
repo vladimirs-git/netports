@@ -8,7 +8,8 @@ from datetime import datetime
 # noinspection PyProtectedMember
 from netports import __title__
 from setup import ROOT
-
+CHANGELOG = "CHANGELOG.rst"
+README = "README.rst"
 
 class Test(unittest.TestCase):
     """unittests package"""
@@ -79,7 +80,7 @@ class Test(unittest.TestCase):
         version = version_init
         self.assertRegex(version, regex, msg="version naming convention")
 
-        path = os.path.join(ROOT, "README.rst")
+        path = os.path.join(ROOT, README)
         with open(path) as fh:
             text = fh.read()
             regex = __title__ + r"-(.+)\.tar\.gz"
@@ -87,10 +88,11 @@ class Test(unittest.TestCase):
             for version_readme in versions_readme:
                 self.assertEqual(version_readme, version, msg=f"package name in {path=}")
 
-        path = os.path.join(ROOT, "CHANGELOG.txt")
+        path = os.path.join(ROOT, CHANGELOG)
         with open(path) as fh:
-            text = fh.readline().strip()
-            version_changelog = (re.findall(r"(.+)\s\(\d\d\d\d-\d\d-\d\d\)$", text) or [""])[0]
+            text = fh.read()
+            regex = r"(.+)\s\(\d\d\d\d-\d\d-\d\d\)$"
+            version_changelog = (re.findall(regex, text, re.M) or [""])[0]
             self.assertEqual(version_changelog, version, msg=f"version in {path=}")
 
     def test_valid__date(self):
@@ -108,10 +110,11 @@ class Test(unittest.TestCase):
             date_max = max([t[1] for t in self._paths_dates()])
             self.assertEqual(date_version, date_max, msg=msg)
 
-            path = os.path.join(ROOT, "CHANGELOG.txt")
+            path = os.path.join(ROOT, CHANGELOG)
             with open(path) as fh_:
-                line = fh_.readline().strip()
-                date_changelog = (re.findall(r".+\s\((\d\d\d\d-\d\d-\d\d)\)$", line) or [""])[0]
+                text = fh_.read()
+                regex = r".+\((\d\d\d\d-\d\d-\d\d)\)$"
+                date_changelog = (re.findall(regex, text, re.M) or [""])[0]
                 self.assertEqual(date_changelog, date_, msg=f"date in {path=}")
 
 

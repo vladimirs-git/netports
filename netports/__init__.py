@@ -20,7 +20,7 @@ __all__ = [
     "svlan_hpe",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __date__ = "2022-05-02"
 __title__ = "netports"
 

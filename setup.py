@@ -6,7 +6,7 @@ from setuptools import setup, find_packages  # type: ignore
 
 import netports as packet
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 PACKAGE = packet.__title__
 ROOT = pathlib.Path(__file__).parent.resolve()
 
@@ -16,10 +16,10 @@ if __name__ == "__main__":
         packages=[PACKAGE],
         package_data={PACKAGE: ["py.typed"]},
         version=VERSION,
-        license=packet.__license__,
         description=packet.__summary__,
-        long_description=(ROOT / "README.rst").read_text(encoding="utf-8"),
-        long_description_content_type="text/markdown",
+        license=packet.__license__,
+        long_description=open("README.rst").read(),
+        long_description_content_type="text/x-rst",
         author=packet.__author__,
         author_email=packet.__email__,
         url=packet.__url__,
@@ -34,5 +34,6 @@ if __name__ == "__main__":
             "Topic :: System :: Networking",
             "License :: OSI Approved :: MIT License",
             "Programming Language :: Python :: 3.8",
+            "Natural Language :: English",
         ],
     )
