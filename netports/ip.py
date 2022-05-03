@@ -455,10 +455,12 @@ IP_PORTS: DiAny = {
 IP_NAMES: DAny = {d["name"]: d for i, d in IP_PORTS.items()}
 
 
-def iip(items: Any) -> LInt:
+# noinspection PyIncorrectDocstring
+def iip(items: Any = "", **kwargs) -> LInt:
     """**Integer IP protocol numbers** - Sort numbers and remove duplicates.
     :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - mean all numbers in range 0...255.
+        "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+    :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
     :return: *List[int]* of unique sorted IP protocol numbers.
         Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
     Example1:
@@ -468,20 +470,15 @@ def iip(items: Any) -> LInt:
         items: "ip"
         return: [0, 1, ... 254, 255]
     """
+    if bool(kwargs.get("all")):
+        return list(range(0, 256))
     items_ = [s.lower() for s in h.split(items)]
     numbers, names = iip_nip(items_)
     if "ip" in names:
-        return iip_all()
+        return list(range(0, 256))
     numbers_ = [IP_NAMES[s]["number"] for s in names]
     numbers.extend(numbers_)
     return inumbers(numbers)
-
-
-def iip_all() -> LInt:
-    """**All Integer IP protocol numbers** - Full range of IP protocol numbers.
-    :return: *List[int]* All IP protocol numbers.
-    """
-    return list(range(0, 256))
 
 
 def iip_nip(items: Any) -> Tuple[LInt, LStr]:
@@ -496,7 +493,7 @@ def iip_nip(items: Any) -> Tuple[LInt, LStr]:
     """
     items_ = [s.lower() for s in h.split(items)]
     if "ip" in items_:
-        return iip_all(), ["ip"]
+        return list(range(0, 256)), ["ip"]
 
     numbers: LInt = []
     names: LStr = []
@@ -513,25 +510,22 @@ def iip_nip(items: Any) -> Tuple[LInt, LStr]:
     return numbers, names
 
 
-def sip(items: Any) -> str:
+# noinspection PyIncorrectDocstring
+def sip(items: Any = "", **kwargs) -> str:
     """**String IP protocol numbers** - Sort numbers and remove duplicates.
     :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
         "ip" - mean all numbers in range 0...255.
+    :param all: True - Return all IP protocol numbers: "0-255"
     :return: *str* of unique sorted IP protocol numbers.
         Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
     Example:
         items: ["icmp", "tcp", "7", 255]
         return: "1,6-7,255"
     """
+    if bool(kwargs.get("all")):
+        return "0-255"
     numbers = iip(items)
     return snumbers(numbers)
-
-
-def sip_all() -> str:
-    """**All String IP protocol numbers** - Full range of IP protocol numbers.
-    :return: *str* All IP protocol numbers.
-    """
-    return "0-255"
 
 
 # ============================= helpers ==============================

@@ -12,20 +12,25 @@ class Test(unittest.TestCase):
 
     def test_valid__iip(self):
         """iip()"""
-        for items, req in [
-            ("", []),
-            ([], []),
-            (0, [0]),
-            (255, [255]),
-            ([0, 255, 1], [0, 1, 255]),
-            ("3-5,0", [0, 3, 4, 5]),
-            ("icmp", [1]),
-            ("icmp,1,icmp,1,7,3-5,3-4,udp,17,igmp", [1, 2, 3, 4, 5, 7, 17]),
-            ("ip", ALL_IP),
-            ("ip,icmp,2", ALL_IP),
+        for kwargs, req in [
+            (dict(), []),
+            (dict(items=""), []),
+            (dict(items=[]), []),
+            (dict(items=0), [0]),
+            (dict(items="0"), [0]),
+            (dict(items=[0]), [0]),
+            (dict(items=255), [255]),
+            (dict(items=[5, 5, 0, 3, 4]), [0, 3, 4, 5]),
+            (dict(items="3-5,0,3-4,0"), [0, 3, 4, 5]),
+            (dict(items="icmp"), [1]),
+            (dict(items="icmp,1,icmp,1,7,3-5,3-4,udp"), [1, 3, 4, 5, 7, 17]),
+            (dict(items="ip"), ALL_IP),
+            (dict(items="ip,icmp,2"), ALL_IP),
+            (dict(all=True), ALL_IP),
+            (dict(items="1", all=True), ALL_IP),
         ]:
-            result = ip.iip(items)
-            self.assertEqual(result, req, msg=f"{items=}")
+            result = ip.iip(**kwargs)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
 
     def test_invalid__iip(self):
         """iip()"""
@@ -37,12 +42,6 @@ class Test(unittest.TestCase):
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
                 ip.iip(items)
-
-    def test_valid__iip_all(self):
-        """iip_all()"""
-        result = ip.iip_all()
-        req = ALL_IP
-        self.assertEqual(result, req, msg="iip_all")
 
     def test_iip_nip(self):
         """iip_nip()"""
@@ -75,17 +74,25 @@ class Test(unittest.TestCase):
 
     def test_valid__sip(self):
         """sip()"""
-        for items, req in [
-            ("", ""),
-            ([], ""),
-            (0, "0"),
-            ([255], "255"),
-            ([5, 5, 1, 3, 4], "1,3-5"),
-            ("3-4,3-5,17,icmp,udp", "1,3-5,17"),
-            (["icmp", "tcp", "7", 255], "1,6-7,255"),
+        for kwargs, req in [
+            (dict(), ""),
+            (dict(items=""), ""),
+            (dict(items=[]), ""),
+            (dict(items=0), "0"),
+            (dict(items="0"), "0"),
+            (dict(items=[0]), "0"),
+            (dict(items=[255]), "255"),
+            (dict(items=[5, 5, 0, 3, 4]), "0,3-5"),
+            (dict(items="3-5,0,3-4,0"), "0,3-5"),
+            (dict(items="icmp"), "1"),
+            (dict(items="icmp,1,icmp,1,7,3-5,3-4,udp"), "1,3-5,7,17"),
+            (dict(items="ip"), "0-255"),
+            (dict(items="ip,icmp,2"), "0-255"),
+            (dict(all=True), "0-255"),
+            (dict(items="1", all=True), "0-255"),
         ]:
-            result = ip.sip(items)
-            self.assertEqual(result, req, msg=f"{items=}")
+            result = ip.sip(**kwargs)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
 
     def test_invalid__sip(self):
         """sip()"""
@@ -97,12 +104,6 @@ class Test(unittest.TestCase):
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
                 ip.sip(items)
-
-    def test_valid__sip_all(self):
-        """sip_all()"""
-        result = ip.sip_all()
-        req = "0-255"
-        self.assertEqual(result, req, msg="sip_all")
 
 
 if __name__ == "__main__":

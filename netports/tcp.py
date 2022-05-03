@@ -7,46 +7,40 @@ from netports.ranges import Ranges
 from netports.types_ import LInt
 
 
-def itcp(items: Any) -> LInt:
+# noinspection PyIncorrectDocstring
+def itcp(items: Any = "", **kwargs) -> LInt:
     """**Integer TCP/UDP ports** - Sort numbers and remove duplicates.
     :param items: Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
+    :param all: True - Return All TCP/UDP ports: [1, 2, ..., 65535].
     :return: *List[int]* of unique sorted TCP/UDP ports.
         Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
     Example:
         items: "1,3-5"
         return: [1, 3, 4, 5]
     """
+    if bool(kwargs.get("all")):
+        return list(range(1, 65536))
     ports: LInt = inumbers(items)
     _check_tcp_ports(ports)
     return ports
 
 
-def itcp_all() -> LInt:
-    """**All Integer TCP/UDP ports** - Full range of TCP/UDP ports.
-    :return: *List[int]* All TCP/UDP ports.
-    """
-    return list(range(1, 65536))
-
-
-def stcp(items: Any) -> str:
+# noinspection PyIncorrectDocstring
+def stcp(items: Any = "", **kwargs) -> str:
     """**String TCP/UDP ports** - Sort numbers and remove duplicates.
     :param items: Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
+    :param all: True - Return All TCP/UDP ports: "1-65535".
     :return: *str* of unique sorted TCP/UDP ports.
         Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
     Example:
         items: [1, 3, 4, 5]
         return: "1,3-5"
     """
+    if bool(kwargs.get("all")):
+        return "1-65535"
     ranges_: Ranges = ranges(items)
     _check_tcp_ports(ranges_.numbers)
     return str(ranges_)
-
-
-def stcp_all() -> str:
-    """**All String TCP/UDP ports** - Full range of TCP/UDP ports.
-    :return: *str* All TCP/UDP ports.
-    """
-    return "1-65535"
 
 
 # ============================= helpers ==============================
