@@ -120,6 +120,12 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{items=}"):
                 ports.itcp(items)
 
+    def test_valid__all_itcp(self):
+        """all_itcp()"""
+        result = ports.all_itcp()
+        req = list(range(1, 65536))
+        self.assertEqual(result, req, msg="all_itcp")
+
     def test_valid__stcp(self):
         """stcp()"""
         for items, req in [
@@ -145,6 +151,12 @@ class Test(unittest.TestCase):
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
                 ports.stcp(items)
+
+    def test_valid__all_stcp(self):
+        """all_stcp()"""
+        result = ports.all_stcp()
+        req = "1-65535"
+        self.assertEqual(result, req, msg="all_stcp")
 
     # =============================== vlan ===============================
 
@@ -185,6 +197,12 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{items=}"):
                 ports.ivlan(items)
 
+    def test_valid__all_ivlan(self):
+        """all_ivlan()"""
+        result = ports.all_ivlan()
+        req = list(range(1, 4095))
+        self.assertEqual(result, req, msg="all_ivlan")
+
     def test_valid__svlan(self):
         """svlan()"""
         for kwargs, req in [
@@ -221,6 +239,12 @@ class Test(unittest.TestCase):
         ]:
             result = ports.svlan_hpe(items)
             self.assertEqual(result, req, msg=f"{items=}")
+
+    def test_valid__all_svlan(self):
+        """all_svlan()"""
+        result = ports.all_svlan()
+        req = "1-4094"
+        self.assertEqual(result, req, msg="all_svlan")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,21 @@
 """netports"""
 
 from netports.interface4 import Interface4
-from netports.ports import iports, itcp, ivlan, ivlan_hpe, ranges, sports, stcp, svlan, svlan_hpe
+from netports.ports import (
+    all_itcp,
+    all_ivlan,
+    all_stcp,
+    all_svlan,
+    iports,
+    itcp,
+    ivlan,
+    ivlan_hpe,
+    ranges,
+    sports,
+    stcp,
+    svlan,
+    svlan_hpe,
+)
 from netports.range import Range
 from netports.ranges import Ranges
 
@@ -9,6 +23,10 @@ __all__ = [
     "Interface4",
     "Range",
     "Ranges",
+    "all_itcp",
+    "all_ivlan",
+    "all_stcp",
+    "all_svlan",
     "iports",
     "itcp",
     "ivlan",
@@ -20,8 +38,8 @@ __all__ = [
     "svlan_hpe",
 ]
 
-__version__ = "0.1.1"
-__date__ = "2022-05-02"
+__version__ = "0.1.2"
+__date__ = "2022-05-03"
 __title__ = "netports"
 
 __summary__ = ""

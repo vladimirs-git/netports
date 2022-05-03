@@ -364,6 +364,23 @@ Return
 	# invalid TCP port
 
 
+all_itcp()
+..........
+
+**All Integer TCP/UDP ports** - Full range of TCP/UDP ports.
+
+Return
+	*List[int]* All TCP/UDP ports.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.all_itcp()
+	print(ports)
+	# [1, 2, ... 65534, 65535]
+
+
 stcp(items)
 ......................................
 
@@ -400,6 +417,23 @@ Return
 	except ValueError:
 		print("invalid TCP port")
 	# invalid TCP port
+
+
+all_stcp()
+..........
+
+**All String TCP/UDP ports** - Full range of TCP/UDP ports.
+
+Return
+	*str* All TCP/UDP ports.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.all_stcp()
+	print(ports)
+	# 1-65535
 
 
 ivlan(line, splitter, range_splitter)
@@ -499,6 +533,23 @@ Return
 	# invalid VLAN
 
 
+all_ivlan()
+..........
+
+**All Integer VLAN IDs** - Full range of VLAN IDs.
+
+Return
+	*List[int]* All VLAN IDs.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.all_ivlan()
+	print(ports)
+	# [1, 2, ... 4093, 4094]
+
+
 svlan(line, splitter, range_splitter)
 ......................................
 
@@ -579,3 +630,20 @@ Return
 	except ValueError:
 		print("invalid VLAN")
 	# invalid VLAN
+
+
+all_svlan()
+..........
+
+**All String VLAN IDs** - Full range of VLAN IDs.
+
+Return
+	*str* All VLAN IDs.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.all_svlan()
+	print(ports)
+	# 1-4094

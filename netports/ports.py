@@ -81,6 +81,20 @@ def sports(items: Any, **kwargs) -> str:
 
 # =============================== tcp ================================
 
+def all_itcp() -> LInt:
+    """**All Integer TCP/UDP ports** - Full range of TCP/UDP ports.
+    :return: *List[int]* All TCP/UDP ports.
+    """
+    return list(range(1, 65536))
+
+
+def all_stcp() -> str:
+    """**All String TCP/UDP ports** - Full range of TCP/UDP ports.
+    :return: *str* All TCP/UDP ports.
+    """
+    return "1-65535"
+
+
 def itcp(items: Any) -> LInt:
     """**Integer TCP/UDP ports** - Sort numbers and remove duplicates.
     :param items: Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
@@ -110,6 +124,20 @@ def stcp(items: Any) -> str:
 
 
 # =============================== vlan ===============================
+
+def all_ivlan() -> LInt:
+    """**All Integer VLAN IDs** - Full range of VLAN IDs.
+    :return: *List[int]* All VLAN IDs.
+    """
+    return list(range(1, 4095))
+
+
+def all_svlan() -> str:
+    """**All String VLAN IDs** - Full range of VLAN IDs.
+    :return: *str* All VLAN IDs.
+    """
+    return "1-4094"
+
 
 # noinspection PyIncorrectDocstring
 def ivlan(items: Any, **kwargs) -> LInt:
