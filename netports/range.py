@@ -11,9 +11,9 @@ class Range:
 
     def __init__(self, line: str):
         """Range.
-        :param line: Range in <str> format
+        :param line: Range in <str> format.
         Example:
-            line: "1-3"
+            Range("1-3")
         result:
             self.line = "1-3"
             self.min = 1

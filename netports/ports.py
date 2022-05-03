@@ -1,15 +1,13 @@
-"""VLAN, TCP ports functions"""
+"""Ports"""
 
 import re
 from typing import Any
 
 from netports import helpers as h
-from netports.ranges import Ranges, check_vlans_range, check_tcp_range
-from netports.static import RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
+from netports.ranges import Ranges
+from netports.static import RANGE_SPLITTER, SPLITTER
 from netports.types_ import LStr, LInt
 
-
-# ============================== ports ===============================
 
 # noinspection PyIncorrectDocstring
 def ranges(line: str, **kwargs) -> Ranges:
@@ -40,8 +38,8 @@ def ranges(line: str, **kwargs) -> Ranges:
 
 
 # noinspection PyIncorrectDocstring
-def iports(items: Any, **kwargs) -> LInt:
-    """**integer ports** - Sort numbers and remove duplicates.
+def inumbers(items: Any, **kwargs) -> LInt:
+    """**integer numbers** - Sort numbers and remove duplicates.
     :param items: Range of numbers or *List[int]*, can be unsorted and with duplicates.
     :param splitter: Separator character between items. By default ",".
     :param range_splitter: Separator between min and max numbers in range. By default "-".
@@ -56,12 +54,12 @@ def iports(items: Any, **kwargs) -> LInt:
         return: [1, 3, 4, 5, 7, 8, 9]
     """
     ranges_: Ranges = ranges(items, **kwargs)
-    return ranges_.ports
+    return ranges_.numbers
 
 
 # noinspection PyIncorrectDocstring
-def sports(items: Any, **kwargs) -> str:
-    """**string ports** - Sort numbers and remove duplicates.
+def snumbers(items: Any, **kwargs) -> str:
+    """**string numbers** - Sort numbers and remove duplicates.
     :param items: Range of numbers or *List[int]*, can be unsorted and with duplicates.
     :param splitter: Separator character between items. By default ",".
     :param range_splitter: Separator between min and max numbers in range. By default "-".
@@ -76,126 +74,4 @@ def sports(items: Any, **kwargs) -> str:
         return: "1,3-5,7-9"
     """
     ranges_: Ranges = ranges(items, **kwargs)
-    return str(ranges_)
-
-
-# =============================== tcp ================================
-
-def all_itcp() -> LInt:
-    """**All Integer TCP/UDP ports** - Full range of TCP/UDP ports.
-    :return: *List[int]* All TCP/UDP ports.
-    """
-    return list(range(1, 65536))
-
-
-def all_stcp() -> str:
-    """**All String TCP/UDP ports** - Full range of TCP/UDP ports.
-    :return: *str* All TCP/UDP ports.
-    """
-    return "1-65535"
-
-
-def itcp(items: Any) -> LInt:
-    """**Integer TCP/UDP ports** - Sort numbers and remove duplicates.
-    :param items: Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
-    :return: *List[int]* of unique sorted TCP/UDP ports.
-        Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
-    Example:
-        items: "1,3-5"
-        return: [1, 3, 4, 5]
-    """
-    ports: LInt = iports(items)
-    check_tcp_range(ports=ports)
-    return ports
-
-
-def stcp(items: Any) -> str:
-    """**String TCP/UDP ports** - Sort numbers and remove duplicates.
-    :param items: Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
-    :return: *str* of unique sorted TCP/UDP ports.
-        Raise *ValueError* if TCP/UDP ports are outside valid range 1...65535.
-    Example:
-        items: [1, 3, 4, 5]
-        return: "1,3-5"
-    """
-    ranges_: Ranges = ranges(items)
-    check_tcp_range(ports=ranges_.ports)
-    return str(ranges_)
-
-
-# =============================== vlan ===============================
-
-def all_ivlan() -> LInt:
-    """**All Integer VLAN IDs** - Full range of VLAN IDs.
-    :return: *List[int]* All VLAN IDs.
-    """
-    return list(range(1, 4095))
-
-
-def all_svlan() -> str:
-    """**All String VLAN IDs** - Full range of VLAN IDs.
-    :return: *str* All VLAN IDs.
-    """
-    return "1-4094"
-
-
-# noinspection PyIncorrectDocstring
-def ivlan(items: Any, **kwargs) -> LInt:
-    """**Integer VLAN IDs** - Sort VLANs and remove duplicates.
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates.
-    :param splitter: Separator character between items. By default ",".
-    :param range_splitter: Separator between min and max numbers in range. By default "-".
-    :return: *List[int]* of unique sorted VLANs.
-        Raise *ValueError* if VLANs are outside valid range 1...4094.
-    Example:
-        items: "1,3-5"
-        return: [1, 3, 4, 5]
-    """
-    vlans: LInt = iports(items, **kwargs)
-    check_vlans_range(vlans=vlans)
-    return vlans
-
-
-def ivlan_hpe(items: Any) -> LInt:
-    """**Integer VLAN IDs, for Hewlett Packard Enterprise** - Sort VLANs and remove duplicates.
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates.
-    :return: *List[int]* of unique sorted VLANs, for Hewlett Packard Enterprise.
-        Raise *ValueError* if VLANs are outside valid range 1...4094.
-    Example:
-        items: "1 3 to 5"
-        return: [1, 3, 4, 5]
-    """
-    vlans: LInt = iports(items, splitter=SPLITTER_HPE, range_splitter=RANGE_SPLITTER_HPE)
-    check_vlans_range(vlans=vlans)
-    return vlans
-
-
-# noinspection PyIncorrectDocstring
-def svlan(items: Any, **kwargs) -> str:
-    """**String VLAN IDs** - Sort VLANs and remove duplicates.
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates.
-    :param splitter: Separator character between items. By default ",".
-    :param range_splitter: Separator between min and max numbers in range. By default "-".
-    :return: *str* of unique sorted VLANs.
-        Raise *ValueError* if VLANs are outside valid range 1...4094.
-    Example:
-        items: [1, 3, 4, 5]
-        return: "1,3-5"
-    """
-    ranges_: Ranges = ranges(items, **kwargs)
-    check_vlans_range(vlans=ranges_.ports)
-    return str(ranges_)
-
-
-def svlan_hpe(items: Any) -> str:
-    """**String VLAN IDs, for Hewlett Packard Enterprise** - Sort VLANs and remove duplicates.
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates.
-    :return: *str* of unique sorted VLANs, for Hewlett Packard Enterprise.
-        Raise *ValueError* if VLANs are outside valid range 1...4094.
-    Example:
-        items: [1, 3, 4, 5]
-        return: "1 3 to 5"
-    """
-    ranges_: Ranges = ranges(items, splitter=SPLITTER_HPE, range_splitter=RANGE_SPLITTER_HPE)
-    check_vlans_range(vlans=ranges_.ports)
     return str(ranges_)

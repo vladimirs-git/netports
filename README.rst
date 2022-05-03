@@ -142,17 +142,27 @@ Parameter		Type						Description
 line         	*str*						Range of numbers. Numbers can be unsorted and duplicated.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
+strict			*bool*						True - Raise ValueError, if in line is invalid item. False - Make Range without invalid items. By default True.
 =============== =========================== ============================================================================
 
 Attributes demonstration.
 
 .. code:: python
 
-	from netports import Ranges
-
 	ranges = Ranges("1,3-5")
 	assert ranges.line == "1,3-5"
-	assert ranges.ports == [1, 3, 4, 5]
+	assert ranges.numbers == [1, 3, 4, 5]
+
+	try:
+		Ranges("1,3-5,typo")
+	except ValueError as ex:
+		print(ex)
+	# invalid item="typo" in line="1,3-5,typo"
+
+	# Make Range without invalid items (by default raise ValueError)
+	ranges = Ranges("1,3-5,typo,-1,1-", strict=False)
+	assert ranges.line == "1,3-5"
+	assert ranges.numbers == [1, 3, 4, 5]
 
 Sorting numbers and removing duplicates.
 
@@ -179,15 +189,15 @@ Range with custom splitters.
 
 	ranges = Ranges("1, 3-5, 7-9", splitter=", ")
 	assert ranges.line == "1, 3-5, 7-9"
-	assert ranges.ports == [1, 3, 4, 5, 7, 8, 9]
+	assert ranges.numbers == [1, 3, 4, 5, 7, 8, 9]
 
 	ranges = Ranges("1 3 to 5 7 to 9", splitter=" ", range_splitter=" to ")
 	assert ranges.line == "1 3 to 5 7 to 9"
-	assert ranges.ports == [1, 3, 4, 5, 7, 8, 9]
+	assert ranges.numbers == [1, 3, 4, 5, 7, 8, 9]
 
 
-Functions
----------
+Numbers
+-------
 
 ranges(line, splitter, range_splitter)
 ......................................
@@ -236,15 +246,15 @@ Range with custom splitter and range_splitter.
 	# [1, 3, 4, 5]
 
 
-iports(items, splitter, range_splitter)
-.......................................
+inumbers(items, splitter, range_splitter)
+.........................................
 
 **integer ports** - Sort numbers and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
@@ -258,15 +268,15 @@ Convert unsorted range to sorted *List[int]* without duplicates.
 
 	import netports
 
-	ports = netports.iports("3-5,1,3-5,1")
+	ports = netports.inumbers("3-5,1,3-5,1")
 	print(ports)
 	# [1, 3, 4, 5]
 
-	ports = netports.iports(["3-5,1", "3-4", "1"])
+	ports = netports.inumbers(["3-5,1", "3-4", "1"])
 	print(ports)
 	# [1, 3, 4, 5]
 
-	ports = netports.iports([3, 4, 5, 1, 3, 4, 5, 1])
+	ports = netports.inumbers([3, 4, 5, 1, 3, 4, 5, 1])
 	print(ports)
 	# [1, 3, 4, 5]
 
@@ -276,20 +286,20 @@ Convert unsorted range to *List[int]* with custom splitters.
 
 	import netports
 
-	ports = netports.iports("3 to 5 1 4 to 5 1", splitter=" ", range_splitter=" to ")
+	ports = netports.inumbers("3 to 5 1 4 to 5 1", splitter=" ", range_splitter=" to ")
 	print(ports)
 	# [1, 3, 4, 5]
 
 
-sports(items, splitter, range_splitter)
-.......................................
+snumbers(items, splitter, range_splitter)
+.........................................
 
 **string ports** - Sort numbers and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
@@ -303,15 +313,15 @@ Convert unsorted range to sorted *str* without duplicates.
 
 	import netports
 
-	ports = netports.sports("3-5,1,3-5,1")
+	ports = netports.snumbers("3-5,1,3-5,1")
 	print(ports)
 	# 1,3-5
 
-	ports = netports.sports(["3-5,1", "3-4", "1"])
+	ports = netports.snumbers(["3-5,1", "3-4", "1"])
 	print(ports)
 	# 1,3-5
 
-	ports = netports.sports([3, 4, 5, 1, 3, 4, 5, 1])
+	ports = netports.snumbers([3, 4, 5, 1, 3, 4, 5, 1])
 	print(ports)
 	# 1,3-5
 
@@ -321,20 +331,24 @@ Convert unsorted range to *str* with custom splitters.
 
 	import netports
 
-	ports = netports.sports("3 to 5 1 4 to 5 1", splitter=" ", range_splitter=" to ")
+	ports = netports.snumbers("3 to 5 1 4 to 5 1", splitter=" ", range_splitter=" to ")
 	print(ports)
 	# 1 3 to 5
 
 
+TCP/UDP ports
+-------------
+
+
 itcp(items)
-......................................
+...........
 
 **Integer TCP/UDP ports** - Sort TCP/UDP ports and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
 
 Return
@@ -359,12 +373,12 @@ Return
 
 	try:
 		netports.itcp("65536")
-	except ValueError:
-		print("invalid TCP port")
-	# invalid TCP port
+	except ValueError as ex:
+		print(ex)
+	# invalid_port=[65536], expected in range 1...65535
 
 
-all_itcp()
+itcp_all()
 ..........
 
 **All Integer TCP/UDP ports** - Full range of TCP/UDP ports.
@@ -376,20 +390,20 @@ Return
 
 	import netports
 
-	ports = netports.all_itcp()
+	ports = netports.itcp_all()
 	print(ports)
-	# [1, 2, ... 65534, 65535]
+	# [1, 2, ..., 65535]
 
 
 stcp(items)
-......................................
+...........
 
 **String TCP/UDP ports** - Sort TCP/UDP ports and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
 
 Return
@@ -414,12 +428,14 @@ Return
 
 	try:
 		netports.stcp("65536")
-	except ValueError:
-		print("invalid TCP port")
-	# invalid TCP port
+	except ValueError as ex:
+		print(ex)
+	# invalid_port=[65536], expected in range 1...65535
 
 
-all_stcp()
+
+
+stcp_all()
 ..........
 
 **All String TCP/UDP ports** - Full range of TCP/UDP ports.
@@ -431,20 +447,24 @@ Return
 
 	import netports
 
-	ports = netports.all_stcp()
+	ports = netports.stcp_all()
 	print(ports)
 	# 1-65535
 
 
+VLAN IDs
+--------
+
+
 ivlan(line, splitter, range_splitter)
-......................................
+.....................................
 
 **Integer VLAN IDs** - Sort VLANs and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
@@ -483,20 +503,37 @@ Return
 
 	try:
 		netports.ivlan("4095")
-	except ValueError:
-		print("invalid VLAN")
-	# invalid VLAN
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
+
+
+ivlan_all()
+...........
+
+**All Integer VLAN IDs** - Full range of VLAN IDs.
+
+Return
+	*List[int]* All VLAN IDs.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.ivlan_all()
+	print(ports)
+	# [1, 2, ..., 4094]
 
 
 ivlan_hpe(items)
-......................................
+................
 
 **Integer VLAN IDs, for Hewlett Packard Enterprise** - Sort VLANs and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
 
 Return
@@ -513,7 +550,7 @@ Return
 	 port link-type hybrid
 	 port hybrid vlan 1 3 to 5 tagged
 	"""
-	trunk = re.findall("vlan(.+)tagged", config)[0]  # ' 1 3 to 5 '
+	trunk = re.findall("vlan(.+)tagged", config)[0]  # " 1 3 to 5 "
 	vlans = netports.ivlan_hpe(trunk)
 	print(vlans)
 	# [1, 3, 4, 5]
@@ -528,37 +565,20 @@ Return
 
 	try:
 		netports.ivlan_hpe("4095")
-	except ValueError:
-		print("invalid VLAN")
-	# invalid VLAN
-
-
-all_ivlan()
-..........
-
-**All Integer VLAN IDs** - Full range of VLAN IDs.
-
-Return
-	*List[int]* All VLAN IDs.
-
-.. code:: python
-
-	import netports
-
-	ports = netports.all_ivlan()
-	print(ports)
-	# [1, 2, ... 4093, 4094]
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
 
 
 svlan(line, splitter, range_splitter)
-......................................
+.....................................
 
 **String VLAN IDs** - Sort VLANs and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 splitter     	*str*						Separator character between items. By default ",".
 range_splitter	*str*						Separator between min and max numbers in range. By default "-".
 =============== =========================== ============================================================================
@@ -589,20 +609,37 @@ Return
 
 	try:
 		netports.svlan("4095")
-	except ValueError:
-		print("invalid VLAN")
-	# invalid VLAN
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
+
+
+svlan_all()
+...........
+
+**All String VLAN IDs** - Full range of VLAN IDs.
+
+Return
+	*str* All VLAN IDs.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.svlan_all()
+	print(ports)
+	# 1-4094
 
 
 svlan_hpe(items)
-......................................
+................
 
 **String VLAN IDs, for Hewlett Packard Enterprise** - Sort VLANs and remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int] List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
 
 Return
@@ -627,23 +664,185 @@ Return
 
 	try:
 		netports.svlan_hpe("4095")
-	except ValueError:
-		print("invalid VLAN")
-	# invalid VLAN
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
 
 
-all_svlan()
-..........
 
-**All String VLAN IDs** - Full range of VLAN IDs.
+IP protocols
+------------
 
-Return
-	*str* All VLAN IDs.
+
+IP_NAMES, IP_PORTS
+..................
+
+Dictionary with known IP protocol names and ports (defined on https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers)
+
 
 .. code:: python
 
 	import netports
 
-	ports = netports.all_svlan()
+	print(netports.IP_NAMES)
+	# {"icmp": {"number": 1, "name": "icmp"},
+	#  "tcp": {"number": 6, "name": "tcp"},
+	#  "udp": {"number": 17, "name": "udp"},
+	#  ...
+	# }
+
+	print(netports.IP_PORTS)
+	# {1: {"number": 1, "name": "icmp"},
+	#  6: {"number": 6, "name": "tcp"},
+	#  17: {"number": 17, "name": "udp"},
+	#  ...
+	# }
+
+
+iip(items)
+..........
+
+**Integer IP protocol numbers** - Sort numbers and remove duplicates.
+
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
+=============== =========================== ============================================================================
+
+Return
+	*List[int]* of unique sorted IP protocol numbers.
+	Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.iip("icmp,tcp,7,255")
 	print(ports)
-	# 1-4094
+	# [1, 6, 7, 255]
+
+	ports = netports.iip(["icmp", "icmp,tcp,1", "6-7", "255"])
+	print(ports)
+	# [1, 6, 7, 255]
+
+	ports = netports.iip([17, 17, 1, 1])
+	print(ports)
+	# [1, 17]
+
+	try:
+		netports.iip("265")
+	except ValueError as ex:
+		print(ex)
+	# invalid_ip_numbers=[265], expected in range 0...255
+
+
+iip_all()
+.........
+
+**All Integer IP protocol numbers** - Full range of IP protocol numbers.
+
+Return
+	*List[int]* All IP protocol numbers.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.iip_all()
+	print(ports)
+	# [1, 2, ..., 255]
+
+
+iip_nip(items)
+..............
+
+**IP protocol Numbers and Names** - Split numbers and names and remove duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol numbers and names, can be unsorted and with duplicates.
+=============== =========================== ============================================================================
+
+Return
+	List of IP protocol Numbers and List of IP protocol Names.
+	Raise *ValueError* if IP protocol number are outside valid range 0...255.
+	Raise *ValueError* if IP protocol name is unknown.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.iip_nip("icmp,tcp,7,255")
+	print(ports)
+	# ([7, 255], ["icmp", "tcp"])
+
+	ports = netports.iip_nip(["icmp", "tcp", 7, 255])
+	print(ports)
+	# ([7, 255], ["icmp", "tcp"])
+
+
+	try:
+		netports.iip_nip("icmp,typo")
+	except ValueError as ex:
+		print(ex)
+	# invalid_ip_names=["typo"]
+
+
+sip(items)
+..........
+
+**String IP protocol numbers** - Sort numbers and remove duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
+=============== =========================== ============================================================================
+
+Return
+	*str* of unique sorted IP protocol numbers.
+	Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.sip("icmp,tcp,7,255")
+	print(ports)
+	# 1,6-7,255
+
+	ports = netports.sip(["icmp", "icmp,tcp,1", "6-7", "255"])
+	print(ports)
+	# 1,6-7,255
+
+	ports = netports.sip([255, 255, 1, 1, 6, 7])
+	print(ports)
+	# 1,6-7,255
+
+	try:
+		netports.sip("265")
+	except ValueError as ex:
+		print(ex)
+	# invalid_ip_numbers=[265], expected in range 0...255
+
+
+sip_all()
+.........
+
+**All String IP protocol numbers** - Full range of IP protocol numbers.
+
+Return
+	*str* All IP protocol numbers.
+
+.. code:: python
+
+	import netports
+
+	ports = netports.sip_all()
+	print(ports)
+	# 0-255
+
+

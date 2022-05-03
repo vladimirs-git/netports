@@ -3,9 +3,10 @@
 CHANGELOG
 =========
 
-0.1.2 (2022-05-03)
+0.2.0 (2022-05-03)
 -------
-* [new] itcp_all, stcp_all, ivlan_all, svlan_all
+* [new] itcp_all, stcp_all, ivlan_all, svlan_all, iip, sip, iip_nip
+* [change] Ranges.ports > Ranges.numbers
 
 0.1.1 (2022-05-02)
 -------

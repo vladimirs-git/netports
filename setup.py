@@ -6,7 +6,7 @@ from setuptools import setup, find_packages  # type: ignore
 
 import netports as packet
 
-VERSION = "0.1.2"
+VERSION = "0.2.0"
 PACKAGE = packet.__title__
 ROOT = pathlib.Path(__file__).parent.resolve()
 README = "README.rst"
