@@ -67,19 +67,15 @@ class Test(unittest.TestCase):
         path = os.path.join(ROOT, __title__, "__init__.py")
         with open(path) as fh:
             text = fh.read()
-            version_init = (re.findall("^__version__ = \"(.+)\"", text, re.M) or [""])[0]
-            self.assertNotEqual(version_init, "", msg=f"__version__ in {path=}")
+            version = (re.findall("^__version__ = \"(.+)\"", text, re.M) or [""])[0]
+            regex = r"\d+(\.(\d+((a|b|c|rc)\d+)?|post\d+|dev\d+))+"
+            self.assertRegex(version, regex, msg=f"__version__ in {path=}")
 
         path = os.path.join(ROOT, "setup.py")
         with open(path) as fh:
             text = fh.read()
             version_setup = (re.findall("^VERSION = \"(.+)\"", text, re.M) or [""])[0]
-            self.assertNotEqual(version_setup, "", msg=f"VERSION in {path=}")
-
-        self.assertRegex(version_init, version_setup, msg="the same version everywhere")
-        regex = r"\d+(\.(\d+((a|b|c|rc)\d+)?|post\d+|dev\d+))+"
-        version = version_init
-        self.assertRegex(version, regex, msg="version naming convention")
+            self.assertEqual(version_setup, version, msg=f"VERSION in {path=}")
 
         path = os.path.join(ROOT, README)
         with open(path) as fh:
@@ -87,7 +83,7 @@ class Test(unittest.TestCase):
             regex = __title__ + r"-(.+)\.tar\.gz"
             versions_readme = re.findall(regex, text, re.M)
             for version_readme in versions_readme:
-                self.assertEqual(version_readme, version, msg=f"package name in {path=}")
+                self.assertEqual(version_readme, version, msg=f"version in {path=}")
 
         path = os.path.join(ROOT, CHANGELOG)
         with open(path) as fh:
@@ -100,23 +96,20 @@ class Test(unittest.TestCase):
         """__date__"""
         path = os.path.join(ROOT, __title__, "__init__.py")
         with open(path) as fh:
-            # date format convention
             text = fh.read()
-            date_ = (re.findall("^__date__ = \"(.+)\"", text, re.M) or [""])[0]
-            msg = f"invalid __date__ in {path=}"
-            self.assertRegex(date_, r"\d\d\d\d-\d\d-\d\d", msg=msg)
+            date = (re.findall("^__date__ = \"(.+)\"", text, re.M) or [""])[0]
+            self.assertRegex(date, r"\d\d\d\d-\d\d-\d\d", msg=f"date in {path=}")
 
             # last modified file
-            date_version = datetime.strptime(date_, "%Y-%m-%d").date()
-            date_max = max([t[1] for t in self._paths_dates()])
-            self.assertEqual(date_version, date_max, msg=msg)
+            date_last = max([t[1] for t in self._paths_dates()])
+            self.assertEqual(date, str(date_last), msg="last modified file")
 
             path = os.path.join(ROOT, CHANGELOG)
             with open(path) as fh_:
                 text = fh_.read()
                 regex = r".+\((\d\d\d\d-\d\d-\d\d)\)$"
                 date_changelog = (re.findall(regex, text, re.M) or [""])[0]
-                self.assertEqual(date_changelog, date_, msg=f"date in {path=}")
+                self.assertEqual(date_changelog, date, msg=f"date in {path=}")
 
 
 if __name__ == "__main__":

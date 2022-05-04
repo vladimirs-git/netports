@@ -607,19 +607,19 @@ Return
 	# invalid_ip_numbers=[265], expected in range 0...255
 
 
-iip_nip(items)
-..............
+nip(items)
+..........
 
-**IP protocol Numbers and Names** - Split numbers and names and remove duplicates.
+**IP protocol Names and Numbers** - Split items to names and numbers, remove duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of IP protocol numbers and names, can be unsorted and with duplicates.
+items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates.
 =============== =========================== ============================================================================
 
 Return
-	List of IP protocol Numbers and List of IP protocol Names.
+	*Tuple[List[str], List[int]]* Lists of IP protocol Names and IP protocol Numbers.
 	Raise *ValueError* if IP protocol number are outside valid range 0...255.
 	Raise *ValueError* if IP protocol name is unknown.
 
@@ -627,16 +627,16 @@ Return
 
 	import netports
 
-	ports = netports.iip_nip("icmp,tcp,7,255")
+	ports = netports.nip("icmp,tcp,7,255")
 	print(ports)
-	# ([7, 255], ["icmp", "tcp"])
+	# (["icmp", "tcp"], [7, 255])
 
-	ports = netports.iip_nip(["icmp", "tcp", 7, 255])
+	ports = netports.nip(["icmp", "tcp", 7, 255])
 	print(ports)
-	# ([7, 255], ["icmp", "tcp"])
+	# (["icmp", "tcp"], [7, 255])
 
 	try:
-		netports.iip_nip("icmp,typo")
+		netports.nip("icmp,typo")
 	except ValueError as ex:
 		print(ex)
 	# invalid_ip_names=["typo"]

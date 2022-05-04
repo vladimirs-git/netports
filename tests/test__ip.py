@@ -43,25 +43,25 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{items=}"):
                 ip.iip(items)
 
-    def test_iip_nip(self):
-        """iip_nip()"""
+    def test_nip(self):
+        """nip()"""
         for items, req in [
             ("", ([], [])),
             ([], ([], [])),
-            ("1", ([1], [])),
-            ("icmp", ([], ["icmp"])),
-            ("icmp,1", ([1], ["icmp"])),
-            ("ip", (ALL_IP, ["ip"])),
-            (["ip", "icmp"], (ALL_IP, ["ip"])),
-            ("ip,icmp", (ALL_IP, ["ip"])),
-            ("tcp,2,3-5,1,icmp", ([1, 2, 3, 4, 5], ["icmp", "tcp"])),
-            (["tcp", "2", "3-5", "1", "icmp"], ([1, 2, 3, 4, 5], ["icmp", "tcp"])),
+            ("1", ([], [1])),
+            ("icmp", (["icmp"], [])),
+            ("icmp,1", (["icmp"], [1])),
+            ("ip", (["ip"], ALL_IP)),
+            (["ip", "icmp"], (["ip"], ALL_IP)),
+            ("ip,icmp", (["ip"], ALL_IP)),
+            ("tcp,2,3-5,1,icmp", (["icmp", "tcp"], [1, 2, 3, 4, 5])),
+            (["tcp", "2", "3-5", "1", "icmp"], (["icmp", "tcp"], [1, 2, 3, 4, 5])),
         ]:
-            result = ip.iip_nip(items=items)
+            result = ip.nip(items=items)
             self.assertEqual(result, req, msg=f"{items=}")
 
-    def test_invalid__iip_nip(self):
-        """iip_nip()"""
+    def test_invalid__nip(self):
+        """nip()"""
         for items, error in [
             ("-1", ValueError),
             ("256", ValueError),
@@ -70,7 +70,7 @@ class Test(unittest.TestCase):
             ("typo", ValueError),
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
-                ip.iip_nip(items)
+                ip.nip(items)
 
     def test_valid__sip(self):
         """sip()"""
