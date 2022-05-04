@@ -473,7 +473,7 @@ def iip(items: Any = "", **kwargs) -> LInt:
     if bool(kwargs.get("all")):
         return list(range(0, 256))
     items_ = [s.lower() for s in h.split(items)]
-    numbers, names = iip_nip(items_)
+    names, numbers = nip(items_)
     if "ip" in names:
         return list(range(0, 256))
     numbers_ = [IP_NAMES[s]["number"] for s in names]
@@ -481,33 +481,33 @@ def iip(items: Any = "", **kwargs) -> LInt:
     return inumbers(numbers)
 
 
-def iip_nip(items: Any) -> Tuple[LInt, LStr]:
-    """**IP protocol Numbers and Names** - Split numbers and names and remove duplicates.
-    :param items: Range of IP protocol numbers and names, can be unsorted and with duplicates.
-    :return: List of IP protocol Numbers and List of IP protocol Names.
+def nip(items: Any) -> Tuple[LStr, LInt]:
+    """**IP protocol Names and Numbers** - Split items to names and numbers, remove duplicates.
+    :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates.
+    :return: Lists of IP protocol Names and IP protocol Numbers.
         Raise *ValueError* if IP protocol number are outside valid range 0...255.
         Raise *ValueError* if IP protocol name is unknown.
     Example:
-        items: ["icmp", "tcp", "7", 255]
+        items: ["icmp", "7", "tcp", 255]
         return: [7, 255] ["icmp", "tcp"]
     """
     items_ = [s.lower() for s in h.split(items)]
     if "ip" in items_:
-        return list(range(0, 256)), ["ip"]
+        return ["ip"], list(range(0, 256))
 
-    numbers: LInt = []
     names: LStr = []
+    numbers: LInt = []
     for item_ in items_:
         try:
             ranges_o = Ranges(item_)
             numbers.extend(ranges_o.numbers)
         except ValueError:
             names.append(item_)
-    numbers = sorted(set(numbers))
-    _check_ip_numbers(numbers)
     names = sorted(set(names))
+    numbers = sorted(set(numbers))
     _check_ip_names(names)
-    return numbers, names
+    _check_ip_numbers(numbers)
+    return names, numbers
 
 
 # noinspection PyIncorrectDocstring
