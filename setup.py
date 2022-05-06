@@ -2,12 +2,11 @@
 
 import pathlib
 
+import netports as package
 from setuptools import setup, find_packages  # type: ignore
 
-import netports as packet
-
 VERSION = "0.2.0"
-PACKAGE = packet.__title__
+PACKAGE = package.__title__
 ROOT = pathlib.Path(__file__).parent.resolve()
 README = "README.rst"
 
@@ -17,14 +16,14 @@ if __name__ == "__main__":
         packages=[PACKAGE],
         package_data={PACKAGE: ["py.typed"]},
         version=VERSION,
-        description=packet.__summary__,
-        license=packet.__license__,
+        description=package.__summary__,
+        license=package.__license__,
         long_description=open(README).read(),
         long_description_content_type="text/x-rst",
-        author=packet.__author__,
-        author_email=packet.__email__,
-        url=packet.__url__,
-        download_url=packet.__download_url__,
+        author=package.__author__,
+        author_email=package.__email__,
+        url=package.__url__,
+        download_url=package.__download_url__,
         keywords="interfaces, ports, tcp, network, telecommunication, cisco, ios",
         python_requires=">=3.8",
         classifiers=[

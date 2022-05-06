@@ -32,20 +32,8 @@ class Test(unittest.TestCase):
 
     # ============================ tests =============================
 
-    # @unittest.skip("solve pylint conflict")
     def test_valid__init__(self):
         """__init__.py"""
-        path1 = os.path.join(ROOT, "__init__.py")
-        path2 = os.path.join(ROOT, __title__, "__init__.py")
-        with open(path1) as fh1, open(path2) as fh2:
-            lines1 = {s.strip() for s in fh1.read().split("\n")}
-            lines2 = {s.strip() for s in fh2.read().split("\n")}
-            regex = r"(import|from)\s"
-            imports1 = {s for s in lines1 if re.match(regex, s)}
-            imports2 = {s for s in lines2 if re.match(regex, s)}
-            diff = imports1.difference(imports2)
-            self.assertEqual(len(diff), 0, msg=f"imports {diff=} in {path1=} {path2=}")
-
         metadata = [
             "__all__ = .+",
             "__version__ = .+",
@@ -58,9 +46,20 @@ class Test(unittest.TestCase):
             "__download_url__ = .+",
             "__license__ = .+",
         ]
+        path1 = os.path.join(ROOT, "__init__.py")
+        path2 = os.path.join(ROOT, __title__, "__init__.py")
+        with open(path1) as fh1, open(path2) as fh2:
+            lines1 = {s.strip() for s in fh1.read().split("\n")}
+            lines2 = {s.strip() for s in fh2.read().split("\n")}
+            regex = r"(import|from)\s"
+            imports1 = {s for s in lines1 if re.match(regex, s)}
+            imports2 = {s for s in lines2 if re.match(regex, s)}
+            diff = imports1.difference(imports2)
+            self.assertEqual(len(diff), 0, msg=f"imports {diff=} in {path1=} {path2=}")
+
         for meta in metadata:
             metadata2 = [s for s in lines2 if re.match(meta, s)]
-            self.assertEqual(len(metadata2), 1, msg=f"invalid {meta=} in {path2=}")
+            self.assertEqual(len(metadata2), 1, msg=f"absent {meta=} in {path2=}")
 
     def test_valid__version(self):
         """version"""

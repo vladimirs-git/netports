@@ -19,7 +19,7 @@ class Ranges:
         :param splitter: Separator character between numbers. By default ",".
         :param range_splitter: Separator between min and max digits in range. By default "-".
         :param strict: True - Raise ValueError, if in line is invalid item.
-                       False - Make Range without invalid items. By default True.
+                       False - Make Range without invalid items. By default - True.
         """
         self.splitter = kwargs.get("splitter") or SPLITTER
         self.range_splitter = kwargs.get("range_splitter") or RANGE_SPLITTER

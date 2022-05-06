@@ -481,9 +481,12 @@ def iip(items: Any = "", **kwargs) -> LInt:
     return inumbers(numbers)
 
 
-def nip(items: Any) -> Tuple[LStr, LInt]:
+# noinspection PyIncorrectDocstring
+def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     """**IP protocol Names and Numbers** - Split items to names and numbers, remove duplicates.
     :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates.
+    :param strict: True - Raise ValueError, if in line is invalid item.
+                   False - Return output with invalid items. By default - True.
     :return: Lists of IP protocol Names and IP protocol Numbers.
         Raise *ValueError* if IP protocol number are outside valid range 0...255.
         Raise *ValueError* if IP protocol name is unknown.
@@ -505,8 +508,11 @@ def nip(items: Any) -> Tuple[LStr, LInt]:
             names.append(item_)
     names = sorted(set(names))
     numbers = sorted(set(numbers))
-    _check_ip_names(names)
-    _check_ip_numbers(numbers)
+
+    strict = bool(kwargs.get("strict")) if kwargs.get("strict") is not None else True
+    if strict:
+        _check_ip_names(names)
+        _check_ip_numbers(numbers)
     return names, numbers
 
 

@@ -45,32 +45,34 @@ class Test(unittest.TestCase):
 
     def test_nip(self):
         """nip()"""
-        for items, req in [
-            ("", ([], [])),
-            ([], ([], [])),
-            ("1", ([], [1])),
-            ("icmp", (["icmp"], [])),
-            ("icmp,1", (["icmp"], [1])),
-            ("ip", (["ip"], ALL_IP)),
-            (["ip", "icmp"], (["ip"], ALL_IP)),
-            ("ip,icmp", (["ip"], ALL_IP)),
-            ("tcp,2,3-5,1,icmp", (["icmp", "tcp"], [1, 2, 3, 4, 5])),
-            (["tcp", "2", "3-5", "1", "icmp"], (["icmp", "tcp"], [1, 2, 3, 4, 5])),
+        for kwargs, req in [
+            (dict(items=""), ([], [])),
+            (dict(items=[]), ([], [])),
+            (dict(items="1"), ([], [1])),
+            (dict(items="icmp"), (["icmp"], [])),
+            (dict(items="icmp,1"), (["icmp"], [1])),
+            (dict(items="ip"), (["ip"], ALL_IP)),
+            (dict(items=["ip", "icmp"]), (["ip"], ALL_IP)),
+            (dict(items="ip,icmp"), (["ip"], ALL_IP)),
+            (dict(items="tcp,2,3-5,1,icmp"), (["icmp", "tcp"], [1, 2, 3, 4, 5])),
+            (dict(items=["tcp", "2", "3-5", "1", "icmp"]), (["icmp", "tcp"], [1, 2, 3, 4, 5])),
+            (dict(items=["tcp,typo,1,226"], strict=False), (["tcp", "typo"], [1, 226])),
         ]:
-            result = ip.nip(items=items)
-            self.assertEqual(result, req, msg=f"{items=}")
+            result = ip.nip(**kwargs)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
 
     def test_invalid__nip(self):
         """nip()"""
-        for items, error in [
-            ("-1", ValueError),
-            ("256", ValueError),
-            ([-1], ValueError),
-            ([256], ValueError),
-            ("typo", ValueError),
+        for kwargs, error in [
+            (dict(items="-1"), ValueError),
+            (dict(items="256"), ValueError),
+            (dict(items=[-1]), ValueError),
+            (dict(items=[256]), ValueError),
+            (dict(items="typo"), ValueError),
+            (dict(items="typo", strict=True), ValueError),
         ]:
-            with self.assertRaises(error, msg=f"{items=}"):
-                ip.nip(items)
+            with self.assertRaises(error, msg=f"{kwargs=}"):
+                ip.nip(**kwargs)
 
     def test_valid__sip(self):
         """sip()"""

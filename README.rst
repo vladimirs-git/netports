@@ -607,7 +607,7 @@ Return
 	# invalid_ip_numbers=[265], expected in range 0...255
 
 
-nip(items)
+nip(items, strict)
 ..........
 
 **IP protocol Names and Numbers** - Split items to names and numbers, remove duplicates.
@@ -616,6 +616,7 @@ nip(items)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates.
+strict			*bool*						True - Raise ValueError, if in line is invalid item. False - Return output with invalid items. By default - True.
 =============== =========================== ============================================================================
 
 Return
