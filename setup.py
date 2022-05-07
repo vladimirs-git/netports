@@ -2,8 +2,9 @@
 
 import pathlib
 
-import netports as package
 from setuptools import setup, find_packages  # type: ignore
+
+import netports as package
 
 VERSION = "0.2.0"
 PACKAGE = package.__title__

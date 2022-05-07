@@ -5,7 +5,7 @@ Useful for the interfaces strings by index (not by alphabetic).
 import re
 from functools import total_ordering
 
-from netports.types_ import TStr5
+from netports.types_ import T5Str
 
 
 @total_ordering
@@ -13,9 +13,9 @@ class Interface4:
     """Interface"""
 
     def __init__(self, line: str = "", splitter: str = ",./:"):
-        """Interface.
-        :param line: Interface name that can contain up to 4 indexes.
-        :param splitter: Separator characters between indexes. By default ",./:".
+        """Interface
+        :param line: Interface name that can contain up to 4 indexes
+        :param splitter: Separator characters between indexes, by default ",./:"
         """
         self.splitter = splitter
         self.line = line
@@ -61,7 +61,7 @@ class Interface4:
     def line(self, line: str) -> None:
         if not isinstance(line, str):
             raise TypeError(f"{line=} {str} expected")
-        items: TStr5 = self._parse_interface(line)
+        items: T5Str = self._parse_interface(line)
         self._id0 = items[0]
         self._id1 = int(items[1]) if items[1] else 0
         self._id2 = int(items[2]) if items[2] else 0
@@ -112,11 +112,12 @@ class Interface4:
 
     # =========================== helpers ============================
 
-    def _parse_interface(self, intf: str) -> TStr5:
-        """Parse interface to name and indexes.
-        :param intf: Interface that has up to 4 indexes as <str>.
+    def _parse_interface(self, intf: str) -> T5Str:
+        """Parses interface to name and indexes
+        :param intf: Interface that has up to 4 indexes as *str*
         :return: split name and indexes
-        Example:
+
+        :example:
             intf: "interface Ethernet1/2/3.4"
             return: ("interface Ethernet", 1, 2, 3, 4)
         """
@@ -128,5 +129,5 @@ class Interface4:
         id1 = r"(\d+)*"
         id2 = r"(?:,)*(\d+)*"
         pattern = f"{name}{id1}{id2}{id2}{id2}"
-        parsed: TStr5 = (re.findall(pattern, intf_) or [("", "", "", "", "")])[0]
+        parsed: T5Str = (re.findall(pattern, intf_) or [("", "", "", "", "")])[0]
         return parsed

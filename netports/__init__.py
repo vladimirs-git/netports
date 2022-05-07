@@ -2,9 +2,9 @@
 
 from netports.interface4 import Interface4
 from netports.ip import IP_NAMES, IP_PORTS, iip, nip, sip
-from netports.ports import inumbers, ranges, snumbers
+from netports.item import Item
+from netports.ports import inumbers, parse_range, snumbers
 from netports.range import Range
-from netports.ranges import Ranges
 from netports.tcp import stcp, itcp
 from netports.vlan import ivlan, svlan
 
@@ -12,14 +12,14 @@ __all__ = [
     "IP_NAMES",
     "IP_PORTS",
     "Interface4",
+    "Item",
     "Range",
-    "Ranges",
     "iip",
     "inumbers",
     "itcp",
     "ivlan",
     "nip",
-    "ranges",
+    "parse_range",
     "sip",
     "snumbers",
     "stcp",
@@ -27,11 +27,11 @@ __all__ = [
 ]
 
 __version__ = "0.2.0"
-__date__ = "2022-05-04"
+__date__ = "2022-05-07"
 __title__ = "netports"
 
 __summary__ = "A collection of Python objects and functions " \
-              "for managing ranges of VLANs, TCP/UDP ports, interfaces. " \
+              "for managing range of VLANs, TCP/UDP ports, interfaces. " \
               "Recommended for scripting related to telecommunications networks."
 __author__ = "Vladimir Prusakov"
 __email__ = "vladimir.prusakovs@gmail.com"

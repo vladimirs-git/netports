@@ -3,7 +3,7 @@
 import unittest
 
 from netports.interface4 import Interface4
-from tests.helpers_test import Helpers
+from tests.helpers_ import Helpers
 
 
 # noinspection DuplicatedCode
@@ -30,9 +30,9 @@ class Test(Helpers):
             (Interface4("interface Ethernet1/1"), False),
         ]:
             result = intf_o.__eq__(other_o)
-            self.assertEqual(result, req, msg=f"{intf_o =} {other_o=}")
+            self.assertEqual(result, req, msg=f"{intf_o=} {other_o=}")
             result = intf_o.__ne__(other_o)
-            self.assertEqual(result, not req, msg=f"{intf_o =} {other_o=}")
+            self.assertEqual(result, not req, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__(self):
         """Interface.__lt__() __le__() __gt__() __ge__()"""
@@ -59,7 +59,7 @@ class Test(Helpers):
             self.assertEqual(result, req_ge, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__sort(self):
-        """Ace.__lt__(), Ace.__le__()"""
+        """Interface.__lt__(), Interface.__le__()"""
         intf1 = "interface Ethernet1/2/3.4"
         for items in [
             [intf1, Interface4(intf1)],
