@@ -4,7 +4,7 @@ from typing import Any, Tuple
 
 from netports import helpers as h
 from netports.ports import inumbers, snumbers
-from netports.ranges import Ranges
+from netports.range import Range
 from netports.types_ import LInt, LStr, DAny, DiAny
 
 IP_PORTS: DiAny = {
@@ -457,16 +457,18 @@ IP_NAMES: DAny = {d["name"]: d for i, d in IP_PORTS.items()}
 
 # noinspection PyIncorrectDocstring
 def iip(items: Any = "", **kwargs) -> LInt:
-    """**Integer IP protocol numbers** - Sort numbers and remove duplicates.
+    """**Integer IP protocol numbers** - Sorting numbers and removing duplicates
     :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+        "ip" - Return all IP protocol numbers: [0, 1, ..., 255].
     :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
-    :return: *List[int]* of unique sorted IP protocol numbers.
-        Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
-    Example1:
+    :return: *List[int]* of unique sorted IP protocol numbers
+    :raises ValueError: If IP protocol numbers are outside valid range 0...255
+
+    :example: Converts mix of ip protocol names and numbers to numbers
         items: "icmp,tcp,7,255"
         return: [1, 6, 7, 255]
-    Example2:
+
+    :example: Converts ip to full range of ip protocol numbers
         items: "ip"
         return: [0, 1, ... 254, 255]
     """
@@ -483,14 +485,15 @@ def iip(items: Any = "", **kwargs) -> LInt:
 
 # noinspection PyIncorrectDocstring
 def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
-    """**IP protocol Names and Numbers** - Split items to names and numbers, remove duplicates.
-    :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates.
+    """**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates
+    :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates
     :param strict: True - Raise ValueError, if in line is invalid item.
-                   False - Return output with invalid items. By default - True.
-    :return: Lists of IP protocol Names and IP protocol Numbers.
-        Raise *ValueError* if IP protocol number are outside valid range 0...255.
-        Raise *ValueError* if IP protocol name is unknown.
-    Example:
+                   False - Return output with invalid items, by default - True.
+    :return: Lists of IP protocol Names and IP protocol Numbers
+    :raises ValueError: If IP protocol number are outside valid range 0...255, or
+    IP protocol name is unknown
+
+    :example:
         items: ["icmp", "7", "tcp", 255]
         return: [7, 255] ["icmp", "tcp"]
     """
@@ -502,8 +505,8 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     numbers: LInt = []
     for item_ in items_:
         try:
-            ranges_o = Ranges(item_)
-            numbers.extend(ranges_o.numbers)
+            range_o = Range(item_)
+            numbers.extend(range_o.numbers)
         except ValueError:
             names.append(item_)
     names = sorted(set(names))
@@ -518,13 +521,14 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
 
 # noinspection PyIncorrectDocstring
 def sip(items: Any = "", **kwargs) -> str:
-    """**String IP protocol numbers** - Sort numbers and remove duplicates.
+    """**String IP protocol numbers** - Sorting numbers and removing duplicates
     :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
         "ip" - mean all numbers in range 0...255.
     :param all: True - Return all IP protocol numbers: "0-255"
-    :return: *str* of unique sorted IP protocol numbers.
-        Raise *ValueError* if IP protocol numbers are outside valid range 0...255.
-    Example:
+    :return: *str* of unique sorted IP protocol numbers
+    :raises ValueError: If IP protocol numbers are outside valid range 0...255
+
+    :example:
         items: ["icmp", "tcp", "7", 255]
         return: "1,6-7,255"
     """
@@ -537,14 +541,22 @@ def sip(items: Any = "", **kwargs) -> str:
 # ============================= helpers ==============================
 
 def _check_ip_numbers(items: LInt) -> bool:
-    """True if all items are in the valid IP range 0...255, else raise ValueError."""
+    """Checks IP protocol numbers
+    :param items: IP protocol numbers
+    :return: True if all items are in the valid IP range 0...255
+    :raises ValueError: If on of item is outside valid range
+    """
     if invalid_ip_numbers := [i for i in items if i < 0 or i > 255]:
         raise ValueError(f"{invalid_ip_numbers=}, expected in range 0...255")
     return True
 
 
 def _check_ip_names(items: LStr) -> bool:
-    """True if all items are in the valid IANA range, else raise ValueError."""
+    """Checks IP protocol names
+    :param items: IP protocol names
+    :return: True if all items are in the valid IANA range
+    :raises ValueError: If on of item is outside valid range
+    """
     if invalid_ip_names := [s for s in items if s not in IP_NAMES]:
         raise ValueError(f"{invalid_ip_names=}")
     return True

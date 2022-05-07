@@ -8,8 +8,8 @@ from netports import ports
 class Test(unittest.TestCase):
     """unittest ports.py"""
 
-    def test_valid__iports(self):
-        """iports()"""
+    def test_valid__inumbers(self):
+        """inumbers()"""
         for items, req in [
             ("", []),
             (0, [0]),
@@ -41,8 +41,8 @@ class Test(unittest.TestCase):
             result = ports.inumbers(items)
             self.assertEqual(result, req, msg=f"{items=}")
 
-    def test_invalid__iports(self):
-        """iports()"""
+    def test_invalid__inumbers(self):
+        """inumbers()"""
         for items, error in [
             ("1-2-3", ValueError),
             ("1-a", ValueError),

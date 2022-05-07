@@ -7,6 +7,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    Union,
 )
 
 DAny = Dict[str, Any]
@@ -19,5 +20,9 @@ LStr = List[str]
 OInt = Optional[int]
 SInt = Set[int]
 SStr = Set[str]
+StrInt = Union[int, str]
 
-TStr5 = Tuple[str, str, str, str, str]
+StrIInt = Union[str, IInt]
+IStrInt = Union[IStr, IInt]
+T2SInt = Tuple[SInt, SInt]
+T5Str = Tuple[str, str, str, str, str]
