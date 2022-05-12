@@ -141,7 +141,7 @@ Object implements most of the `set <https://www.w3schools.com/python/python_ref_
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str*, *List[int]*			Range of numbers. Numbers can be unsorted and duplicated
+items         	*str*, *List[int]*			Range of numbers. Numbers can be unsorted and duplicated.
 splitter     	*str*						Separator character between items, by default ","
 range_splitter	*str*						Separator between min and max numbers in range, by default "-"
 strict			*bool*						True - Raise ValueError, if in items is invalid item. False - Make Range without invalid items. By default True.

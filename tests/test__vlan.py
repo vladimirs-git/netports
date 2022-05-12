@@ -3,7 +3,6 @@
 import unittest
 
 import dictdiffer  # type: ignore
-
 from netports import vlan
 
 ALL_VLANS = list(range(1, 4095))
@@ -98,7 +97,7 @@ class Test(unittest.TestCase):
              dict(platform="hpe", splitter=" ", range_splitter=" to ")),
         ]:
             result = vlan._update_splitters(**kwargs)
-            diff = list(dictdiffer.diff(first=result, second=req_d))
+            diff = list(dictdiffer.diff(result, req_d))
             self.assertEqual(diff, [], msg=f"{kwargs=}")
 
 

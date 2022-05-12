@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 __version__ = "0.2.0"
-__date__ = "2022-05-07"
+__date__ = "2022-05-12"
 __title__ = "netports"
 
 __summary__ = "A collection of Python objects and functions " \
