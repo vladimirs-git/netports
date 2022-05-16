@@ -41,7 +41,7 @@ def stcp(items: Any = "", **kwargs) -> str:
     if bool(kwargs.get("all")):
         return "1-65535"
     range_o: Range = parse_range(items)
-    _check_tcp_ports(range_o.numbers)
+    _check_tcp_ports(range_o.numbers())
     return str(range_o)
 
 

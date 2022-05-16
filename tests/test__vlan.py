@@ -3,6 +3,7 @@
 import unittest
 
 import dictdiffer  # type: ignore
+
 from netports import vlan
 
 ALL_VLANS = list(range(1, 4095))

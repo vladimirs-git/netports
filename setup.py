@@ -2,10 +2,11 @@
 
 import pathlib
 
-import netports as package
 from setuptools import setup, find_packages  # type: ignore
 
-VERSION = "0.2.0"
+import netports as package
+
+VERSION = "0.3.0"
 PACKAGE = package.__title__
 ROOT = pathlib.Path(__file__).parent.resolve()
 README = "README.rst"

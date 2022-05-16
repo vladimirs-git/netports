@@ -22,7 +22,7 @@ SInt = Set[int]
 SStr = Set[str]
 StrInt = Union[int, str]
 
-StrIInt = Union[str, IInt]
+StrIInt = Union[str, int, IInt]
 IStrInt = Union[IStr, IInt]
 T2SInt = Tuple[SInt, SInt]
 T5Str = Tuple[str, str, str, str, str]

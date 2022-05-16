@@ -54,7 +54,7 @@ def inumbers(items: Any, **kwargs) -> LInt:
         return: [1, 3, 4, 5, 7, 8, 9]
     """
     range_o: Range = parse_range(items, **kwargs)
-    return range_o.numbers
+    return range_o.numbers()
 
 
 # noinspection PyIncorrectDocstring

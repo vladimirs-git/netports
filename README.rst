@@ -156,7 +156,7 @@ Attributes demonstration
 	range_o = Range("1,3-5")
 	assert range_o.line == "1,3-5"
 	assert str(range_o) == "1,3-5"
-	assert range_o.numbers == [1, 3, 4, 5]
+	assert range_o.numbers() == [1, 3, 4, 5]
 	assert list(range_o) == [1, 3, 4, 5]
 	assert Range("1,3-5") == Range([1, 3, 4, 5])
 
@@ -197,11 +197,11 @@ Range with custom splitters
 
 	range_o = Range("1, 3-5, 7-9", splitter=", ")
 	assert range_o.line == "1, 3-5, 7-9"
-	assert range_o.numbers == [1, 3, 4, 5, 7, 8, 9]
+	assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
 
 	range_o = Range("1 3 to 5 7 to 9", splitter=" ", range_splitter=" to ")
 	assert range_o.line == "1 3 to 5 7 to 9"
-	assert range_o.numbers == [1, 3, 4, 5, 7, 8, 9]
+	assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
 
 Range operators
 :::::::::::::::
@@ -348,7 +348,7 @@ Sorting numbers and removing duplicates
 	range_o = netports.parse_range("3\t- 5, 1 , 3-5\t,1\n")
 	print(f"{range_o!r}")
 	print(range_o.line)
-	print(range_o.numbers)
+	print(range_o.numbers())
 	# Range("1,3-5")
 	# 1,3-5
 	# [1, 3, 4, 5]
@@ -362,7 +362,7 @@ Range with custom splitter and range_splitter
 	range_o = netports.parse_range("1 3 to 5 1 3 to 5", splitter=" ", range_splitter=" to ")
 	print(f"{range_o!r}")
 	print(range_o.line)
-	print(range_o.numbers)
+	print(range_o.numbers())
 	# Range("1 3 to 5", splitter=" ", range_splitter=" to ")
 	# 1 3 to 5
 	# [1, 3, 4, 5]

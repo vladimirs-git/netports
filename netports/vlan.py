@@ -58,7 +58,7 @@ def svlan(items: Any = "", **kwargs) -> str:
         return "1-4094"
     kwargs = _update_splitters(**kwargs)
     range_o: Range = parse_range(items, **kwargs)
-    _check_vlan_ids(range_o.numbers)
+    _check_vlan_ids(range_o.numbers())
     return str(range_o)
 
 

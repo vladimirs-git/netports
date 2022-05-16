@@ -1,6 +1,7 @@
 """unittest helpers"""
 
 import unittest
+from typing import Callable
 
 
 class Helpers(unittest.TestCase):
@@ -18,7 +19,11 @@ class Helpers(unittest.TestCase):
         result = str(obj)
         self.assertEqual(result, req, msg=f"{msg} str")
         for attr, req in req_d.items():
-            result = getattr(obj, attr)
+            if attr == "numbers":
+                method: Callable = getattr(obj, attr)
+                result = method()
+            else:
+                result = getattr(obj, attr)
             if hasattr(result, "line"):
                 result = str(result)
             self.assertEqual(result, req, msg=f"{msg} {attr=}")

@@ -506,7 +506,7 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     for item_ in items_:
         try:
             range_o = Range(item_)
-            numbers.extend(range_o.numbers)
+            numbers.extend(range_o.numbers())
         except ValueError:
             names.append(item_)
     names = sorted(set(names))

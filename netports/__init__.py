@@ -26,8 +26,8 @@ __all__ = [
     "svlan",
 ]
 
-__version__ = "0.2.0"
-__date__ = "2022-05-12"
+__version__ = "0.3.0"
+__date__ = "2022-05-16"
 __title__ = "netports"
 
 __summary__ = "A collection of Python objects and functions " \
