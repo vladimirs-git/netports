@@ -12,17 +12,23 @@ Recommended for scripting related to telecommunications networks.
 Installation
 ------------
 
-Install the package by running
+Install the package from pypi.org release
 
 .. code:: bash
 
     pip install netports
 
-or
+or install the package from github.com release
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.4.0.tar.gz
+
+or install the package from github.com repository
+
+.. code:: bash
+
+    pip install git+https://github.com/vladimirs-git/netports@0.4.0
 
 
 Objects
