@@ -102,7 +102,6 @@ Sorting by indexes
 	interfaces = [Interface4(line) for line in lines]
 	for interface in sorted(interfaces):
 		print(interface)
-
 	# interface Ethernet1/1/1.1
 	# interface Ethernet1/2/1.1
 	# interface Ethernet1/3/1.1
@@ -128,7 +127,6 @@ Grouping interfaces by 3rd index
 	interfaces.sort(key=lambda o: o.id3)
 	for interface in interfaces:
 		print(interface)
-
 	# interface Ethernet101/1/1
 	# interface Ethernet102/1/1
 	# interface Ethernet101/1/2
@@ -682,21 +680,28 @@ Dictionary with known IP protocol names and IDs listed in https://en.wikipedia.o
 
 .. code:: python
 
+	from pprint import pprint
 	import netports
 
-	print(netports.IP_NAMES)
-	# {"icmp": {"number": 1, "name": "icmp", "description": "Internet Control Message Protocol"},
-	#  "tcp": {"number": 6, "name": "tcp", "description": "Transmission Control Protocol"},
-	#  "udp": {"number": 17, "name": "udp", "description": "User Datagram Protocol"},
-	#  ...
-	# }
+	# IP_NAMES
+	pprint(netports.IP_NAMES)
+	#  'icmp': {'description': 'Internet Control Message Protocol, RFC 792',
+	#           'name': 'icmp',
+	#           'number': 1},
+	#  'tcp': {'description': 'Transmission Control Protocol, RFC 793',
+	#          'name': 'tcp',
+	#          'number': 6},
+	# ...
 
-	print(netports.IP_NUMBERS)
-	# {1: {"number": 1, "name": "icmp", "description": "Internet Control Message Protocol"},
-	#  6: {"number": 6, "name": "tcp", "description": "Transmission Control Protocol"},
-	#  17: {"number": 17, "name": "udp", "description": "User Datagram Protocol"},
-	#  ...
-	# }
+	# IP_NUMBERS
+	pprint(netports.IP_NUMBERS)
+	# {0: {'description': 'IPv6 Hop-by-Hop Option, RFC 8200',
+	#      'name': 'hopopt',
+	#      'number': 0},
+	#  6: {'description': 'Transmission Control Protocol, RFC 793',
+	#      'name': 'tcp',
+	#      'number': 6},
+	# ...
 
 
 iip(items, all)
@@ -819,4 +824,3 @@ Raises
 	except ValueError as ex:
 		print(ex)
 	# invalid_ip_numbers=[265], expected in range 0...255
-
