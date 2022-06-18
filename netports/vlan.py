@@ -15,7 +15,7 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
     :param all: True - Return All VLAN IDs: [1, 2, ..., 4094]
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
-    :param platform: Set `splitter` and `range_splitter` to platform specific values.
+    :param platform: Set `splitter` and `range_splitter` to platform specific values
         platform    splitter    range_splitter  description
         ==========  ==========  ==============  ==========================
         "cisco"     ","         "-"             Cisco IOS
@@ -42,7 +42,7 @@ def svlan(items: Any = "", **kwargs) -> str:
     :param all: True - Return All VLAN IDs: "1-4094"
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
-    :param platform: Set `splitter` and `range_splitter` to platform specific values.
+    :param platform: Set `splitter` and `range_splitter` to platform specific values
         platform    splitter    range_splitter  description
         ==========  ==========  ==============  ==========================
         "cisco"     ","         "-"             Cisco IOS
@@ -76,7 +76,7 @@ def _check_vlan_ids(items: LInt) -> bool:
 
 
 def _update_splitters(**kwargs):
-    """Updates `splitter` and `range_splitter` by `platform`.
+    """Updates `splitter` and `range_splitter` by `platform`
         platform    splitter    range_splitter  description
         ==========  ==========  ==============  ==========================
         "cisco"     ","         "-"             Cisco IOS

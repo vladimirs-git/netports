@@ -1,6 +1,5 @@
-"""
-**Interface4** - An object of interface name that can contain up to 4 indexes.
-Useful for the interfaces strings by index (not by alphabetic).
+"""**Interface4** - An object of interface name that can contain up to 4 indexes
+Useful for the interfaces strings by index (not by alphabetic)
 """
 import re
 from functools import total_ordering
@@ -10,10 +9,10 @@ from netports.types_ import T5Str
 
 @total_ordering
 class Interface4:
-    """Interface"""
+    """Interface4"""
 
     def __init__(self, line: str = "", splitter: str = ",./:"):
-        """Interface
+        """Interface4
         :param line: Interface name that can contain up to 4 indexes
         :param splitter: Separator characters between indexes, by default ",./:"
         """

@@ -28,6 +28,7 @@ class Test(unittest.TestCase):
             (dict(items="ip,icmp,2"), ALL_IP),
             (dict(all=True), ALL_IP),
             (dict(items="1", all=True), ALL_IP),
+            (dict(items="-1,1,1,256,typo", strict=False), [1]),
         ]:
             result = ip.iip(**kwargs)
             self.assertEqual(result, req, msg=f"{kwargs=}")

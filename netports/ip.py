@@ -7,7 +7,7 @@ from netports.ports import inumbers, snumbers
 from netports.range import Range
 from netports.types_ import LInt, LStr, DAny, DiAny
 
-IP_PORTS: DiAny = {
+IP_NUMBERS: DiAny = {
     0: {"number": 0,
         "name": "hopopt",
         "description": "IPv6 Hop-by-Hop Option, RFC 8200"},
@@ -451,16 +451,17 @@ IP_PORTS: DiAny = {
                          "(TEMPORARY - registered 2020-01-31, expired 2021-01-31)"},
 
 }
-
-IP_NAMES: DAny = {d["name"]: d for i, d in IP_PORTS.items()}
+IP_NAMES: DAny = {d["name"]: d for i, d in IP_NUMBERS.items()}
 
 
 # noinspection PyIncorrectDocstring
-def iip(items: Any = "", **kwargs) -> LInt:
+def iip(items: Any = "", strict: bool = True, **kwargs) -> LInt:
     """**Integer IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - Return all IP protocol numbers: [0, 1, ..., 255].
+    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates,
+        "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
     :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+    :param strict: True - Raises ValueError, if the protocol is unknown,
+                   False - Skips unknown protocols, by default - True
     :return: *List[int]* of unique sorted IP protocol numbers
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
@@ -474,12 +475,18 @@ def iip(items: Any = "", **kwargs) -> LInt:
     """
     if bool(kwargs.get("all")):
         return list(range(0, 256))
+    # split items to names, numbers
     items_ = [s.lower() for s in h.split(items)]
-    names, numbers = nip(items_)
+    names, numbers = nip(items=items_, strict=strict)
     if "ip" in names:
         return list(range(0, 256))
-    numbers_ = [IP_NAMES[s]["number"] for s in names]
-    numbers.extend(numbers_)
+    # translate names to numbers
+    for name in names:
+        name = name.lower()
+        if data := IP_NAMES.get(name):
+            numbers.append(data["number"])
+        elif strict:
+            raise ValueError(f"invalid {name=}")
     return inumbers(numbers)
 
 
@@ -487,11 +494,12 @@ def iip(items: Any = "", **kwargs) -> LInt:
 def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     """**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates
     :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates
-    :param strict: True - Raise ValueError, if in line is invalid item.
-                   False - Return output with invalid items, by default - True.
+    :param strict: True - Raise ValueError, if in line is unknown protocol,
+                   False - Return output with invalid names (skip invalid numbers),
+                   by default - True
     :return: Lists of IP protocol Names and IP protocol Numbers
-    :raises ValueError: If IP protocol number are outside valid range 0...255, or
-    IP protocol name is unknown
+    :raises ValueError: If IP protocol number are outside valid range 0...255,
+    or IP protocol name is unknown
 
     :example:
         items: ["icmp", "7", "tcp", 255]
@@ -512,18 +520,20 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     names = sorted(set(names))
     numbers = sorted(set(numbers))
 
-    strict = bool(kwargs.get("strict")) if kwargs.get("strict") is not None else True
+    strict_ = kwargs.get("strict")
+    strict = bool(strict_ if strict_ is not None else True)
     if strict:
         _check_ip_names(names)
         _check_ip_numbers(numbers)
+    numbers = [i for i in numbers if i in range(0, 256)]
     return names, numbers
 
 
 # noinspection PyIncorrectDocstring
 def sip(items: Any = "", **kwargs) -> str:
     """**String IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - mean all numbers in range 0...255.
+    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates,
+        "ip" - mean all numbers in range 0...255
     :param all: True - Return all IP protocol numbers: "0-255"
     :return: *str* of unique sorted IP protocol numbers
     :raises ValueError: If IP protocol numbers are outside valid range 0...255

@@ -668,10 +668,10 @@ IP protocols
 ------------
 
 
-IP_NAMES, IP_PORTS
-..................
+IP_NAMES, IP_NUMBERS
+....................
 
-Dictionary with known IP protocol names and ports listed in https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
+Dictionary with known IP protocol names and IDs listed in https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
 
 
 .. code:: python
@@ -685,7 +685,7 @@ Dictionary with known IP protocol names and ports listed in https://en.wikipedia
 	#  ...
 	# }
 
-	print(netports.IP_PORTS)
+	print(netports.IP_NUMBERS)
 	# {1: {"number": 1, "name": "icmp", "description": "Internet Control Message Protocol"},
 	#  6: {"number": 6, "name": "tcp", "description": "Transmission Control Protocol"},
 	#  17: {"number": 17, "name": "udp", "description": "User Datagram Protocol"},
@@ -704,6 +704,7 @@ Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
 all				*bool*						True - Return all IP protocol numbers: [0, 1, ..., 255]
+strict          *bool*                      True - Raises ValueError, if the protocol is unknown, False - Skips unknown protocols, by default - True
 =============== =========================== ============================================================================
 
 Return
@@ -743,7 +744,7 @@ nip(items, strict)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates
-strict			*bool*						True - Raise ValueError, if in line is invalid item. False - Return output with invalid items. By default - True.
+strict			*bool*						True - Raise ValueError, if in line is unknown protocol, False - Return output with invalid names (skip invalid numbers), by default - True
 =============== =========================== ============================================================================
 
 Return
