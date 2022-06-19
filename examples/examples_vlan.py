@@ -1,6 +1,7 @@
 """Examples VLAN"""
 
 import re
+
 import netports
 
 # ivlan(items, all, splitter, range_splitter, platform)

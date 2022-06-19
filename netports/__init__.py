@@ -26,13 +26,12 @@ __all__ = [
     "svlan",
 ]
 
-__version__ = "0.4.0"
-__date__ = "2022-06-18"
+__version__ = "0.5.0"
+__date__ = "2022-06-19"
 __title__ = "netports"
 
-__summary__ = "A collection of Python objects and functions " \
-              "for managing range of VLANs, TCP/UDP ports, interfaces. " \
-              "Recommended for scripting related to telecommunications networks."
+__summary__ = "A collection of Python objects and functions for managing ranges of VLANs, " \
+              "TCP/UDP ports, IP protocol numbers, interfaces."
 __author__ = "Vladimir Prusakov"
 __email__ = "vladimir.prusakovs@gmail.com"
 __url__ = "https://github.com/vladimirs-git/netports"

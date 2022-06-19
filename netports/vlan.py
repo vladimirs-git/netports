@@ -2,17 +2,27 @@
 
 from typing import Any
 
+from netports import helpers as h
 from netports.ports import inumbers, parse_range
 from netports.range import Range
-from netports.static import RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
+from netports.static import BRIEF_ALL_I, RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
 from netports.types_ import LInt
+
+MIN_VLAN = 1
+MAX_VLAN = 4094
+ALL_VLANS_L = list(range(MIN_VLAN, MAX_VLAN + 1))
+ALL_VLANS_S = f"{MIN_VLAN}-{MAX_VLAN}"
 
 
 # noinspection PyIncorrectDocstring
 def ivlan(items: Any = "", **kwargs) -> LInt:
     """**Integer VLAN IDs** - Sorting VLANs and removing duplicates
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates
-    :param all: True - Return All VLAN IDs: [1, 2, ..., 4094]
+    :param items: Range of VLANs, can be unsorted and with duplicates,
+        *str, List[int], List[str]*
+    :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                         False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
+                         by default True
+    :param bool all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
     :param platform: Set `splitter` and `range_splitter` to platform specific values
@@ -27,19 +37,33 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
         items: "1,3-5"
         return: [1, 3, 4, 5]
     """
-    if bool(kwargs.get("all")):
-        return list(range(1, 4095))
+    if h.is_all(**kwargs):
+        if h.is_brief(**kwargs):
+            return [BRIEF_ALL_I]
+        return ALL_VLANS_L.copy()
+    if h.is_brief(**kwargs):
+        if h.is_brief_all(items):
+            return [BRIEF_ALL_I]
+
     kwargs = _update_splitters(**kwargs)
     vlans: LInt = inumbers(items, **kwargs)
-    _check_vlan_ids(vlans)
+    _check_vlans(vlans)
+
+    if h.is_brief(**kwargs):
+        if vlans == ALL_VLANS_L:
+            return [BRIEF_ALL_I]
     return vlans
 
 
 # noinspection PyIncorrectDocstring
 def svlan(items: Any = "", **kwargs) -> str:
     """**String VLAN IDs** - Sorting VLANs and removing duplicates
-    :param items: Range of VLANs or *List[int]*, can be unsorted and with duplicates
-    :param all: True - Return All VLAN IDs: "1-4094"
+    :param items: Range of VLANs, can be unsorted and with duplicates,
+        *str, List[int], List[str]*
+    :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                         False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
+                         by default True
+    :param bool all: True - Returns all VLAN IDs: "1-4094"
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
     :param platform: Set `splitter` and `range_splitter` to platform specific values
@@ -54,25 +78,38 @@ def svlan(items: Any = "", **kwargs) -> str:
         items: [1, 3, 4, 5]
         return: "1,3-5"
     """
-    if bool(kwargs.get("all")):
-        return "1-4094"
     kwargs = _update_splitters(**kwargs)
+    if h.is_all(**kwargs):
+        return _replace_range_splitter(ALL_VLANS_S, **kwargs)
+    if h.is_brief(**kwargs):
+        if h.is_brief_all(items):
+            return _replace_range_splitter(ALL_VLANS_S, **kwargs)
+
     range_o: Range = parse_range(items, **kwargs)
-    _check_vlan_ids(range_o.numbers())
+    _check_vlans(range_o.numbers())
     return str(range_o)
 
 
 # ============================= helpers ==============================
 
-def _check_vlan_ids(items: LInt) -> bool:
+def _check_vlans(items: LInt) -> bool:
     """Checks VLAN IDs
     :param items: VLAN IDs
     :return: True if all items are in the valid VLAN range 1...4094
     :raises ValueError: If on of item is outside valid range
     """
-    if invalid_vlan := [i for i in items if i < 1 or i > 4094]:
+    if invalid_vlan := [i for i in items if i < MIN_VLAN or i > MAX_VLAN]:
         raise ValueError(f"{invalid_vlan=}, expected in range 1...4094")
     return True
+
+
+def _replace_range_splitter(item: str, **kwargs) -> str:
+    """Replaces "-" to range_splitter specified in kwargs"""
+    range_splitter = kwargs.get("range_splitter") or ""
+    if not range_splitter:
+        return item
+    item = item.replace("-", range_splitter)
+    return item
 
 
 def _update_splitters(**kwargs):

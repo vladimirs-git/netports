@@ -5,6 +5,7 @@ from typing import Any, Tuple
 from netports import helpers as h
 from netports.ports import inumbers, snumbers
 from netports.range import Range
+from netports.static import BRIEF_ALL_I
 from netports.types_ import LInt, LStr, DAny, DiAny
 
 IP_NUMBERS: DiAny = {
@@ -453,13 +454,21 @@ IP_NUMBERS: DiAny = {
 }
 IP_NAMES: DAny = {d["name"]: d for i, d in IP_NUMBERS.items()}
 
+MIN_NUMBER = 0
+MAX_NUMBER = 255
+ALL_NUMBERS_L = list(range(MIN_NUMBER, MAX_NUMBER + 1))
+ALL_NUMBERS_S = f"{MIN_NUMBER}-{MAX_NUMBER}"
+
 
 # noinspection PyIncorrectDocstring
 def iip(items: Any = "", strict: bool = True, **kwargs) -> LInt:
-    """**Integer IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates,
-        "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
-    :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+    """**Integer IP protocol numbers** - Sorts numbers and removes duplicates
+    :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+    :param bool verbose: True - all protocols in verbose mode: [0, 1, ..., 255],
+                         False - all protocols in brief mode: [-1] (reduces RAM usage),
+                         by default True
+    :param bool all: True - Return all IP protocol numbers: [0, 1, ..., 255]
     :param strict: True - Raises ValueError, if the protocol is unknown,
                    False - Skips unknown protocols, by default - True
     :return: *List[int]* of unique sorted IP protocol numbers
@@ -473,13 +482,21 @@ def iip(items: Any = "", strict: bool = True, **kwargs) -> LInt:
         items: "ip"
         return: [0, 1, ... 254, 255]
     """
-    if bool(kwargs.get("all")):
-        return list(range(0, 256))
+    if h.is_all(**kwargs):
+        if h.is_brief(**kwargs):
+            return [BRIEF_ALL_I]
+        return ALL_NUMBERS_L.copy()
+    if h.is_brief(**kwargs):
+        if h.is_brief_all(items):
+            return [BRIEF_ALL_I]
+
     # split items to names, numbers
     items_ = [s.lower() for s in h.split(items)]
     names, numbers = nip(items=items_, strict=strict)
     if "ip" in names:
-        return list(range(0, 256))
+        if h.is_brief(**kwargs):
+            return [BRIEF_ALL_I]
+        return ALL_NUMBERS_L.copy()
     # translate names to numbers
     for name in names:
         name = name.lower()
@@ -487,7 +504,12 @@ def iip(items: Any = "", strict: bool = True, **kwargs) -> LInt:
             numbers.append(data["number"])
         elif strict:
             raise ValueError(f"invalid {name=}")
-    return inumbers(numbers)
+    numbers = inumbers(numbers)
+
+    if h.is_brief(**kwargs):
+        if numbers == ALL_NUMBERS_L:
+            return [BRIEF_ALL_I]
+    return numbers
 
 
 # noinspection PyIncorrectDocstring
@@ -507,7 +529,7 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
     """
     items_ = [s.lower() for s in h.split(items)]
     if "ip" in items_:
-        return ["ip"], list(range(0, 256))
+        return ["ip"], ALL_NUMBERS_L.copy()
 
     names: LStr = []
     numbers: LInt = []
@@ -531,10 +553,13 @@ def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
 
 # noinspection PyIncorrectDocstring
 def sip(items: Any = "", **kwargs) -> str:
-    """**String IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates,
-        "ip" - mean all numbers in range 0...255
-    :param all: True - Return all IP protocol numbers: "0-255"
+    """**String IP protocol numbers** - Sorts numbers and removes duplicates
+    :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*, "ip" - mean all numbers in range 0...255
+    :param bool verbose: True - all protocols in verbose mode: [0, 1, ..., 255],
+                         False - all protocols in brief mode: [-1] (reduces RAM usage),
+                         by default True
+    :param bool all: True - Return all IP protocol numbers: "0-255"
     :return: *str* of unique sorted IP protocol numbers
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
@@ -542,8 +567,12 @@ def sip(items: Any = "", **kwargs) -> str:
         items: ["icmp", "tcp", "7", 255]
         return: "1,6-7,255"
     """
-    if bool(kwargs.get("all")):
-        return "0-255"
+    if h.is_all(**kwargs):
+        return ALL_NUMBERS_S
+    if h.is_brief(**kwargs):
+        if h.is_brief_all(items):
+            return ALL_NUMBERS_S
+
     numbers = iip(items)
     return snumbers(numbers)
 

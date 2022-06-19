@@ -4,6 +4,11 @@
 CHANGELOG
 =========
 
+0.5.0 (2022-06-19)
+------------------
+* [new] param `verbose` in functions: itcp, stcp, ivlan, svlan, iip, sip
+
+
 0.4.0 (2022-06-18)
 ------------------
 * [change] netports.IP_PORTS to netports.IP_NUMBERS

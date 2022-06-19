@@ -3,6 +3,7 @@
 import unittest
 
 import dictdiffer  # type: ignore
+
 from netports import vlan
 
 ALL_VLANS = list(range(1, 4095))
@@ -14,7 +15,7 @@ class Test(unittest.TestCase):
     def test_valid__ivlan(self):
         """ivlan()"""
         for kwargs, req in [
-            (dict(), []),
+            ({}, []),
             (dict(items=""), []),
             (dict(items=[]), []),
             (dict(items=1), [1]),
@@ -23,12 +24,36 @@ class Test(unittest.TestCase):
             (dict(items=[4094]), [4094]),
             (dict(items=[5, 5, 1, 3, 4]), [1, 3, 4, 5]),
             (dict(items="3-5,1,3-5,1"), [1, 3, 4, 5]),
+
+            (dict(items=ALL_VLANS), ALL_VLANS),
+            (dict(items=ALL_VLANS, verbose=True), ALL_VLANS),
+            (dict(items=ALL_VLANS, verbose=False), [-1]),
+
             (dict(all=True), ALL_VLANS),
+            (dict(all=True, verbose=True), ALL_VLANS),
+            (dict(all=True, verbose=False), [-1]),
             (dict(items="1", all=True), ALL_VLANS),
+            (dict(items="1", all=True, verbose=True), ALL_VLANS),
+            (dict(items="1", all=True, verbose=False), [-1]),
+
+            (dict(items="-1", verbose=False), [-1]),
+            (dict(items=["-1"], verbose=False), [-1]),
+            (dict(items=["-1", "2"], verbose=False), [-1]),
+            (dict(items=["typo", "-1"], verbose=False), [-1]),
+            (dict(items=-1, verbose=False), [-1]),
+            (dict(items=[-1], verbose=False), [-1]),
+            (dict(items=[-1, 2], verbose=False), [-1]),
+            (dict(items=[-2, -1], verbose=False), [-1]),
+
             (dict(items="1,3-5", platform="cisco"), [1, 3, 4, 5]),
             (dict(items="1 3 to 5", platform="hpe"), [1, 3, 4, 5]),
             (dict(items="1,3-5", splitter=",", range_splitter="-"), [1, 3, 4, 5]),
             (dict(items="1 3 to 5", splitter=" ", range_splitter=" to "), [1, 3, 4, 5]),
+
+            (dict(items="-1", platform="cisco", verbose=False), [-1]),
+            (dict(items="-1", platform="hpe", verbose=False), [-1]),
+            (dict(items="-1", splitter=",", range_splitter="-", verbose=False), [-1]),
+            (dict(items="-1", splitter=" ", range_splitter=" to ", verbose=False), [-1]),
         ]:
             result = vlan.ivlan(**kwargs)
             self.assertEqual(result, req, msg=f"{kwargs=}")
@@ -51,7 +76,7 @@ class Test(unittest.TestCase):
     def test_valid__svlan(self):
         """svlan()"""
         for kwargs, req in [
-            (dict(), ""),
+            ({}, ""),
             (dict(items=""), ""),
             (dict(items=[]), ""),
             (dict(items=1), "1"),
@@ -60,10 +85,49 @@ class Test(unittest.TestCase):
             (dict(items=[4094]), "4094"),
             (dict(items=[5, 5, 1, 3, 4]), "1,3-5"),
             (dict(items="3-5,1,3-5,1"), "1,3-5"),
+
+            (dict(items=ALL_VLANS), "1-4094"),
+            (dict(items=ALL_VLANS, verbose=True), "1-4094"),
+            (dict(items=ALL_VLANS, verbose=False), "1-4094"),
+
+            (dict(all=True), "1-4094"),
+            (dict(all=True, verbose=True), "1-4094"),
+            (dict(all=True, verbose=False), "1-4094"),
+            (dict(items="1", all=True), "1-4094"),
+            (dict(items="1", all=True, verbose=True), "1-4094"),
+            (dict(items="1", all=True, verbose=False), "1-4094"),
+
+            (dict(items="-1", verbose=False), "1-4094"),
+            (dict(items=["-1"], verbose=False), "1-4094"),
+            (dict(items=["-1", "2"], verbose=False), "1-4094"),
+            (dict(items=["typo", "-1"], verbose=False), "1-4094"),
+            (dict(items=-1, verbose=False), "1-4094"),
+            (dict(items=[-1], verbose=False), "1-4094"),
+            (dict(items=[-1, 2], verbose=False), "1-4094"),
+            (dict(items=[-2, -1], verbose=False), "1-4094"),
+
             (dict(items=[1, 3, 4, 5], platform="cisco"), "1,3-5"),
             (dict(items=[1, 3, 4, 5], platform="hpe"), "1 3 to 5"),
             (dict(items=[1, 3, 4, 5], splitter=",", range_splitter="-"), "1,3-5"),
             (dict(items=[1, 3, 4, 5], splitter=" ", range_splitter=" to "), "1 3 to 5"),
+
+            (dict(all=True, platform="cisco"), "1-4094"),
+            (dict(all=True, platform="cisco", verbose=True), "1-4094"),
+            (dict(all=True, platform="cisco", verbose=False), "1-4094"),
+            (dict(all=True, platform="hpe"), "1 to 4094"),
+            (dict(all=True, platform="hpe", verbose=True), "1 to 4094"),
+            (dict(all=True, platform="hpe", verbose=False), "1 to 4094"),
+            (dict(all=True, splitter=",", range_splitter="-"), "1-4094"),
+            (dict(all=True, splitter=",", range_splitter="-", verbose=True), "1-4094"),
+            (dict(all=True, splitter=",", range_splitter="-", verbose=False), "1-4094"),
+            (dict(all=True, splitter=" ", range_splitter=" to "), "1 to 4094"),
+            (dict(all=True, splitter=" ", range_splitter=" to ", verbose=True), "1 to 4094"),
+            (dict(all=True, splitter=" ", range_splitter=" to ", verbose=False), "1 to 4094"),
+
+            (dict(items="-1", platform="cisco", verbose=False), "1-4094"),
+            (dict(items="-1", platform="hpe", verbose=False), "1 to 4094"),
+            (dict(items="-1", splitter=",", range_splitter="-", verbose=False), "1-4094"),
+            (dict(items="-1", splitter=" ", range_splitter=" to ", verbose=False), "1 to 4094"),
         ]:
             result = vlan.svlan(**kwargs)
             self.assertEqual(result, req, msg=f"{kwargs=}")
@@ -85,10 +149,21 @@ class Test(unittest.TestCase):
 
     # =========================== helpers ============================
 
+    def test_valid__replace_range_splitter(self):
+        """_replace_range_splitter()"""
+        for item, kwargs, req in [
+            ("", {}, ""),
+            ("1-3", {}, "1-3"),
+            ("1-3", dict(range_splitter=" to "), "1 to 3"),
+            ("1-3", dict(splitter=" to "), "1-3"),
+        ]:
+            result = vlan._replace_range_splitter(item=item, **kwargs)
+            self.assertEqual(result, req, msg=f"{item=} {kwargs=}")
+
     def test_valid__update_splitters(self):
         """_update_splitters()"""
         for kwargs, req_d in [
-            (dict(), dict()),
+            ({}, {}),
             (dict(splitter="a", range_splitter="a"), dict(splitter="a", range_splitter="a")),
             (dict(platform="cisco"), dict(platform="cisco", splitter=",", range_splitter="-")),
             (dict(platform="cisco", splitter="a", range_splitter="a"),

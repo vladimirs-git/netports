@@ -21,8 +21,7 @@ except ValueError as ex:
 range_o = Range("1,3-5,typo", strict=False)
 assert range_o.line == "1,3-5"
 
-
-# Sorting numbers and removing duplicates
+# Sorts numbers and removes duplicates
 ranges1 = Range("3-5,1")
 print(ranges1)
 # 1,3-5
@@ -33,7 +32,6 @@ print(ranges2)
 
 assert ranges1 == ranges2
 
-
 # Range with custom splitters
 range_o = Range("1, 3-5, 7-9", splitter=", ")
 assert range_o.line == "1, 3-5, 7-9"
@@ -42,7 +40,6 @@ assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
 range_o = Range("1 3 to 5 7 to 9", splitter=" ", range_splitter=" to ")
 assert range_o.line == "1 3 to 5 7 to 9"
 assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
-
 
 # Range operators
 range_o = Range("1,3") + Range("3-5")

@@ -8,18 +8,90 @@ from netports import helpers as h
 class Test(unittest.TestCase):
     """unittest helpers.py"""
 
-    # ============================= str ==============================
+    # =============================== bool ===============================
 
-    def test_valid__join(self):
-        """join()"""
-        for items, req in [
-            ([], ""),
-            (["0", "1"], "0,1"),
-            ([0, 1], "0,1"),
-            ([[1]], "[1]"),
+    def test_valid__is_all(self):
+        """is_all()"""
+        for kwargs, req in [
+            ({}, False),
+            (dict(all=True), True),
+            (dict(all=1), True),
+            (dict(all=False), False),
+            (dict(verbose=True), False),
         ]:
-            result = h.join(items=items)
+            result = h.is_all(**kwargs)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
+
+    def test_valid__is_brief_all(self):
+        """is_brief_all()"""
+        for items, req in [
+            (1, False),
+            ("1", False),
+            ([], False),
+            ([1], False),
+            (["0-1"], False),
+            (-1, True),
+            ("-1", True),
+            ([-1], True),
+            (["-1"], True),
+            ([1, -1], True),
+            (["1", "-1"], True),
+        ]:
+            result = h.is_brief_all(items=items)
             self.assertEqual(result, req, msg=f"{items=}")
+
+    def test_valid__is_verbose(self):
+        """is_verbose() is_brief()"""
+        for kwargs, req in [
+            ({}, True),
+            (dict(verbose=True), True),
+            (dict(verbose=1), True),
+            (dict(verbose=False), False),
+            (dict(brief=True), True),
+        ]:
+            result = h.is_verbose(**kwargs)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
+            result = h.is_brief(**kwargs)
+            req = not req
+            self.assertEqual(result, req, msg=f"{kwargs=}")
+
+    # ============================= int ==============================
+
+    def test_valid__to_int(self):
+        """to_int()"""
+        for number, req in [
+            (0, 0),
+            ("0", 0),
+        ]:
+            result = h.to_int(number)
+            self.assertEqual(result, req, msg=f"{number=}")
+
+    def test_invalid__to_int(self):
+        """to_int()"""
+        for number, error in [
+            ("a", TypeError),
+            ("-1", TypeError),
+        ]:
+            with self.assertRaises(error, msg=f"{error=}"):
+                h.to_int(number)
+
+    def test_valid__to_lint(self):
+        """to_lint()"""
+        for numbers, req in [
+            ([0, 1, "2"], [0, 1, 2]),
+        ]:
+            result = h.to_lint(numbers)
+            self.assertEqual(result, req, msg=f"{numbers=}")
+
+    def test_invalid__to_lint(self):
+        """to_lint()"""
+        for numbers, error in [
+            (1, TypeError),
+            (["a"], TypeError),
+            (["-1"], TypeError),
+        ]:
+            with self.assertRaises(error, msg=f"{error=}"):
+                h.to_lint(numbers)
 
     # ============================= list =============================
 
@@ -79,43 +151,18 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{error=}"):
                 h.split(items=items)
 
-    # ============================= int ==============================
+    # ============================= str ==============================
 
-    def test_valid__to_int(self):
-        """to_int()"""
-        for number, req in [
-            (0, 0),
-            ("0", 0),
+    def test_valid__join(self):
+        """join()"""
+        for items, req in [
+            ([], ""),
+            (["0", "1"], "0,1"),
+            ([0, 1], "0,1"),
+            ([[1]], "[1]"),
         ]:
-            result = h.to_int(number)
-            self.assertEqual(result, req, msg=f"{number=}")
-
-    def test_invalid__to_int(self):
-        """to_int()"""
-        for number, error in [
-            ("a", TypeError),
-            ("-1", TypeError),
-        ]:
-            with self.assertRaises(error, msg=f"{error=}"):
-                h.to_int(number)
-
-    def test_valid__to_lint(self):
-        """to_lint()"""
-        for numbers, req in [
-            ([0, 1, "2"], [0, 1, 2]),
-        ]:
-            result = h.to_lint(numbers)
-            self.assertEqual(result, req, msg=f"{numbers=}")
-
-    def test_invalid__to_lint(self):
-        """to_lint()"""
-        for numbers, error in [
-            (1, TypeError),
-            (["a"], TypeError),
-            (["-1"], TypeError),
-        ]:
-            with self.assertRaises(error, msg=f"{error=}"):
-                h.to_lint(numbers)
+            result = h.join(items=items)
+            self.assertEqual(result, req, msg=f"{items=}")
 
 
 if __name__ == "__main__":

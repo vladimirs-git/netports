@@ -1,5 +1,5 @@
-"""**Interface4** - An object of interface name that can contain up to 4 indexes
-Useful for the interfaces strings by index (not by alphabetic)
+"""**Interface4** - An object of interface name that can contain up to 4 indexes.
+Sorts the interfaces by indexes (not by alphabetic)
 """
 import re
 from functools import total_ordering

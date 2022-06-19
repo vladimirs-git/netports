@@ -12,12 +12,10 @@ assert interface.id2 == 2
 assert interface.id3 == 3
 assert interface.id4 == 4
 
-
 # Interface with custom splitter between indexes. Splitter is ignored when comparing
 interface1 = Interface4("interface Ethernet1/2/3.4")
 interface2 = Interface4("interface Ethernet1-2-3+4", splitter="-+")
 assert interface1 == interface2
-
 
 # Sorting by indexes
 lines = [
