@@ -37,17 +37,17 @@ class Test(unittest.TestCase):
             ([1, -1], True),
             (["1", "-1"], True),
         ]:
-            result = h.is_brief_all(items=items)
+            result = h.is_brief_in_items(items=items)
             self.assertEqual(result, req, msg=f"{items=}")
 
     def test_valid__is_verbose(self):
         """is_verbose() is_brief()"""
         for kwargs, req in [
-            ({}, True),
+            ({}, False),
             (dict(verbose=True), True),
             (dict(verbose=1), True),
             (dict(verbose=False), False),
-            (dict(brief=True), True),
+            (dict(brief=True), False),
         ]:
             result = h.is_verbose(**kwargs)
             self.assertEqual(result, req, msg=f"{kwargs=}")
@@ -122,6 +122,20 @@ class Test(unittest.TestCase):
         ]:
             with self.assertRaises(error, msg=f"{error=}"):
                 h.lstr(items=items)
+
+    def test_valid__remove_brief_items(self):
+        """remove_brief_items()"""
+        for items, req in [
+            ("", [""]),
+            ([], []),
+            ([1], [1]),
+            (-1, []),
+            ("-1", []),
+            ([-1, 1], [1]),
+            (["-1", "1"], ["1"]),
+        ]:
+            result = h.remove_brief_items(items=items)
+            self.assertEqual(result, req, msg=f"{items=}")
 
     def test_valid__split(self):
         """split()"""

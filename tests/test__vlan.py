@@ -6,146 +6,89 @@ import dictdiffer  # type: ignore
 
 from netports import vlan
 
-ALL_VLANS = list(range(1, 4095))
+ALL = list(range(1, 4095))
 
 
 class Test(unittest.TestCase):
     """unittest vlan.py"""
 
-    def test_valid__ivlan(self):
-        """ivlan()"""
-        for kwargs, req in [
-            ({}, []),
-            (dict(items=""), []),
-            (dict(items=[]), []),
-            (dict(items=1), [1]),
-            (dict(items="1"), [1]),
-            (dict(items=[1]), [1]),
-            (dict(items=[4094]), [4094]),
-            (dict(items=[5, 5, 1, 3, 4]), [1, 3, 4, 5]),
-            (dict(items="3-5,1,3-5,1"), [1, 3, 4, 5]),
-
-            (dict(items=ALL_VLANS), ALL_VLANS),
-            (dict(items=ALL_VLANS, verbose=True), ALL_VLANS),
-            (dict(items=ALL_VLANS, verbose=False), [-1]),
-
-            (dict(all=True), ALL_VLANS),
-            (dict(all=True, verbose=True), ALL_VLANS),
-            (dict(all=True, verbose=False), [-1]),
-            (dict(items="1", all=True), ALL_VLANS),
-            (dict(items="1", all=True, verbose=True), ALL_VLANS),
-            (dict(items="1", all=True, verbose=False), [-1]),
-
-            (dict(items="-1", verbose=False), [-1]),
-            (dict(items=["-1"], verbose=False), [-1]),
-            (dict(items=["-1", "2"], verbose=False), [-1]),
-            (dict(items=["typo", "-1"], verbose=False), [-1]),
-            (dict(items=-1, verbose=False), [-1]),
-            (dict(items=[-1], verbose=False), [-1]),
-            (dict(items=[-1, 2], verbose=False), [-1]),
-            (dict(items=[-2, -1], verbose=False), [-1]),
-
-            (dict(items="1,3-5", platform="cisco"), [1, 3, 4, 5]),
-            (dict(items="1 3 to 5", platform="hpe"), [1, 3, 4, 5]),
-            (dict(items="1,3-5", splitter=",", range_splitter="-"), [1, 3, 4, 5]),
-            (dict(items="1 3 to 5", splitter=" ", range_splitter=" to "), [1, 3, 4, 5]),
-
-            (dict(items="-1", platform="cisco", verbose=False), [-1]),
-            (dict(items="-1", platform="hpe", verbose=False), [-1]),
-            (dict(items="-1", splitter=",", range_splitter="-", verbose=False), [-1]),
-            (dict(items="-1", splitter=" ", range_splitter=" to ", verbose=False), [-1]),
+    def test_valid__ivlan__svlan(self):
+        """ivlan() svlan()"""
+        for kwargs, req, req_ in [
+            # vlans
+            ({}, [], ""),
+            (dict(items=""), [], ""),
+            (dict(items=[]), [], ""),
+            (dict(items=1), [1], "1"),
+            (dict(items="1"), [1], "1"),
+            (dict(items=[1]), [1], "1"),
+            (dict(items=["1"]), [1], "1"),
+            (dict(items=[4094]), [4094], "4094"),
+            (dict(items=[5, 5, 1, 3, 4]), [1, 3, 4, 5], "1,3-5"),
+            (dict(items="3-5,1,3-5,1"), [1, 3, 4, 5], "1,3-5"),
+            # 1-4094
+            (dict(items="1-4094"), [-1], "1-4094"),
+            (dict(items=ALL), [-1], "1-4094"),
+            (dict(items=ALL, verbose=False), [-1], "1-4094"),
+            (dict(items=ALL, verbose=True), ALL, "1-4094"),
+            (dict(items="1-4094,1"), [-1], "1-4094"),
+            (dict(items=[*ALL, 1]), [-1], "1-4094"),
+            # -1
+            (dict(items=-1), [-1], "1-4094"),
+            (dict(items="-1"), [-1], "1-4094"),
+            (dict(items=[-1]), [-1], "1-4094"),
+            (dict(items=["-1"]), [-1], "1-4094"),
+            (dict(items=[-1, 2]), [-1], "1-4094"),
+            (dict(items=["-1", "2"]), [-1], "1-4094"),
+            (dict(items=[-1], verbose=False), [-1], "1-4094"),
+            # all
+            (dict(all=True), [-1], "1-4094"),
+            (dict(all=True, verbose=False), [-1], "1-4094"),
+            (dict(all=True, verbose=True), ALL, "1-4094"),
+            (dict(items="1", all=True), [-1], "1-4094"),
+            (dict(items="1", all=True, verbose=False), [-1], "1-4094"),
+            (dict(items="1", all=True, verbose=True), ALL, "1-4094"),
+            # splitter
+            (dict(items="1,3-5", platform="cisco"), [1, 3, 4, 5], "1,3-5"),
+            (dict(items="1 3 to 5", platform="hpe"), [1, 3, 4, 5], "1 3 to 5"),
+            (dict(items="1,3-5", splitter=",", range_splitter="-"), [1, 3, 4, 5], "1,3-5"),
+            (dict(items="1 3 to 5", splitter=" ", range_splitter=" to "), [1, 3, 4, 5], "1 3 to 5"),
+            # splitter -1
+            (dict(items="-1", platform="cisco"), [-1], "1-4094"),
+            (dict(items="-1", platform="hpe"), [-1], "1 to 4094"),
+            (dict(items="-1", splitter=",", range_splitter="-"), [-1], "1-4094"),
+            (dict(items="-1", splitter=" ", range_splitter=" to "), [-1], "1 to 4094"),
         ]:
             result = vlan.ivlan(**kwargs)
             self.assertEqual(result, req, msg=f"{kwargs=}")
+            result_ = vlan.svlan(**kwargs)
+            self.assertEqual(result_, req_, msg=f"{kwargs=}")
 
-    def test_invalid__ivlan(self):
-        """ivlan()"""
+    def test_invalid__ivlan__svlan(self):
+        """ivlan() svlan()"""
         for kwargs, error in [
-            (dict(items="-1"), ValueError),
+            # vlans
+            (dict(items=0), ValueError),
             (dict(items="0"), ValueError),
-            (dict(items="4095"), ValueError),
             (dict(items=[0]), ValueError),
-            (dict(items=[-1]), ValueError),
+            (dict(items=4095), ValueError),
+            (dict(items="4095"), ValueError),
             (dict(items=[4095]), ValueError),
+            # typo
+            (dict(items="typo"), ValueError),
+            # splitter
             (dict(items="1,3-5", platform="hpe"), ValueError),
             (dict(items="1 3 to 5", platform="cisco"), ValueError),
+            # splitter -1 verbose
+            (dict(items="-1", verbose=True, platform="cisco"), ValueError),
+            (dict(items="-1", verbose=True, platform="hpe"), ValueError),
+            (dict(items="-1", verbose=True, splitter=",", range_splitter="-"), ValueError),
+            (dict(items="-1", verbose=True, splitter=" ", range_splitter=" to "), ValueError),
         ]:
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 vlan.ivlan(**kwargs)
-
-    def test_valid__svlan(self):
-        """svlan()"""
-        for kwargs, req in [
-            ({}, ""),
-            (dict(items=""), ""),
-            (dict(items=[]), ""),
-            (dict(items=1), "1"),
-            (dict(items="1"), "1"),
-            (dict(items=[1]), "1"),
-            (dict(items=[4094]), "4094"),
-            (dict(items=[5, 5, 1, 3, 4]), "1,3-5"),
-            (dict(items="3-5,1,3-5,1"), "1,3-5"),
-
-            (dict(items=ALL_VLANS), "1-4094"),
-            (dict(items=ALL_VLANS, verbose=True), "1-4094"),
-            (dict(items=ALL_VLANS, verbose=False), "1-4094"),
-
-            (dict(all=True), "1-4094"),
-            (dict(all=True, verbose=True), "1-4094"),
-            (dict(all=True, verbose=False), "1-4094"),
-            (dict(items="1", all=True), "1-4094"),
-            (dict(items="1", all=True, verbose=True), "1-4094"),
-            (dict(items="1", all=True, verbose=False), "1-4094"),
-
-            (dict(items="-1", verbose=False), "1-4094"),
-            (dict(items=["-1"], verbose=False), "1-4094"),
-            (dict(items=["-1", "2"], verbose=False), "1-4094"),
-            (dict(items=["typo", "-1"], verbose=False), "1-4094"),
-            (dict(items=-1, verbose=False), "1-4094"),
-            (dict(items=[-1], verbose=False), "1-4094"),
-            (dict(items=[-1, 2], verbose=False), "1-4094"),
-            (dict(items=[-2, -1], verbose=False), "1-4094"),
-
-            (dict(items=[1, 3, 4, 5], platform="cisco"), "1,3-5"),
-            (dict(items=[1, 3, 4, 5], platform="hpe"), "1 3 to 5"),
-            (dict(items=[1, 3, 4, 5], splitter=",", range_splitter="-"), "1,3-5"),
-            (dict(items=[1, 3, 4, 5], splitter=" ", range_splitter=" to "), "1 3 to 5"),
-
-            (dict(all=True, platform="cisco"), "1-4094"),
-            (dict(all=True, platform="cisco", verbose=True), "1-4094"),
-            (dict(all=True, platform="cisco", verbose=False), "1-4094"),
-            (dict(all=True, platform="hpe"), "1 to 4094"),
-            (dict(all=True, platform="hpe", verbose=True), "1 to 4094"),
-            (dict(all=True, platform="hpe", verbose=False), "1 to 4094"),
-            (dict(all=True, splitter=",", range_splitter="-"), "1-4094"),
-            (dict(all=True, splitter=",", range_splitter="-", verbose=True), "1-4094"),
-            (dict(all=True, splitter=",", range_splitter="-", verbose=False), "1-4094"),
-            (dict(all=True, splitter=" ", range_splitter=" to "), "1 to 4094"),
-            (dict(all=True, splitter=" ", range_splitter=" to ", verbose=True), "1 to 4094"),
-            (dict(all=True, splitter=" ", range_splitter=" to ", verbose=False), "1 to 4094"),
-
-            (dict(items="-1", platform="cisco", verbose=False), "1-4094"),
-            (dict(items="-1", platform="hpe", verbose=False), "1 to 4094"),
-            (dict(items="-1", splitter=",", range_splitter="-", verbose=False), "1-4094"),
-            (dict(items="-1", splitter=" ", range_splitter=" to ", verbose=False), "1 to 4094"),
-        ]:
-            result = vlan.svlan(**kwargs)
-            self.assertEqual(result, req, msg=f"{kwargs=}")
-
-    def test_invalid__svlan(self):
-        """svlan()"""
-        for items, error in [
-            ("-1", ValueError),
-            ("0", ValueError),
-            ("4095", ValueError),
-            ([0], ValueError),
-            ([-1], ValueError),
-            ([4095], ValueError),
-            (dict(items="1,3-5", platform="hpe"), ValueError),
-            (dict(items="1 3 to 5", platform="cisco"), ValueError),
-        ]:
-            with self.assertRaises(error, msg=f"{items=}"):
-                vlan.svlan(items)
+            with self.assertRaises(error, msg=f"{kwargs=}"):
+                vlan.svlan(**kwargs)
 
     # =========================== helpers ============================
 

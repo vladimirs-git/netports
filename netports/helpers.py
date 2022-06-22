@@ -18,7 +18,7 @@ def is_brief(**kwargs) -> bool:
     return not is_verbose(**kwargs)
 
 
-def is_brief_all(items: Any) -> bool:
+def is_brief_in_items(items: Any) -> bool:
     """Checks is "-1" or -1 in `items`, used for verbose=False
     :param items: *str, int, List[str], List[int]*
     :return: True - if "-1" or -1 present in `items`
@@ -44,8 +44,16 @@ def is_verbose(**kwargs) -> bool:
     """Get param `verbose` from `kwargs`"""
     verbose = kwargs.get("verbose")
     if verbose is None:
-        return True
+        return False
     return bool(verbose)
+
+
+def is_strict(**kwargs) -> bool:
+    """Get param `strict` from `kwargs`"""
+    strict = kwargs.get("strict")
+    if strict is None:
+        return True
+    return bool(strict)
 
 
 # =============================== int ================================
@@ -91,6 +99,16 @@ def lstr(items: Any) -> LStr:
         else:
             items_.append(str(item))
     return items_
+
+
+def remove_brief_items(items: Any) -> list:
+    """Remove "-1", -1 from `items`
+    :param items: *str, int, List[str], List[int]*
+    :return: Items without "-1", -1
+    """
+    if isinstance(items, (str, int)):
+        items = [items]
+    return [i for i in items if i not in (BRIEF_ALL_S, BRIEF_ALL_I)]
 
 
 def split(items: Any) -> LStr:

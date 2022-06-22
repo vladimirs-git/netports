@@ -21,7 +21,7 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
         *str, List[int], List[str]*
     :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
                          False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
-                         by default True
+                         by default False
     :param bool all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
@@ -42,7 +42,10 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
             return [BRIEF_ALL_I]
         return ALL_VLANS_L.copy()
     if h.is_brief(**kwargs):
-        if h.is_brief_all(items):
+        if h.is_brief_in_items(items):
+            items_ = h.remove_brief_items(items)
+            ports = inumbers(items_)
+            _check_vlans(ports)
             return [BRIEF_ALL_I]
 
     kwargs = _update_splitters(**kwargs)
@@ -62,7 +65,7 @@ def svlan(items: Any = "", **kwargs) -> str:
         *str, List[int], List[str]*
     :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
                          False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
-                         by default True
+                         by default False
     :param bool all: True - Returns all VLAN IDs: "1-4094"
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
@@ -82,10 +85,13 @@ def svlan(items: Any = "", **kwargs) -> str:
     if h.is_all(**kwargs):
         return _replace_range_splitter(ALL_VLANS_S, **kwargs)
     if h.is_brief(**kwargs):
-        if h.is_brief_all(items):
+        if h.is_brief_in_items(items):
+            items_ = ",".join(h.lstr(h.remove_brief_items(items)))
+            range_o: Range = parse_range(items_)
+            _check_vlans(range_o.numbers())
             return _replace_range_splitter(ALL_VLANS_S, **kwargs)
 
-    range_o: Range = parse_range(items, **kwargs)
+    range_o = parse_range(items, **kwargs)
     _check_vlans(range_o.numbers())
     return str(range_o)
 

@@ -21,7 +21,7 @@ def itcp(items: Any = "", **kwargs) -> LInt:
         *str, List[int], List[str]*
     :param bool verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
                          False - all ports in brief mode: [-1] (reduces RAM usage),
-                         by default True
+                         by default False
     :param bool all: True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False
     :return: *List[int]* of unique sorted TCP/UDP ports
     :raises ValueError: If TCP/UDP ports are outside valid range 1...65535
@@ -35,7 +35,7 @@ def itcp(items: Any = "", **kwargs) -> LInt:
             return [BRIEF_ALL_I]
         return ALL_PORTS_L.copy()
     if h.is_brief(**kwargs):
-        if h.is_brief_all(items):
+        if h.is_brief_in_items(items):
             return [BRIEF_ALL_I]
 
     ports: LInt = inumbers(items)
@@ -54,7 +54,7 @@ def stcp(items: Any = "", **kwargs) -> str:
         *str, List[int], List[str]*
     :param bool verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
                          False - all ports in brief mode: [-1] (reduces RAM usage),
-                         by default True
+                         by default False
     :param bool all: True - Returns all TCP/UDP ports: "1-65535"
     :return: *str* of unique sorted TCP/UDP ports
     :raises ValueError: If TCP/UDP ports are outside valid range 1...65535
@@ -66,10 +66,13 @@ def stcp(items: Any = "", **kwargs) -> str:
     if h.is_all(**kwargs):
         return ALL_PORTS_S
     if h.is_brief(**kwargs):
-        if h.is_brief_all(items):
+        if h.is_brief_in_items(items):
+            items_ = ",".join(h.lstr(h.remove_brief_items(items)))
+            range_o: Range = parse_range(items_)
+            _check_tcp_ports(range_o.numbers())
             return ALL_PORTS_S
 
-    range_o: Range = parse_range(items)
+    range_o = parse_range(items)
     _check_tcp_ports(range_o.numbers())
     return str(range_o)
 

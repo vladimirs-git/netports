@@ -23,13 +23,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.5.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.5.1.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.5.0
+    pip install git+https://github.com/vladimirs-git/netports@0.5.1
 
 
 TCP/UDP ports
@@ -45,7 +45,7 @@ itcp(items, verbose, all)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of TCP/UDP ports, can be unsorted and with duplicates
-verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default True
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default False
 all				*bool*						True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False
 =============== =========================== ============================================================================
 
@@ -86,7 +86,7 @@ stcp(items, verbose, all)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of TCP/UDP ports, can be unsorted and with duplicates
-verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default True
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default False
 all				*bool*						True - Returns all TCP/UDP ports: "1-65535"
 =============== =========================== ============================================================================
 
@@ -135,7 +135,7 @@ ivlan(items, verbose, all, splitter, range_splitter, platform)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of VLANs, can be unsorted and with duplicates
-verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default True
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default False
 all				*bool*						True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
 splitter     	*str*						Separator character between items, by default ","
 range_splitter	*str*						Separator between min and max numbers in range, by default "-"
@@ -195,7 +195,7 @@ svlan(items, verbose, all, splitter, range_splitter, platform)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of VLANs, can be unsorted and with duplicates
-verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default True
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default False
 all				*bool*						True - Returns all VLAN IDs: "1-4094"
 splitter     	*str*						Separator character between items, by default ","
 range_splitter	*str*						Separator between min and max numbers in range, by default "-"
@@ -288,9 +288,9 @@ iip(items, verbose, all, strict)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of IP protocol numbers, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
-verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default True
-all				*bool*						True - Return all IP protocol numbers: [0, 1, ..., 255]
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
 strict          *bool*                      True - Raises ValueError, if the protocol is unknown, False - Skips unknown protocols, by default - True
+all				*bool*						True - Return all IP protocol numbers: [0, 1, ..., 255]
 =============== =========================== ============================================================================
 
 Return
@@ -321,42 +321,6 @@ Raises
 	# invalid_ip_numbers=[265], expected in range 0...255
 
 
-nip(items, strict)
-..................
-
-**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates
-strict			*bool*						True - Raise ValueError, if in line is unknown protocol, False - Return output with invalid names (skip invalid numbers), by default - True
-=============== =========================== ============================================================================
-
-Return
-	*Tuple[List[str], List[int]]* Lists of IP protocol Names and IP protocol Numbers
-Raises
-	*ValueError* If IP protocol number are outside valid range 0...255, or IP protocol name is unknown
-
-.. code:: python
-
-	import netports
-
-	ports = netports.nip("icmp,tcp,7,255")
-	print(ports)
-	# (["icmp", "tcp"], [7, 255])
-
-	ports = netports.nip(["icmp", "tcp", 7, 255])
-	print(ports)
-	# (["icmp", "tcp"], [7, 255])
-
-	try:
-		netports.nip("icmp,typo")
-	except ValueError as ex:
-		print(ex)
-	# invalid_ip_names=["typo"]
-
-
 sip(items, verbose, all)
 ........................
 
@@ -366,7 +330,8 @@ sip(items, verbose, all)
 Parameter		Type						Description
 =============== =========================== ============================================================================
 items         	*str, List[int], List[str]*	Range of IP protocol numbers, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
-verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default True
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
+strict          *bool*                      True - Raises ValueError, if the protocol is unknown, False - Skips unknown protocols, by default - True
 all				*bool*						True - Return all IP protocol numbers: "0-255"
 =============== =========================== ============================================================================
 
@@ -402,109 +367,35 @@ Raises
 	# invalid_ip_numbers=[265], expected in range 0...255
 
 
-Objects
--------
+ip_pairs(items, strict)
+.......................
 
-
-Interface4(line, splitter)
-..........................
-
-**Interface4** - An object of interface name, that can contain up to 4 indexes.
-Sorts the interfaces by indexes (not by alphabetic).
+**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-line         	*str*						Interface name that can contain up to 4 indexes
-splitter		*Iterable[str]*				Separator characters between indexes. By default ",./:"
+items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
 =============== =========================== ============================================================================
 
-Attributes demonstration
+Return
+	*List[Tuple[int, str]]* Pairs of IP protocol number and name,
+	 *List[str]* Undefined protocol names and invalid numbers
 
 .. code:: python
 
-	from netports import Interface4
+	import netports
 
-	interface = Interface4("interface Ethernet1/2/3.4")
-	assert interface.line == "interface Ethernet1/2/3.4"
-	assert interface.name == "Ethernet1/2/3.4"
-	assert interface.id0 == "interface Ethernet"
-	assert interface.id1 == 1
-	assert interface.id2 == 2
-	assert interface.id3 == 3
-	assert interface.id4 == 4
+	pairs, invalid = netports.ip_pairs("1,tcp,255,256,typo")
+	print("pairs", pairs)
+	print("invalid", invalid)
+	# pairs [(1, 'icmp'), (6, 'tcp'), (255, '')]
+	# invalid ['256', 'typo']
 
-Interface with custom splitter between indexes. Splitter is ignored when comparing
 
-.. code:: python
-
-	from netports import Interface4
-
-	interface1 = Interface4("interface Ethernet1/2/3.4")
-	interface2 = Interface4("interface Ethernet1-2-3+4", splitter="-+")
-	assert interface1 == interface2
-
-Sorting by indexes
-
-.. code:: python
-
-	from netports import Interface4
-
-	lines = [
-		"interface Ethernet1/1/1.1",
-		"interface Ethernet10/1/1.1",
-		"interface Ethernet2/1/1.1",
-		"interface Ethernet1/2/1.1",
-		"interface Ethernet1/20/1.1",
-		"interface Ethernet1/3/1.1",
-	]
-
-	# Alphabetical sorting. This approach is not convenient in scripting
-	for line in sorted(lines):
-		print(line)
-	print()
-	# interface Ethernet1/1/1.1
-	# interface Ethernet1/2/1.1
-	# interface Ethernet1/20/1.1
-	# interface Ethernet1/3/1.1
-	# interface Ethernet10/1/1.1
-	# interface Ethernet2/1/1.1
-
-	# Sorting by indexes. This approach is useful in scripting
-	interfaces = [Interface4(line) for line in lines]
-	for interface in sorted(interfaces):
-		print(interface)
-	# interface Ethernet1/1/1.1
-	# interface Ethernet1/2/1.1
-	# interface Ethernet1/3/1.1
-	# interface Ethernet1/20/1.1
-	# interface Ethernet2/1/1.1
-	# interface Ethernet10/1/1.1
-
-Grouping interfaces by 3rd index
-
-.. code:: python
-
-	from netports import Interface4
-
-	lines = [
-		"interface Ethernet101/1/1",
-		"interface Ethernet101/1/2",
-		"interface Ethernet101/1/3",
-		"interface Ethernet102/1/1",
-		"interface Ethernet102/1/2",
-		"interface Ethernet102/1/3",
-	]
-	interfaces = [Interface4(line) for line in lines]
-	interfaces.sort(key=lambda o: o.id3)
-	for interface in interfaces:
-		print(interface)
-	# interface Ethernet101/1/1
-	# interface Ethernet102/1/1
-	# interface Ethernet101/1/2
-	# interface Ethernet102/1/2
-	# interface Ethernet101/1/3
-	# interface Ethernet102/1/3
+Objects
+-------
 
 
 Range(items, splitter, range_splitter, strict)
@@ -836,3 +727,103 @@ Converts unsorted range to *str* with custom splitters
 	print(ports)
 	# 1 3 to 5
 
+
+Interface4(line, splitter)
+..........................
+
+**Interface4** - An object of interface name, that can contain up to 4 indexes.
+Sorts the interfaces by indexes (not by alphabetic).
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+line         	*str*						Interface name that can contain up to 4 indexes
+splitter		*Iterable[str]*				Separator characters between indexes. By default ",./:"
+=============== =========================== ============================================================================
+
+Attributes demonstration
+
+.. code:: python
+
+	from netports import Interface4
+
+	interface = Interface4("interface Ethernet1/2/3.4")
+	assert interface.line == "interface Ethernet1/2/3.4"
+	assert interface.name == "Ethernet1/2/3.4"
+	assert interface.id0 == "interface Ethernet"
+	assert interface.id1 == 1
+	assert interface.id2 == 2
+	assert interface.id3 == 3
+	assert interface.id4 == 4
+
+Interface with custom splitter between indexes. Splitter is ignored when comparing
+
+.. code:: python
+
+	from netports import Interface4
+
+	interface1 = Interface4("interface Ethernet1/2/3.4")
+	interface2 = Interface4("interface Ethernet1-2-3+4", splitter="-+")
+	assert interface1 == interface2
+
+Sorting by indexes
+
+.. code:: python
+
+	from netports import Interface4
+
+	lines = [
+		"interface Ethernet1/1/1.1",
+		"interface Ethernet10/1/1.1",
+		"interface Ethernet2/1/1.1",
+		"interface Ethernet1/2/1.1",
+		"interface Ethernet1/20/1.1",
+		"interface Ethernet1/3/1.1",
+	]
+
+	# Alphabetical sorting. This approach is not convenient in scripting
+	for line in sorted(lines):
+		print(line)
+	print()
+	# interface Ethernet1/1/1.1
+	# interface Ethernet1/2/1.1
+	# interface Ethernet1/20/1.1
+	# interface Ethernet1/3/1.1
+	# interface Ethernet10/1/1.1
+	# interface Ethernet2/1/1.1
+
+	# Sorting by indexes. This approach is useful in scripting
+	interfaces = [Interface4(line) for line in lines]
+	for interface in sorted(interfaces):
+		print(interface)
+	# interface Ethernet1/1/1.1
+	# interface Ethernet1/2/1.1
+	# interface Ethernet1/3/1.1
+	# interface Ethernet1/20/1.1
+	# interface Ethernet2/1/1.1
+	# interface Ethernet10/1/1.1
+
+Grouping interfaces by 3rd index
+
+.. code:: python
+
+	from netports import Interface4
+
+	lines = [
+		"interface Ethernet101/1/1",
+		"interface Ethernet101/1/2",
+		"interface Ethernet101/1/3",
+		"interface Ethernet102/1/1",
+		"interface Ethernet102/1/2",
+		"interface Ethernet102/1/3",
+	]
+	interfaces = [Interface4(line) for line in lines]
+	interfaces.sort(key=lambda o: o.id3)
+	for interface in interfaces:
+		print(interface)
+	# interface Ethernet101/1/1
+	# interface Ethernet102/1/1
+	# interface Ethernet101/1/2
+	# interface Ethernet102/1/2
+	# interface Ethernet101/1/3
+	# interface Ethernet102/1/3

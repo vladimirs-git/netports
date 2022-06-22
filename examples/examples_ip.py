@@ -6,22 +6,22 @@ import netports
 
 # IP_NAMES
 pprint(netports.IP_NAMES)
-#  'icmp': {'description': 'Internet Control Message Protocol, RFC 792',
-#           'name': 'icmp',
-#           'number': 1},
-#  'tcp': {'description': 'Transmission Control Protocol, RFC 793',
-#          'name': 'tcp',
-#          'number': 6},
+#  "icmp": {"description": "Internet Control Message Protocol, RFC 792",
+#           "name": "icmp",
+#           "number": 1},
+#  "tcp": {"description": "Transmission Control Protocol, RFC 793",
+#          "name": "tcp",
+#          "number": 6},
 # ...
 
 # IP_NUMBERS
 pprint(netports.IP_NUMBERS)
-# {0: {'description': 'IPv6 Hop-by-Hop Option, RFC 8200',
-#      'name': 'hopopt',
-#      'number': 0},
-#  6: {'description': 'Transmission Control Protocol, RFC 793',
-#      'name': 'tcp',
-#      'number': 6},
+# {0: {"description": "IPv6 Hop-by-Hop Option, RFC 8200",
+#      "name": "hopopt",
+#      "number": 0},
+#  6: {"description": "Transmission Control Protocol, RFC 793",
+#      "name": "tcp",
+#      "number": 6},
 # ...
 
 
@@ -45,20 +45,12 @@ except ValueError as ex:
 # invalid_ip_numbers=[265], expected in range 0...255
 
 
-# nip(items, strict)
-ports = netports.nip("icmp,tcp,7,255")
-print(ports)
-# (["icmp", "tcp"], [7, 255])
-
-ports = netports.nip(["icmp", "tcp", 7, 255])
-print(ports)
-# (["icmp", "tcp"], [7, 255])
-
-try:
-    netports.nip("icmp,typo")
-except ValueError as ex:
-    print(ex)
-# invalid_ip_names=["typo"]
+# ip_pairs(items, verbose)
+pairs, invalid = netports.ip_pairs("1,tcp,255,256,typo")
+print("pairs", pairs)
+print("invalid", invalid)
+# pairs [(1, 'icmp'), (6, 'tcp'), (255, '')]
+# invalid ['256', 'typo']
 
 
 # sip(items, all)

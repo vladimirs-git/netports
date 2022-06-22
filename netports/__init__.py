@@ -1,7 +1,7 @@
 """netports"""
 
 from netports.interface4 import Interface4
-from netports.ip import IP_NAMES, IP_NUMBERS, iip, nip, sip
+from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
 from netports.item import Item
 from netports.ports import inumbers, parse_range, snumbers
 from netports.range import Range
@@ -16,9 +16,9 @@ __all__ = [
     "Range",
     "iip",
     "inumbers",
+    "ip_pairs",
     "itcp",
     "ivlan",
-    "nip",
     "parse_range",
     "sip",
     "snumbers",
@@ -26,8 +26,8 @@ __all__ = [
     "svlan",
 ]
 
-__version__ = "0.5.0"
-__date__ = "2022-06-19"
+__version__ = "0.5.1"
+__date__ = "2022-06-20"
 __title__ = "netports"
 
 __summary__ = "A collection of Python objects and functions for managing ranges of VLANs, " \

@@ -4,6 +4,13 @@
 CHANGELOG
 =========
 
+0.5.1 (2022-06-20)
+------------------
+* [new] netports.ip_pairs(items, strict)
+* [chang] param is_verbose, by default True
+* [new] ip.py IP_ALIASES
+
+
 0.5.0 (2022-06-19)
 ------------------
 * [new] param `verbose` in functions: itcp, stcp, ivlan, svlan, iip, sip
