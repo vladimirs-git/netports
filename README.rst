@@ -9,6 +9,7 @@ Recommended for scripting related to telecommunications networks.
 .. sectnum::
 
 
+
 Installation
 ------------
 
@@ -23,6 +24,7 @@ or
 .. code:: bash
 
     pip install git+https://github.com/vladimirs-git/netports
+
 
 
 Objects
@@ -320,6 +322,7 @@ update(other)                       Returns *Range* of the union of self *Range*
 	# 1,3-5
 
 
+
 Numbers
 -------
 
@@ -458,6 +461,7 @@ Converts unsorted range to *str* with custom splitters
 	# 1 3 to 5
 
 
+
 TCP/UDP ports
 -------------
 
@@ -544,6 +548,7 @@ Raises
 	except ValueError as ex:
 		print(ex)
 	# invalid_port=[65536], expected in range 1...65535
+
 
 
 VLAN IDs
@@ -662,6 +667,7 @@ Raises
 	except ValueError as ex:
 		print(ex)
 	# invalid_vlan=[4095], expected in range 1...4094
+
 
 
 IP protocols
