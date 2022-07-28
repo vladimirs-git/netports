@@ -11,9 +11,10 @@ from netports.types_ import LStr, LInt
 
 # noinspection PyIncorrectDocstring
 def parse_range(line: str, **kwargs) -> Range:
-    """**Parse Range** - Parses range from line. Removes white spaces considering splitters,
-    sorting numbers and removing duplicates
-    :param line: Range of numbers, can be unsorted and with duplicates
+    """**Parse Range** - Parses range from line. Removes white spaces considering splitters.
+        Sorts numbers and removes duplicates
+    :param line: Range of numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
     :return: Range *object* of unique sorted numbers
@@ -39,8 +40,9 @@ def parse_range(line: str, **kwargs) -> Range:
 
 # noinspection PyIncorrectDocstring
 def inumbers(items: Any, **kwargs) -> LInt:
-    """**Integer Numbers** - Sorting numbers and removing duplicates
-    :param items: Range of numbers or *List[int]*, can be unsorted and with duplicates
+    """**Integer Numbers** - Sorts numbers and removes duplicates
+    :param items: Range of numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
     :return: *List[int]* of unique sorted numbers
@@ -54,13 +56,14 @@ def inumbers(items: Any, **kwargs) -> LInt:
         return: [1, 3, 4, 5, 7, 8, 9]
     """
     range_o: Range = parse_range(items, **kwargs)
-    return range_o.numbers
+    return range_o.numbers()
 
 
 # noinspection PyIncorrectDocstring
 def snumbers(items: Any, **kwargs) -> str:
-    """**String Numbers** - Sorting numbers and removing duplicates
-    :param items: Range of numbers or *List[int]*, can be unsorted and with duplicates
+    """**String Numbers** - Sorts numbers and removes duplicates
+    :param items: Range of numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*
     :param splitter: Separator character between items, by default ","
     :param range_splitter: Separator between min and max numbers in range, by default "-"
     :return: *str* of unique sorted numbers

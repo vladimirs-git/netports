@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import Range
+from netports import Range, Item
 from tests.helpers_ import Helpers
 
 
@@ -16,7 +16,7 @@ class Test(Helpers):
         """Range.__hash__()"""
         range_o = Range("1,3-5")
         result = range_o.__hash__()
-        req = hash((1, 3, 4, 5))
+        req = hash((Item("1"), Item("3-5")))
         self.assertEqual(result, req, msg="hash")
 
     def test_valid__eq__(self):
@@ -200,7 +200,8 @@ class Test(Helpers):
             ("3-5", 3),
             ("1,3-5", 4),
         ]:
-            result = len(Range(line))
+            range_o = Range(line)
+            result = len(range_o)
             self.assertEqual(result, req, msg=f"{line=}")
 
     def test_valid__next__(self):
@@ -264,7 +265,7 @@ class Test(Helpers):
         range_o.clear()
         result = range_o.line
         self.assertEqual(result, "", msg="clear")
-        result = range_o.numbers
+        result = range_o.numbers()
         self.assertEqual(result, [], msg="clear")
 
     def test_valid__copy(self):
@@ -333,8 +334,9 @@ class Test(Helpers):
         """Range.extend()"""
         for numbers, req, in [
             ([3], "1,3"),
+            ([3], "1,3"),
             (["3"], "1,3"),
-            ([3, "4", "5"], "1,3-5"),
+            ([3, 4, 5], "1,3-5"),
         ]:
             range_o = Range("1")
             range_o.extend(numbers)
@@ -347,7 +349,7 @@ class Test(Helpers):
         for number, error, in [
             (3, TypeError),
             ("3", TypeError),
-            (["a"], TypeError),
+            (["a"], ValueError),
         ]:
             with self.assertRaises(error, msg=f"{number=}"):
                 range_o.extend(number)
@@ -603,6 +605,7 @@ class Test(Helpers):
     def test_valid__line(self):
         """Range.line"""
         for kwargs, req_d in [
+            # line
             ({}, dict(line="", numbers=[])),
             (dict(items=""), dict(line="", numbers=[])),
             (dict(items="0"), dict(line="0", numbers=[0])),
@@ -619,14 +622,27 @@ class Test(Helpers):
             (dict(items="1 3 to 5 7 9 to 10 1 4 to 5", splitter=" ", range_splitter=" to "),
              dict(line="1 3 to 5 7 9 to 10", numbers=[1, 3, 4, 5, 7, 9, 10])),
             (dict(items="1,3-5,a,7-a,a-7", strict=False), dict(line="1,3-5", numbers=[1, 3, 4, 5])),
+            # numbers
+            (dict(items=0), dict(line="0", numbers=[0])),
+            (dict(items=1), dict(line="1", numbers=[1])),
+            (dict(items=[0]), dict(line="0", numbers=[0])),
+            (dict(items=[0, 1]), dict(line="0-1", numbers=[0, 1])),
+            (dict(items=["0", "1"]), dict(line="0-1", numbers=[0, 1])),
+            (dict(items=[0, 2]), dict(line="0,2", numbers=[0, 2])),
+            (dict(items={0, 2}), dict(line="0,2", numbers=[0, 2])),
+            (dict(items=(0, 2)), dict(line="0,2", numbers=[0, 2])),
+            (dict(items=[1, 3, 4, 5]), dict(line="1,3-5", numbers=[1, 3, 4, 5])),
+            (dict(items=[5, 1, 1, 3, 4]), dict(line="1,3-5", numbers=[1, 3, 4, 5])),
+            (dict(items=[1, 3, 4, 5], splitter=" ", range_splitter=" to "),
+             dict(line="1 3 to 5", numbers=[1, 3, 4, 5])),
         ]:
             # getter
             range_o = Range(**kwargs)
             self._test_attrs(obj=range_o, req_d=req_d, msg=f"getter {kwargs=}")
             # setter
-            if kwargs:
+            if kwargs and isinstance(kwargs["items"], str):
                 range_o.line = kwargs["items"]
-            self._test_attrs(obj=range_o, req_d=req_d, msg=f"setter {kwargs=}")
+                self._test_attrs(obj=range_o, req_d=req_d, msg=f"setter {kwargs=}")
         # deleter
         with self.assertRaises(AttributeError, msg="deleter line"):
             # noinspection PyPropertyAccess
@@ -635,7 +651,7 @@ class Test(Helpers):
     def test_invalid__line(self):
         """Range.line"""
         for kwargs, error in [
-            (dict(items=1), TypeError),
+            (dict(items=-1), ValueError),
             (dict(items={1: "A"}), TypeError),
             (dict(items="0.1"), ValueError),  # invalid char
             (dict(items="0,1", splitter=" "), ValueError),  # invalid splitter
@@ -644,49 +660,19 @@ class Test(Helpers):
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 Range(**kwargs)
 
-    def test_valid__numbers(self):
-        """Range.numbers"""
-        for items, req_d in [
-            ([], dict(line="", numbers=[])),
-            ([1], dict(line="1", numbers=[1])),
-            ({1}, dict(line="1", numbers=[1])),
-            ((1,), dict(line="1", numbers=[1])),
-            (["1"], dict(line="1", numbers=[1])),
-            ([1, "3", 4, 5], dict(line="1,3-5", numbers=[1, 3, 4, 5])),
-        ]:
-            # getter
-            range_o = Range(items)
-            self._test_attrs(obj=range_o, req_d=req_d, msg=f"getter {items=}")
-            # setter
-            range_o.numbers = items
-            self._test_attrs(obj=range_o, req_d=req_d, msg=f"setter {items=}")
-        # deleter
-        with self.assertRaises(AttributeError, msg="deleter numbers"):
-            # noinspection PyPropertyAccess
-            del range_o.numbers
-
-    def test_invalid__numbers(self):
-        """Range.numbers"""
-        range_o = Range()
-        for items, error in [
-            (1, TypeError),
-            ("1", TypeError),
-            (b"1", TypeError),
-            ({1: "A"}, TypeError),
-            (["a"], TypeError),
-        ]:
-            with self.assertRaises(error, msg=f"{items=}"):
-                range_o.numbers = items
-
     # =========================== helpers ============================
 
-    def test_valid__range(self):
-        """Range._range()"""
+    def test_valid__create_items(self):
+        """Range._create_items()"""
         for items, strict, req in [
             ([], True, []),
             ([], False, []),
+            ([""], True, []),
+            ([""], False, []),
             (["1", "3-5"], True, ["1", "3-5"]),
             (["1", "3-5"], False, ["1", "3-5"]),
+            (["1", "3-5", "1", "3-4", "4-5"], True, ["1", "3-5"]),
+            (["1", "3-5", "1", "3-4", "4-5"], False, ["1", "3-5"]),
             (["3-"], False, []),
             (["-5"], False, []),
             (["1-3-5"], False, []),
@@ -696,18 +682,44 @@ class Test(Helpers):
             (["1", "3-5", "a"], False, ["1", "3-5"]),
         ]:
             range_o = Range("1", strict=strict)
-            result_l = range_o._range(items=items)
+            result_l = range_o._create_items(items=items)
             result = [o.line for o in result_l]
             self.assertEqual(result, req, msg=f"{items=}")
 
-    def test_invalid__range(self):
-        """Range._range()"""
+    def test_invalid__create_items(self):
+        """Range._create_items()"""
         for items, error in [
             (["a"], ValueError),
         ]:
             range_o = Range("1", strict=True)
             with self.assertRaises(error, msg=f"{items=}"):
-                range_o._range(items=items)
+                range_o._create_items(items=items)
+
+    def test_valid__items_to_line(self):
+        """Range._items_to_line()"""
+        for items, kwargs, req in [
+            ([], {}, ""),
+            ([Item("1")], {}, "1"),
+            ([Item("3-5")], {}, "3-5"),
+            ([Item("1"), Item("3-5")], {}, "1,3-5"),
+            ([Item("1"), Item("3-5")], dict(splitter=" ", range_splitter=" to "), "1 3 to 5"),
+        ]:
+            range_o = Range("1", **kwargs)
+            result = range_o._items_to_line(items=items)
+            self.assertEqual(result, req, msg=f"{items=}")
+
+    def test_valid__items_wo_duplicates(self):
+        """Range._items_wo_duplicates()"""
+        range_o = Range("1")
+        for items, req in [
+            ([], []),
+            ([Item("1")], [Item("1")]),
+            ([Item("3-5")], [Item("3-5")]),
+            ([Item("3-5"), Item("1")], [Item("1"), Item("3-5")]),
+            ([Item("1"), Item("3-5"), Item("1"), Item("3-4")], [Item("1"), Item("3-5")]),
+        ]:
+            result = range_o._items_wo_duplicates(items=items)
+            self.assertEqual(result, req, msg=f"{items=}")
 
 
 if __name__ == "__main__":

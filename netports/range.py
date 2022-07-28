@@ -8,7 +8,7 @@ from functools import total_ordering
 from netports import helpers as h
 from netports.item import Item, LItem
 from netports.static import SPLITTER, RANGE_SPLITTER
-from netports.types_ import LStr, LInt, OInt, SInt, IInt, T2SInt, StrInt, StrIInt
+from netports.types_ import LStr, LInt, OInt, IInt, T2SInt, StrInt, StrIInt, IStrInt
 
 
 @total_ordering
@@ -18,22 +18,25 @@ class Range:
 
     def __init__(self, items: StrIInt = "", **kwargs):
         """Range
-        :param items: Range of numbers. Numbers can be unsorted and duplicated.
-            Type: *str*, *List[int]*.
+        :param items: Range of numbers. Numbers can be unsorted and duplicated
+            Type: *str*, *List[int]*
         :param splitter: Separator character between numbers, by default ","
         :param range_splitter: Separator between min and max digits in range, by default "-"
-        :param strict: True - Raise ValueError, if in line is invalid item.
-                       False - Make Range without invalid items, By default - True.
+        :param strict: True - Raise ValueError, if in line is invalid item
+                       False - Make Range without invalid items, By default - True
         """
         self.splitter = kwargs.get("splitter") or SPLITTER
         self.range_splitter = kwargs.get("range_splitter") or RANGE_SPLITTER
         self._strict = self._init_strict(**kwargs)
-        self._numbers: LInt = []
+        self.items: LItem = []
         self._idx = 0
+
         if isinstance(items, str):
             self.line = items
+        elif isinstance(items, int):
+            self.items = self._create_items([items])
         elif isinstance(items, (list, set, tuple)):
-            self.numbers = list(items)
+            self.items = self._create_items(items)
         else:
             raise TypeError(f"{items=} {str} expected")
 
@@ -54,7 +57,7 @@ class Range:
         return f"{self.__class__.__name__}({params_})"
 
     def __hash__(self) -> int:
-        return tuple(self.numbers).__hash__()
+        return tuple(self.items).__hash__()
 
     def __eq__(self, other) -> bool:
         """== Equality"""
@@ -66,17 +69,19 @@ class Range:
     def __lt__(self, other: Range) -> bool:
         """< Less than"""
         if self.__class__ == other.__class__:
-            self_len = len(self.numbers)
-            other_len = len(other.numbers)
-            if not self_len:
+            self_len = len(self.items)
+            other_len = len(other.items)
+            if not (self_len and other_len):
                 return self_len < other_len
-            for len_i, self_number in enumerate(self.numbers, start=1):
-                if other_len < len_i:
+            for idx, self_item in enumerate(self.items):
+                try:
+                    other_item = other.items[idx]
+                except IndexError:
                     return False
-                if other_len == len_i:
-                    other_number = other.numbers[len_i - 1]
-                    if self_number != other_number:
-                        return self_number < other_number
+                if self_item.min != other_item.min:
+                    return self_item.min < other_item.min
+                if self_item.max != other_item.max:
+                    return self_item.max < other_item.max
             return self.line < other.line
         return False
 
@@ -96,16 +101,17 @@ class Range:
         """Returns key in self"""
         if not isinstance(number, int):
             raise TypeError
-        return number in self.numbers
+        return number in self.numbers()
 
     def __delitem__(self, idx: int) -> None:
         """Deletes self.numbers[idx]"""
-        self._numbers.__delitem__(idx)
-        self.numbers = self._numbers
+        numbers = self.numbers()
+        numbers.__delitem__(idx)
+        self.items = self._create_items(numbers)
 
     def __getitem__(self, idx: int):
         """Returns number by index"""
-        return self.numbers[idx]
+        return self.numbers()[idx]
 
     def __iter__(self):
         """Iterator"""
@@ -113,12 +119,12 @@ class Range:
 
     def __len__(self) -> int:
         """Returns length of numbers"""
-        return len(self.numbers)
+        return len(self.numbers())
 
     def __next__(self) -> int:
         """Returns next number"""
         try:
-            number = self.numbers[self._idx]
+            number = self.numbers()[self._idx]
         except IndexError:
             raise StopIteration()
         self._idx += 1
@@ -130,16 +136,17 @@ class Range:
         """Adds other *Range* object to self"""
         self_numbers, other_numbers = self._numbers_sets(other)
         self_numbers.update(other_numbers)
-        self.numbers = list(self_numbers)
+        self.items = self._create_items(self_numbers)
 
     def append(self, number: StrInt) -> None:
         """Appends number to self"""
         number_ = h.to_int(number)
-        self.numbers = [*self._numbers, number_]
+        other = Range(number_)
+        self.add(other)
 
     def clear(self) -> None:
         """Removes all numbers from self"""
-        self.numbers = []
+        self.items = []
 
     def copy(self):
         """Returns a copy of self *Range* object"""
@@ -157,18 +164,21 @@ class Range:
     def difference_update(self, other: Range) -> None:
         """Removes other *Range* from self"""
         self_numbers, other_numbers = self._numbers_sets(other)
-        self.numbers = list(self_numbers.difference(other_numbers))
+        numbers = self_numbers.difference(other_numbers)
+        self.items = self._create_items(numbers)
 
     def discard(self, number: StrInt) -> None:
         """Removes the specified number from self *Range*"""
         number_ = h.to_int(number)
-        self_numbers = set(self.numbers).difference({number_})
-        self.numbers = list(self_numbers)
+        numbers = set(self.numbers()).difference({number_})
+        self.items = self._create_items(numbers)
 
     def extend(self, numbers: IInt) -> None:
         """Adds *List[int]* numbers to self"""
-        numbers_ = h.to_lint(numbers)
-        self.numbers = [*self._numbers, *numbers_]
+        if not isinstance(numbers, (list, set, tuple)):
+            raise TypeError(f"{numbers=} {list} expected")
+        other = Range(numbers)
+        self.add(other)
 
     def index(self, number: StrInt) -> int:
         """Index of number
@@ -176,7 +186,7 @@ class Range:
         :raises ValueError: if the number is not present in range
         """
         number_ = h.to_int(number)
-        return self.numbers.index(number_)
+        return self.numbers().index(number_)
 
     def intersection(self, other: Range) -> Range:
         """Returns *Range* which is the intersection of self and other *Range*"""
@@ -187,7 +197,8 @@ class Range:
     def intersection_update(self, other: Range) -> None:
         """Removes numbers of other *Range* in self, that are not present in other"""
         self_numbers, other_numbers = self._numbers_sets(other)
-        self.numbers = list(self_numbers.intersection(other_numbers))
+        numbers = self_numbers.intersection(other_numbers)
+        self.items = self._create_items(numbers)
 
     def isdisjoint(self, other: Range) -> bool:
         """Returns whether self numbers and other *Range* numbers have intersection or not"""
@@ -208,8 +219,9 @@ class Range:
         """Removes and returns last number in *Range*
         :raises IndexError: If list is empty or index is out of range
         """
-        number = self._numbers.pop()
-        self.numbers = self._numbers
+        numbers = self.numbers()
+        number = numbers.pop()
+        self.items = self._create_items(numbers)
         return number
 
     def remove(self, number: StrInt) -> None:
@@ -217,8 +229,9 @@ class Range:
         :raises ValueError: If the numbers is not present
         """
         number_ = h.to_int(number)
-        self._numbers.remove(number_)
-        self.numbers = self._numbers
+        numbers = self.numbers()
+        numbers.remove(number_)
+        self.items = self._create_items(numbers)
 
     def symmetric_difference(self, other: Range) -> Range:
         """Returns *Range* object with the symmetric differences of self and other *Range*"""
@@ -229,7 +242,8 @@ class Range:
     def symmetric_difference_update(self, other: Range) -> None:
         """Inserts the symmetric differences from self *Range* and other *Range*"""
         self_numbers, other_numbers = self._numbers_sets(other)
-        self.numbers = list(self_numbers.symmetric_difference(other_numbers))
+        numbers = self_numbers.symmetric_difference(other_numbers)
+        self.items = self._create_items(numbers)
 
     def union(self, other: Range) -> Range:
         """Returns Range of the union of self and other numbers"""
@@ -241,7 +255,7 @@ class Range:
         """Returns *Range* of the union of self *Range* and other *Range*"""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.union(other_numbers)
-        self.numbers = list(numbers)
+        self.items = self._create_items(numbers)
 
     # ============================= init =============================
 
@@ -260,7 +274,7 @@ class Range:
     @property
     def line(self) -> str:
         """Range in *str* format"""
-        return self._line
+        return self._items_to_line(self.items)
 
     @line.setter
     def line(self, line: str) -> None:
@@ -269,25 +283,86 @@ class Range:
         line_: str = self._valid_line(line)
         line_ = line_.replace(self.range_splitter, RANGE_SPLITTER)
         line_ = line_.replace(self.splitter, SPLITTER)
-        items: LStr = line_.split(SPLITTER)
-        items = [s for s in items if s]
-        range_o = self._range(items)
-        numbers: SInt = {i for o in range_o for i in o.range}
-        self._numbers = sorted(numbers)
-        self._line = self._snumbers(numbers)
+        lines: LStr = line_.split(SPLITTER)
+        items = self._create_items(lines)
+        self.items = items
 
-    @property
+    # =========================== methods ============================
+
     def numbers(self) -> LInt:
-        """Range in ist of *int* format"""
-        return self._numbers
-
-    @numbers.setter
-    def numbers(self, items: LInt) -> None:
-        numbers = sorted(set(h.to_lint(items)))
-        self._numbers = numbers
-        self._line = self._snumbers(numbers)
+        """Returns list of numbers"""
+        return [i for o in self.items for i in o.range]
 
     # =========================== helpers ============================
+
+    def _items_to_line(self, items: LItem) -> str:
+        """Converts  items *List[Item]* to line *str*
+        :param items: [Item("1"), Item("3-5")]
+        :return: "1,3-5"
+        """
+        lines = [o.line.replace("-", self.range_splitter) for o in items]
+        line = self.splitter.join(lines)
+        return line
+
+    @staticmethod
+    def _items_wo_duplicates(items: LItem) -> LItem:
+        """Removes duplicates digits in items
+        :param items: [Item(1), Item(4-5), Item(3-4), Item(1)]
+        :return: [Item(1), Item(3-5)]
+        """
+        items_: LStr = []  # result
+        numbers: LInt = sorted({i for o in items for i in o.range})
+        item_1st: OInt = None
+        for idx, item in enumerate(numbers, start=1):
+            # not last iteration
+            if idx < len(numbers):
+                item_next = numbers[idx]
+                if item_next - item <= 1:  # range
+                    if item_1st is None:  # start new range
+                        item_1st = item
+                else:  # int or end of range
+                    if item_1st is None:
+                        range_ = str(item)
+                    else:
+                        range_ = f"{item_1st}-{item}"
+                    items_.append(range_)
+                    item_1st = None
+            # last iteration
+            else:
+                item_ = str(item) if item_1st is None else f"{item_1st}-{item}"
+                items_.append(item_)
+        return [Item(s) for s in items_]
+
+    def _numbers_sets(self, other: Range) -> T2SInt:
+        """Converts self and other *List[int]* numbers to *Set[int]*
+        :param other: Other Range *object*
+        :return: Sets of numbers
+        """
+        if not isinstance(other, Range):
+            raise TypeError(f"{other=} {Range} expected")
+        self_numbers = self.numbers()
+        other_numbers = other.numbers()
+        return set(self_numbers), set(other_numbers)
+
+    def _create_items(self, items: IStrInt) -> LItem:
+        """Converts items *List[str]* to items *List[Items]*, removes duplicates
+        :param items: List of *str* items
+        :return: List of *Item* objects
+        :raises ValueError: If self._strict==True and item is invalid
+        """
+        items_: LItem = []
+        items_wo_duplicates = sorted({str(i) for i in items})
+        for item in items_wo_duplicates:
+            if item == "":
+                continue
+            try:
+                items_.append(Item(str(item)))
+            except ValueError as ex:
+                if self._strict:
+                    raise type(ex)(*ex.args)
+                continue
+        items_ = self._items_wo_duplicates(items_)
+        return items_
 
     def _valid_line(self, line: str) -> str:
         """Checks valid chars in line. Splits line to items by splitter"""
@@ -306,57 +381,3 @@ class Range:
             line_ = splitter.join(items_)
             lines.append(line_)
         return range_splitter.join(lines)
-
-    def _numbers_sets(self, other: Range) -> T2SInt:
-        """Converts self and other *List[int]* numbers to *Set[int]*
-        :param other: Other Range *object*
-        :return: Sets of numbers
-        """
-        if not isinstance(other, Range):
-            raise TypeError(f"{other=} {Range} expected")
-        return set(self.numbers), set(other.numbers)
-
-    def _snumbers(self, items: IInt) -> str:
-        """Converts list of *int* to *str*
-        :param items: [1, 3, 4, 5]
-        :return: "1,3-5"
-        """
-        ranges: LStr = []  # return
-        range_splitter = self.range_splitter
-        item_1st: OInt = None
-        items_: LInt = sorted({int(i) for i in items})
-        for idx, item in enumerate(items_, start=1):
-            # not last iteration
-            if idx < len(items_):
-                item_next = items_[idx]
-                if item_next - item <= 1:  # range
-                    if item_1st is None:  # start new range
-                        item_1st = item
-                else:  # int or end of range
-                    if item_1st is None:
-                        range_ = str(item)
-                    else:
-                        range_ = f"{item_1st}{range_splitter}{item}"
-                    ranges.append(range_)
-                    item_1st = None
-            # last iteration
-            else:
-                item_ = str(item) if item_1st is None else f"{item_1st}{range_splitter}{item}"
-                ranges.append(item_)
-        return self.splitter.join(ranges)
-
-    def _range(self, items: LStr) -> LItem:
-        """Converts items to list of Range
-        :param items: List of string items
-        :return: List of *Item* objects
-        :raises ValueError: If self._strict==True and item is invalid
-        """
-        ranges: LItem = []
-        for item in items:
-            try:
-                ranges.append(Item(item))
-            except ValueError as ex:
-                if self._strict:
-                    raise type(ex)(*ex.args)
-                continue
-        return ranges

@@ -1,13 +1,15 @@
 """IP Protocols"""
 
+from operator import itemgetter
 from typing import Any, Tuple
 
 from netports import helpers as h
-from netports.ports import inumbers, snumbers
+from netports.ports import snumbers
 from netports.range import Range
-from netports.types_ import LInt, LStr, DAny, DiAny
+from netports.static import BRIEF_ALL_I
+from netports.types_ import LInt, LStr, DAny, DiAny, SStr, SInt, LTIntStr
 
-IP_PORTS: DiAny = {
+IP_NUMBERS: DiAny = {
     0: {"number": 0,
         "name": "hopopt",
         "description": "IPv6 Hop-by-Hop Option, RFC 8200"},
@@ -263,9 +265,6 @@ IP_PORTS: DiAny = {
     84: {"number": 84,
          "name": "ttp",
          "description": "TTP"},
-    # 84: {"number": 84,
-    #      "name": "iptm",
-    #      "description": "Internet Protocol Traffic Manager"},
     85: {"number": 85,
          "name": "nsfnet-igp",
          "description": "NSFNET-IGP"},
@@ -451,16 +450,37 @@ IP_PORTS: DiAny = {
                          "(TEMPORARY - registered 2020-01-31, expired 2021-01-31)"},
 
 }
+IP_NAMES_: DAny = {d["name"]: d for i, d in IP_NUMBERS.items()}
+IP_ALIASES = {
+    "ipinip":
+        {"number": 4,
+         "name": "ipinip",
+         "description": "IP in IP (encapsulation), RFC 2003"},
+    "iptm": {"number": 84,
+             "name": "iptm",
+             "description": "Internet Protocol Traffic Manager"},
+}
+IP_NAMES = {**IP_NAMES_, **IP_ALIASES}
 
-IP_NAMES: DAny = {d["name"]: d for i, d in IP_PORTS.items()}
+MIN_NUMBER = 0
+MAX_NUMBER = 255
+ALL_NUMBERS_L = list(range(MIN_NUMBER, MAX_NUMBER + 1))
+ALL_NUMBERS_S = f"{MIN_NUMBER}-{MAX_NUMBER}"
 
 
 # noinspection PyIncorrectDocstring
 def iip(items: Any = "", **kwargs) -> LInt:
-    """**Integer IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - Return all IP protocol numbers: [0, 1, ..., 255].
-    :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+    """**Integer IP protocol numbers** - Sorts numbers and removes duplicates
+    :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
+                         by default False
+    :param bool strict: True - Raises ValueError, if the protocol is unknown,
+                        False - Skips unknown protocols,
+                        by default - True
+    :param bool all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+
     :return: *List[int]* of unique sorted IP protocol numbers
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
@@ -472,59 +492,49 @@ def iip(items: Any = "", **kwargs) -> LInt:
         items: "ip"
         return: [0, 1, ... 254, 255]
     """
-    if bool(kwargs.get("all")):
-        return list(range(0, 256))
+    if h.is_all(**kwargs):
+        if h.is_brief(**kwargs):
+            return [BRIEF_ALL_I]
+        return ALL_NUMBERS_L.copy()
+    if h.is_brief(**kwargs):
+        if h.is_brief_in_items(items):
+            return [BRIEF_ALL_I]
+
     items_ = [s.lower() for s in h.split(items)]
-    names, numbers = nip(items_)
-    if "ip" in names:
-        return list(range(0, 256))
-    numbers_ = [IP_NAMES[s]["number"] for s in names]
-    numbers.extend(numbers_)
-    return inumbers(numbers)
 
+    # 0-255
+    if ALL_NUMBERS_S in items_:
+        if h.is_brief(**kwargs):
+            return [BRIEF_ALL_I]
+        return ALL_NUMBERS_L.copy()
 
-# noinspection PyIncorrectDocstring
-def nip(items: Any, **kwargs) -> Tuple[LStr, LInt]:
-    """**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates
-    :param items: Range of IP protocol names and numbers, can be unsorted and with duplicates
-    :param strict: True - Raise ValueError, if in line is invalid item.
-                   False - Return output with invalid items, by default - True.
-    :return: Lists of IP protocol Names and IP protocol Numbers
-    :raises ValueError: If IP protocol number are outside valid range 0...255, or
-    IP protocol name is unknown
+    # names, numbers
+    pairs, invalid = ip_pairs(items=items_, **kwargs)
+    if h.is_strict(**kwargs):
+        if invalid:
+            raise ValueError(f"{invalid=}")
+    if not pairs:
+        return []
+    numbers, names = [list(t) for t in zip(*pairs)]
 
-    :example:
-        items: ["icmp", "7", "tcp", 255]
-        return: [7, 255] ["icmp", "tcp"]
-    """
-    items_ = [s.lower() for s in h.split(items)]
-    if "ip" in items_:
-        return ["ip"], list(range(0, 256))
-
-    names: LStr = []
-    numbers: LInt = []
-    for item_ in items_:
-        try:
-            range_o = Range(item_)
-            numbers.extend(range_o.numbers)
-        except ValueError:
-            names.append(item_)
-    names = sorted(set(names))
-    numbers = sorted(set(numbers))
-
-    strict = bool(kwargs.get("strict")) if kwargs.get("strict") is not None else True
-    if strict:
-        _check_ip_names(names)
-        _check_ip_numbers(numbers)
-    return names, numbers
+    if h.is_brief(**kwargs):
+        if numbers == ALL_NUMBERS_L:
+            return [BRIEF_ALL_I]
+    return numbers
 
 
 # noinspection PyIncorrectDocstring
 def sip(items: Any = "", **kwargs) -> str:
-    """**String IP protocol numbers** - Sorting numbers and removing duplicates
-    :param items: Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates.
-        "ip" - mean all numbers in range 0...255.
-    :param all: True - Return all IP protocol numbers: "0-255"
+    """**String IP protocol numbers** - Sorts numbers and removes duplicates
+    :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
+        *str, List[int], List[str]*, "ip" - mean all numbers in range 0...255
+    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
+                         by default False
+    :param bool strict: True - Raises ValueError, if the protocol is unknown,
+                        False - Skips unknown protocols,
+                        by default - True
+    :param bool all: True - Return all IP protocol numbers: "0-255"
     :return: *str* of unique sorted IP protocol numbers
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
@@ -532,31 +542,127 @@ def sip(items: Any = "", **kwargs) -> str:
         items: ["icmp", "tcp", "7", 255]
         return: "1,6-7,255"
     """
-    if bool(kwargs.get("all")):
-        return "0-255"
-    numbers = iip(items)
+    if h.is_all(**kwargs):
+        return ALL_NUMBERS_S
+    if h.is_brief(**kwargs):
+        if h.is_brief_in_items(items):
+            return ALL_NUMBERS_S
+
+    numbers = iip(items, **kwargs)
+    if h.is_brief_in_items(numbers):
+        return ALL_NUMBERS_S
+
     return snumbers(numbers)
+
+
+# noinspection PyIncorrectDocstring
+def ip_pairs(items: Any, **kwargs) -> Tuple[LTIntStr, LStr]:
+    """**IP protocol Pairs (number, name), Undefined** - Splits items to number-name pairs and
+    undefined-invalid protocols
+    :param items: Range of IP protocols, can be unsorted and with duplicates
+    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
+                         by default False
+    :return: *List[Tuple[int, str]]* Pairs of IP protocol number and name,
+             *List[str]* Undefined protocol names and invalid numbers
+
+    :example:
+        items: "tcp,1,typo,256" or ["tcp", 1, "typo", 256]
+        return: [(1, "icmp"), (6, "tcp")], ["256", "typo"]
+    """
+    items_: LStr = [s.lower() for s in h.split(items)]
+    if "ip" in items_:
+        if h.is_brief(**kwargs):
+            return [(BRIEF_ALL_I, "ip")], []
+        return ALL_PAIRS.copy(), []
+    if h.is_brief(**kwargs):
+        if h.is_brief_in_items(items):
+            return [(BRIEF_ALL_I, "ip")], []
+
+    numbers, names = _split_numbers_names(items_)
+    names, undefined = _split_names_undefined(names)
+    numbers, invalid = _split_numbers_invalid(numbers)
+    numbers.update({d["number"] for s, d in IP_NAMES.items() if s in names})
+    invalid.update(undefined)
+
+    pairs: LTIntStr = []
+    for name in sorted(names):
+        number = IP_NAMES[name]["number"]
+        if number not in numbers:
+            continue
+        numbers.remove(number)
+        pairs.append((number, name))
+    for number in sorted(numbers):
+        name = IP_NUMBERS.get(number, {}).get("name") or ""
+        pairs.append((number, name))
+    pairs.sort(key=itemgetter(0))
+
+    if h.is_brief(**kwargs):
+        if pairs == ALL_PAIRS:
+            pairs = [(BRIEF_ALL_I, "ip")]
+
+    return pairs, sorted(invalid)
 
 
 # ============================= helpers ==============================
 
-def _check_ip_numbers(items: LInt) -> bool:
-    """Checks IP protocol numbers
-    :param items: IP protocol numbers
-    :return: True if all items are in the valid IP range 0...255
-    :raises ValueError: If on of item is outside valid range
-    """
-    if invalid_ip_numbers := [i for i in items if i < 0 or i > 255]:
-        raise ValueError(f"{invalid_ip_numbers=}, expected in range 0...255")
-    return True
+def all_pairs():
+    """Return all pairs of IP protocol (number, name)"""
+    paris = []
+    for number in ALL_NUMBERS_L:
+        name = IP_NUMBERS.get(number, {}).get("name") or ""
+        paris.append((number, name))
+    return paris
 
 
-def _check_ip_names(items: LStr) -> bool:
-    """Checks IP protocol names
-    :param items: IP protocol names
-    :return: True if all items are in the valid IANA range
-    :raises ValueError: If on of item is outside valid range
+def _split_numbers_names(items: LStr) -> Tuple[SInt, SStr]:
+    """Splits `items` to the numbers and names
+    :param items: Combo of numbers and names
+    :return: numbers, names
     """
-    if invalid_ip_names := [s for s in items if s not in IP_NAMES]:
-        raise ValueError(f"{invalid_ip_names=}")
-    return True
+    names: SStr = set()
+    numbers: SInt = set()
+    for item in items:
+        try:
+            range_o = Range(item)
+            numbers.update(range_o.numbers())
+        except ValueError:
+            names.add(item)
+    return numbers, names
+
+
+def _split_names_undefined(items: SStr) -> Tuple[SStr, SStr]:
+    """Splits `items` to the defined names and undefined names
+    :param items: Combo of defined names and undefined names
+    :return: defined names, undefined names
+    """
+    names: SStr = set()
+    undefined: SStr = set()
+    for item in items:
+        if item in IP_NAMES_:
+            names.add(item)
+            continue
+        if item in IP_ALIASES:
+            names.add(item)
+            continue
+        undefined.add(item)
+    return names, undefined
+
+
+def _split_numbers_invalid(items: SInt) -> Tuple[SInt, SStr]:
+    """Splits `items` to the valid protocol numbers and invalid numbers
+    :param items: Combo of valid and invalid numbers
+    :return: valid numbers, invalid numbers
+    """
+    numbers: SInt = set()
+    invalid: SInt = set()
+    for item in items:
+        if item in ALL_NUMBERS_L:
+            numbers.add(item)
+        else:
+            invalid.add(item)
+    invalid_: SStr = {str(i) for i in invalid}
+    return numbers, invalid_
+
+
+ALL_PAIRS = all_pairs()

@@ -1,136 +1,401 @@
 netports
 ========
 
-A collection of Python objects and functions for managing ranges of VLANs, TCP/UDP ports, interfaces.
-Recommended for scripting related to telecommunications networks.
+A collection of Python objects and functions for managing ranges of VLANs,
+TCP/UDP ports, IP protocol numbers, interfaces.
+Recommended for scripting in telecommunications networks.
 
 .. contents::
 
 .. sectnum::
 
 
-
 Installation
 ------------
 
-Install the package by running
+Install the package from pypi.org release
 
 .. code:: bash
 
     pip install netports
 
-or
+or install the package from github.com release
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.5.1.tar.gz
+
+or install the package from github.com repository
+
+.. code:: bash
+
+    pip install git+https://github.com/vladimirs-git/netports@0.5.1
 
 
+TCP/UDP ports
+-------------
 
-Objects
--------
 
-Interface4(line)
-................
+itcp(items, verbose, all)
+.........................
 
-**Interface4** - An object of interface name, that can contain up to 4 indexes.
-Useful for sorting interface strings by index (not by alphabetic).
+**Integer TCP/UDP Ports** - Sorting TCP/UDP ports and removing duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-line         	*str*						Interface name that can contain up to 4 indexes
-splitter		*Iterable[str]*				Separator characters between indexes. By default ",./:"
+items         	*str, List[int], List[str]*	Range of TCP/UDP ports, can be unsorted and with duplicates
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default False
+all				*bool*						True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False
 =============== =========================== ============================================================================
 
-Attributes demonstration
+Return
+	*List[int]* of unique sorted TCP/UDP ports
+Raises
+	*ValueError* if TCP/UDP ports are outside valid range 1...65535
 
 .. code:: python
 
-	from netports import Interface4
+	import netports
 
-	interface = Interface4("interface Ethernet1/2/3.4")
-	assert interface.line == "interface Ethernet1/2/3.4"
-	assert interface.name == "Ethernet1/2/3.4"
-	assert interface.id0 == "interface Ethernet"
-	assert interface.id1 == 1
-	assert interface.id2 == 2
-	assert interface.id3 == 3
-	assert interface.id4 == 4
+	ports = netports.itcp("80,20,21-22")
+	print(ports)
+	# [20, 21, 22, 80]
 
-Interface with custom splitter between indexes. Splitter is ignored when comparing
+	ports = netports.itcp(["20-22", "80", 22])
+	print(ports)
+	# [20, 21, 22, 80]
 
-.. code:: python
+	ports = netports.itcp(all=True)
+	print(ports)
+	# [1, 2, ..., 65535]
 
-	from netports import Interface4
+	try:
+		netports.itcp("65536")
+	except ValueError as ex:
+		print(ex)
+	# invalid_port=[65536], expected in range 1...65535
 
-	interface1 = Interface4("interface Ethernet1/2/3.4")
-	interface2 = Interface4("interface Ethernet1-2-3+4", splitter="-+")
-	assert interface1 == interface2
 
-Sorting by indexes
+stcp(items, verbose, all)
+.........................
 
-.. code:: python
+**String TCP/UDP ports** - Sorting TCP/UDP ports and removing duplicates.
 
-	from netports import Interface4
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of TCP/UDP ports, can be unsorted and with duplicates
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1] (reduces RAM usage), by default False
+all				*bool*						True - Returns all TCP/UDP ports: "1-65535"
+=============== =========================== ============================================================================
 
-	lines = [
-		"interface Ethernet1/1/1.1",
-		"interface Ethernet10/1/1.1",
-		"interface Ethernet2/1/1.1",
-		"interface Ethernet1/2/1.1",
-		"interface Ethernet1/20/1.1",
-		"interface Ethernet1/3/1.1",
-	]
-
-	# Alphabetical sorting. This approach is not convenient in scripting
-	for line in sorted(lines):
-		print(line)
-	print()
-	# interface Ethernet1/1/1.1
-	# interface Ethernet1/2/1.1
-	# interface Ethernet1/20/1.1
-	# interface Ethernet1/3/1.1
-	# interface Ethernet10/1/1.1
-	# interface Ethernet2/1/1.1
-
-	# Sorting by indexes. This approach is useful in scripting
-	interfaces = [Interface4(line) for line in lines]
-	for interface in sorted(interfaces):
-		print(interface)
-
-	# interface Ethernet1/1/1.1
-	# interface Ethernet1/2/1.1
-	# interface Ethernet1/3/1.1
-	# interface Ethernet1/20/1.1
-	# interface Ethernet2/1/1.1
-	# interface Ethernet10/1/1.1
-
-Grouping interfaces by 3rd index
+Return
+	*str* of unique sorted TCP/UDP ports
+Raises
+	*ValueError* if TCP/UDP ports are outside valid range 1...65535
 
 .. code:: python
 
-	from netports import Interface4
+	import netports
 
-	lines = [
-		"interface Ethernet101/1/1",
-		"interface Ethernet101/1/2",
-		"interface Ethernet101/1/3",
-		"interface Ethernet102/1/1",
-		"interface Ethernet102/1/2",
-		"interface Ethernet102/1/3",
-	]
-	interfaces = [Interface4(line) for line in lines]
-	interfaces.sort(key=lambda o: o.id3)
-	for interface in interfaces:
-		print(interface)
+	ports = netports.stcp("80,20-21,80")
+	print(ports)
+	# 20-21,80
 
-	# interface Ethernet101/1/1
-	# interface Ethernet102/1/1
-	# interface Ethernet101/1/2
-	# interface Ethernet102/1/2
-	# interface Ethernet101/1/3
-	# interface Ethernet102/1/3
+	ports = netports.stcp(["80", "20-21", "20"])
+	print(ports)
+	# 20-21,80
+
+	ports = netports.stcp([80, 80, 20, 21])
+	print(ports)
+	# 20-21,80
+
+	ports = netports.stcp(all=True)
+	print(ports)
+	# 1-65535
+
+	try:
+		netports.stcp("65536")
+	except ValueError as ex:
+		print(ex)
+	# invalid_port=[65536], expected in range 1...65535
+
+
+VLAN IDs
+--------
+
+
+ivlan(items, verbose, all, splitter, range_splitter, platform)
+..............................................................
+
+**Integer VLAN IDs** - Sorting VLANs and removing duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of VLANs, can be unsorted and with duplicates
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default False
+all				*bool*						True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
+splitter     	*str*						Separator character between items, by default ","
+range_splitter	*str*						Separator between min and max numbers in range, by default "-"
+platform		*str*						Set ``splitter`` and ``range_splitter`` to platform specific values. Defined: "cisco" (Cisco IOS), "hpe" (Hewlett Packard Enterprise).
+=============== =========================== ============================================================================
+
+Return
+	*List[int]* of unique sorted VLANs
+Raises
+	*ValueError* if VLANs are outside valid range 1...4094
+
+.. code:: python
+
+	import re
+	import netports
+
+	config = """
+	interface FastEthernet0/1
+	  switchport mode trunk
+	  switchport trunk allowed vlan 1,3-5
+	  end
+	"""
+	trunk = re.findall("vlan(.+)", config)[0]  # " 1,3-5"
+	vlans = netports.ivlan(trunk)
+	print(vlans)
+	# [1, 3, 4, 5]
+
+	vlans = netports.ivlan(["1", "3-4", "4-5"])
+	print(vlans)
+	# [1, 3, 4, 5]
+
+	ports = netports.ivlan(all=True)
+	print(ports)
+	# [1, 2, ..., 4094]
+
+	vlans = netports.ivlan("1 3 to 5", platform="hpe")
+	print(vlans)
+	# [1, 3, 4, 5]
+
+	vlans = netports.ivlan("1 3 to 5", splitter=" ", range_splitter=" to ")
+	print(vlans)
+	# [1, 3, 4, 5]
+
+	try:
+		netports.ivlan("4095")
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
+
+
+svlan(items, verbose, all, splitter, range_splitter, platform)
+..............................................................
+
+**String VLAN IDs** - Sorting VLANs and removing duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of VLANs, can be unsorted and with duplicates
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1] (reduces RAM usage), by default False
+all				*bool*						True - Returns all VLAN IDs: "1-4094"
+splitter     	*str*						Separator character between items, by default ","
+range_splitter	*str*						Separator between min and max numbers in range, by default "-"
+platform		*str*						Set ``splitter`` and ``range_splitter`` to platform specific values. Defined: "cisco" (Cisco IOS), "hpe" (Hewlett Packard Enterprise).
+=============== =========================== ============================================================================
+
+Return
+	*str* of unique sorted VLANs
+Raises
+	*ValueError* if VLANs are outside valid range 1...4094
+
+.. code:: python
+
+	import netports
+
+	vlans = netports.svlan("3-4,1,4-5")
+	print(vlans)
+	# 1,3-5
+
+	vlans = netports.svlan(["1", "3-5", "3-4", "4-5"])
+	print(vlans)
+	# 1,3-5
+
+	vlans = netports.svlan([1, 3, 4, 5])
+	print(vlans)
+	# 1,3-5
+
+	ports = netports.svlan(all=True)
+	print(ports)
+	# 1-4094
+
+	vlans = netports.svlan("1 3 to 5", platform="hpe")
+	print(vlans)
+	# 1 3 to 5
+
+	vlans = netports.svlan("1 3 to 5", splitter=" ", range_splitter=" to ")
+	print(vlans)
+	# 1 3 to 5
+
+	try:
+		netports.svlan("4095")
+	except ValueError as ex:
+		print(ex)
+	# invalid_vlan=[4095], expected in range 1...4094
+
+
+IP protocols
+------------
+
+
+IP_NAMES, IP_NUMBERS
+....................
+
+Dictionary with known IP protocol names and IDs listed in https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
+
+
+.. code:: python
+
+	from pprint import pprint
+	import netports
+
+	# IP_NAMES
+	pprint(netports.IP_NAMES)
+	#  'icmp': {'description': 'Internet Control Message Protocol, RFC 792',
+	#           'name': 'icmp',
+	#           'number': 1},
+	#  'tcp': {'description': 'Transmission Control Protocol, RFC 793',
+	#          'name': 'tcp',
+	#          'number': 6},
+	# ...
+
+	# IP_NUMBERS
+	pprint(netports.IP_NUMBERS)
+	# {0: {'description': 'IPv6 Hop-by-Hop Option, RFC 8200',
+	#      'name': 'hopopt',
+	#      'number': 0},
+	#  6: {'description': 'Transmission Control Protocol, RFC 793',
+	#      'name': 'tcp',
+	#      'number': 6},
+	# ...
+
+
+iip(items, verbose, all, strict)
+................................
+
+**Integer IP protocol numbers** - Sorts numbers and removes duplicates.
+
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol numbers, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
+strict          *bool*                      True - Raises ValueError, if the protocol is unknown, False - Skips unknown protocols, by default - True
+all				*bool*						True - Return all IP protocol numbers: [0, 1, ..., 255]
+=============== =========================== ============================================================================
+
+Return
+	*List[int]* of unique sorted IP protocol numbers
+Raises
+	*ValueError* if IP protocol numbers are outside valid range 0...255
+
+.. code:: python
+
+	import netports
+
+	ports = netports.iip("icmp,tcp,7,255")
+	print(ports)
+	# [1, 6, 7, 255]
+
+	ports = netports.iip(["icmp", "tcp,1", "6-7", 255])
+	print(ports)
+	# [1, 6, 7, 255]
+
+	ports = netports.iip(all=True)
+	print(ports)
+	# [0, 1, ..., 255]
+
+	try:
+		netports.iip("265")
+	except ValueError as ex:
+		print(ex)
+	# invalid_ip_numbers=[265], expected in range 0...255
+
+
+sip(items, verbose, all)
+........................
+
+**String IP protocol numbers** - Sorts numbers and removes duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol numbers, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
+strict          *bool*                      True - Raises ValueError, if the protocol is unknown, False - Skips unknown protocols, by default - True
+all				*bool*						True - Return all IP protocol numbers: "0-255"
+=============== =========================== ============================================================================
+
+Return
+	*str* of unique sorted IP protocol numbers
+Raises
+	*ValueError* if IP protocol numbers are outside valid range 0...255
+
+.. code:: python
+
+	import netports
+
+	ports = netports.sip("icmp,tcp,7,255")
+	print(ports)
+	# 1,6-7,255
+
+	ports = netports.sip(["icmp", "icmp,tcp,1", "6-7", 255])
+	print(ports)
+	# 1,6-7,255
+
+	ports = netports.sip([255, 255, 1, 6, 7])
+	print(ports)
+	# 1,6-7,255
+
+	ports = netports.sip(all=True)
+	print(ports)
+	# 0-255
+
+	try:
+		netports.sip("265")
+	except ValueError as ex:
+		print(ex)
+	# invalid_ip_numbers=[265], expected in range 0...255
+
+
+ip_pairs(items, strict)
+.......................
+
+**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates.
+
+=============== =========================== ============================================================================
+Parameter		Type						Description
+=============== =========================== ============================================================================
+items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1] (reduces RAM usage), by default False
+=============== =========================== ============================================================================
+
+Return
+	*List[Tuple[int, str]]* Pairs of IP protocol number and name,
+	 *List[str]* Undefined protocol names and invalid numbers
+
+.. code:: python
+
+	import netports
+
+	pairs, invalid = netports.ip_pairs("1,tcp,255,256,typo")
+	print("pairs", pairs)
+	print("invalid", invalid)
+	# pairs [(1, 'icmp'), (6, 'tcp'), (255, '')]
+	# invalid ['256', 'typo']
+
+
+Objects
+-------
 
 
 Range(items, splitter, range_splitter, strict)
@@ -158,7 +423,7 @@ Attributes demonstration
 	range_o = Range("1,3-5")
 	assert range_o.line == "1,3-5"
 	assert str(range_o) == "1,3-5"
-	assert range_o.numbers == [1, 3, 4, 5]
+	assert range_o.numbers() == [1, 3, 4, 5]
 	assert list(range_o) == [1, 3, 4, 5]
 	assert Range("1,3-5") == Range([1, 3, 4, 5])
 
@@ -174,7 +439,7 @@ Attributes demonstration
 	assert range_o.line == "1,3-5"
 
 
-Sorting numbers and removing duplicates
+Sorts numbers and removes duplicates
 
 .. code:: python
 
@@ -199,14 +464,16 @@ Range with custom splitters
 
 	range_o = Range("1, 3-5, 7-9", splitter=", ")
 	assert range_o.line == "1, 3-5, 7-9"
-	assert range_o.numbers == [1, 3, 4, 5, 7, 8, 9]
+	assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
 
 	range_o = Range("1 3 to 5 7 to 9", splitter=" ", range_splitter=" to ")
 	assert range_o.line == "1 3 to 5 7 to 9"
-	assert range_o.numbers == [1, 3, 4, 5, 7, 8, 9]
+	assert range_o.numbers() == [1, 3, 4, 5, 7, 8, 9]
+
 
 Range operators
 :::::::::::::::
+
 **Range** object implements:
 
 - Arithmetic operators: ``+``, ``-``
@@ -244,6 +511,7 @@ Range("1,3-5")[1:3]             [3, 4]                      Get numbers by slice
 
 Range methods
 :::::::::::::
+
 **Range** object implements most of `set <https://www.w3schools.com/python/python_ref_set.asp>`_
 and `list <https://www.w3schools.com/python/python_ref_list.asp>`_ methods.
 
@@ -322,14 +590,13 @@ update(other)                       Returns *Range* of the union of self *Range*
 	# 1,3-5
 
 
-
 Numbers
 -------
 
 parse_range(line, splitter, range_splitter)
 ...........................................
 
-**Parse Range** - Parses range from line. Removes white spaces considering splitters. Sorting numbers and removing duplicates.
+**Parse Range** - Parses range from line. Removes white spaces considering splitters. Sorts numbers and removes duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
@@ -342,7 +609,7 @@ range_splitter	*str*						Separator between min and max numbers in range, by def
 Return
 	Range *object*
 
-Sorting numbers and removing duplicates
+Sorts numbers and removes duplicates
 
 .. code:: python
 
@@ -351,7 +618,7 @@ Sorting numbers and removing duplicates
 	range_o = netports.parse_range("3\t- 5, 1 , 3-5\t,1\n")
 	print(f"{range_o!r}")
 	print(range_o.line)
-	print(range_o.numbers)
+	print(range_o.numbers())
 	# Range("1,3-5")
 	# 1,3-5
 	# [1, 3, 4, 5]
@@ -365,7 +632,7 @@ Range with custom splitter and range_splitter
 	range_o = netports.parse_range("1 3 to 5 1 3 to 5", splitter=" ", range_splitter=" to ")
 	print(f"{range_o!r}")
 	print(range_o.line)
-	print(range_o.numbers)
+	print(range_o.numbers())
 	# Range("1 3 to 5", splitter=" ", range_splitter=" to ")
 	# 1 3 to 5
 	# [1, 3, 4, 5]
@@ -374,12 +641,12 @@ Range with custom splitter and range_splitter
 inumbers(items, splitter, range_splitter)
 .........................................
 
-**Integer Numbers** - Sorting numbers and removing duplicates.
+**Integer Numbers** - Sorts numbers and removes duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates
+items         	*str, List[int], List[str]*	Range of numbers, can be unsorted and with duplicates
 splitter     	*str*						Separator character between items, by default ","
 range_splitter	*str*						Separator between min and max numbers in range, by default "-"
 =============== =========================== ============================================================================
@@ -419,12 +686,12 @@ Converts unsorted range to *List[int]* with custom splitters
 snumbers(items, splitter, range_splitter)
 .........................................
 
-**String Numbers** - Sorting numbers and removing duplicates.
+**String Numbers** - Sorts numbers and removes duplicates.
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of numbers or *List[int]*, can be unsorted and with duplicates
+items         	*str, List[int], List[str]*	Range of numbers, can be unsorted and with duplicates
 splitter     	*str*						Separator character between items, by default ","
 range_splitter	*str*						Separator between min and max numbers in range, by default "-"
 =============== =========================== ============================================================================
@@ -461,361 +728,102 @@ Converts unsorted range to *str* with custom splitters
 	# 1 3 to 5
 
 
+Interface4(line, splitter)
+..........................
 
-TCP/UDP ports
--------------
-
-
-itcp(items, all)
-................
-
-**Integer TCP/UDP Ports** - Sorting TCP/UDP ports and removing duplicates.
+**Interface4** - An object of interface name, that can contain up to 4 indexes.
+Sorts the interfaces by indexes (not by alphabetic).
 
 =============== =========================== ============================================================================
 Parameter		Type						Description
 =============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates
-all				*bool*						True - Return All TCP/UDP ports: [1, 2, ..., 65535]
+line         	*str*						Interface name that can contain up to 4 indexes
+splitter		*Iterable[str]*				Separator characters between indexes. By default ",./:"
 =============== =========================== ============================================================================
 
-Return
-	*List[int]* of unique sorted TCP/UDP ports
-Raises
-	*ValueError* if TCP/UDP ports are outside valid range 1...65535
+Attributes demonstration
 
 .. code:: python
 
-	import netports
+	from netports import Interface4
 
-	ports = netports.itcp("80,20,21-22")
-	print(ports)
-	# [20, 21, 22, 80]
+	interface = Interface4("interface Ethernet1/2/3.4")
+	assert interface.line == "interface Ethernet1/2/3.4"
+	assert interface.name == "Ethernet1/2/3.4"
+	assert interface.id0 == "interface Ethernet"
+	assert interface.id1 == 1
+	assert interface.id2 == 2
+	assert interface.id3 == 3
+	assert interface.id4 == 4
 
-	ports = netports.itcp(["20-22", "80", 22])
-	print(ports)
-	# [20, 21, 22, 80]
-
-	ports = netports.itcp(all=True)
-	print(ports)
-	# [1, 2, ..., 65535]
-
-	try:
-		netports.itcp("65536")
-	except ValueError as ex:
-		print(ex)
-	# invalid_port=[65536], expected in range 1...65535
-
-
-stcp(items, all)
-................
-
-**String TCP/UDP ports** - Sorting TCP/UDP ports and removing duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of TCP/UDP ports or *List[int]*, can be unsorted and with duplicates
-all				*bool*						True - Return All TCP/UDP ports: "1-65535"
-=============== =========================== ============================================================================
-
-Return
-	*str* of unique sorted TCP/UDP ports
-Raises
-	*ValueError* if TCP/UDP ports are outside valid range 1...65535
+Interface with custom splitter between indexes. Splitter is ignored when comparing
 
 .. code:: python
 
-	import netports
+	from netports import Interface4
 
-	ports = netports.stcp("80,20-21,80")
-	print(ports)
-	# 20-21,80
+	interface1 = Interface4("interface Ethernet1/2/3.4")
+	interface2 = Interface4("interface Ethernet1-2-3+4", splitter="-+")
+	assert interface1 == interface2
 
-	ports = netports.stcp(["80", "20-21", "20"])
-	print(ports)
-	# 20-21,80
-
-	ports = netports.stcp([80, 80, 20, 21])
-	print(ports)
-	# 20-21,80
-
-	ports = netports.stcp(all=True)
-	print(ports)
-	# 1-65535
-
-	try:
-		netports.stcp("65536")
-	except ValueError as ex:
-		print(ex)
-	# invalid_port=[65536], expected in range 1...65535
-
-
-
-VLAN IDs
---------
-
-
-ivlan(items, all, splitter, range_splitter, platform)
-.....................................................
-
-**Integer VLAN IDs** - Sorting VLANs and removing duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates
-all				*bool*						True - Return All VLAN IDs: [1, 2, ..., 4094]
-splitter     	*str*						Separator character between items, by default ","
-range_splitter	*str*						Separator between min and max numbers in range, by default "-"
-platform		*str*						Set ``splitter`` and ``range_splitter`` to platform specific values. Defined: "cisco" (Cisco IOS), "hpe" (Hewlett Packard Enterprise).
-=============== =========================== ============================================================================
-
-Return
-	*List[int]* of unique sorted VLANs
-Raises
-	*ValueError* if VLANs are outside valid range 1...4094
+Sorting by indexes
 
 .. code:: python
 
-	import re
-	import netports
+	from netports import Interface4
 
-	config = """
-	interface FastEthernet0/1
-	  switchport mode trunk
-	  switchport trunk allowed vlan 1,3-5
-	  end
-	"""
-	trunk = re.findall("vlan(.+)", config)[0]  # " 1,3-5"
-	vlans = netports.ivlan(trunk)
-	print(vlans)
-	# [1, 3, 4, 5]
+	lines = [
+		"interface Ethernet1/1/1.1",
+		"interface Ethernet10/1/1.1",
+		"interface Ethernet2/1/1.1",
+		"interface Ethernet1/2/1.1",
+		"interface Ethernet1/20/1.1",
+		"interface Ethernet1/3/1.1",
+	]
 
-	vlans = netports.ivlan(["1", "3-4", "4-5"])
-	print(vlans)
-	# [1, 3, 4, 5]
+	# Alphabetical sorting. This approach is not convenient in scripting
+	for line in sorted(lines):
+		print(line)
+	print()
+	# interface Ethernet1/1/1.1
+	# interface Ethernet1/2/1.1
+	# interface Ethernet1/20/1.1
+	# interface Ethernet1/3/1.1
+	# interface Ethernet10/1/1.1
+	# interface Ethernet2/1/1.1
 
-	ports = netports.ivlan(all=True)
-	print(ports)
-	# [1, 2, ..., 4094]
+	# Sorting by indexes. This approach is useful in scripting
+	interfaces = [Interface4(line) for line in lines]
+	for interface in sorted(interfaces):
+		print(interface)
+	# interface Ethernet1/1/1.1
+	# interface Ethernet1/2/1.1
+	# interface Ethernet1/3/1.1
+	# interface Ethernet1/20/1.1
+	# interface Ethernet2/1/1.1
+	# interface Ethernet10/1/1.1
 
-	vlans = netports.ivlan("1 3 to 5", platform="hpe")
-	print(vlans)
-	# [1, 3, 4, 5]
-
-	vlans = netports.ivlan("1 3 to 5", splitter=" ", range_splitter=" to ")
-	print(vlans)
-	# [1, 3, 4, 5]
-
-	try:
-		netports.ivlan("4095")
-	except ValueError as ex:
-		print(ex)
-	# invalid_vlan=[4095], expected in range 1...4094
-
-
-svlan(items, all, splitter, range_splitter, platform)
-.....................................................
-
-**String VLAN IDs** - Sorting VLANs and removing duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of VLANs or *List[int]*, can be unsorted and with duplicates
-all				*bool*						True - Return All VLAN IDs: "1-4094"
-splitter     	*str*						Separator character between items, by default ","
-range_splitter	*str*						Separator between min and max numbers in range, by default "-"
-platform		*str*						Set ``splitter`` and ``range_splitter`` to platform specific values. Defined: "cisco" (Cisco IOS), "hpe" (Hewlett Packard Enterprise).
-=============== =========================== ============================================================================
-
-Return
-	*str* of unique sorted VLANs
-Raises
-	*ValueError* if VLANs are outside valid range 1...4094
+Grouping interfaces by 3rd index
 
 .. code:: python
 
-	import netports
+	from netports import Interface4
 
-	vlans = netports.svlan("3-4,1,4-5")
-	print(vlans)
-	# 1,3-5
-
-	vlans = netports.svlan(["1", "3-5", "3-4", "4-5"])
-	print(vlans)
-	# 1,3-5
-
-	vlans = netports.svlan([1, 3, 4, 5])
-	print(vlans)
-	# 1,3-5
-
-	ports = netports.svlan(all=True)
-	print(ports)
-	# 1-4094
-
-	vlans = netports.svlan("1 3 to 5", platform="hpe")
-	print(vlans)
-	# 1 3 to 5
-
-	vlans = netports.svlan("1 3 to 5", splitter=" ", range_splitter=" to ")
-	print(vlans)
-	# 1 3 to 5
-
-	try:
-		netports.svlan("4095")
-	except ValueError as ex:
-		print(ex)
-	# invalid_vlan=[4095], expected in range 1...4094
-
-
-
-IP protocols
-------------
-
-
-IP_NAMES, IP_PORTS
-..................
-
-Dictionary with known IP protocol names and ports listed in https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
-
-
-.. code:: python
-
-	import netports
-
-	print(netports.IP_NAMES)
-	# {"icmp": {"number": 1, "name": "icmp", "description": "Internet Control Message Protocol"},
-	#  "tcp": {"number": 6, "name": "tcp", "description": "Transmission Control Protocol"},
-	#  "udp": {"number": 17, "name": "udp", "description": "User Datagram Protocol"},
-	#  ...
-	# }
-
-	print(netports.IP_PORTS)
-	# {1: {"number": 1, "name": "icmp", "description": "Internet Control Message Protocol"},
-	#  6: {"number": 6, "name": "tcp", "description": "Transmission Control Protocol"},
-	#  17: {"number": 17, "name": "udp", "description": "User Datagram Protocol"},
-	#  ...
-	# }
-
-
-iip(items, all)
-...............
-
-**Integer IP protocol numbers** - Sorting numbers and removing duplicates.
-
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
-all				*bool*						True - Return all IP protocol numbers: [0, 1, ..., 255]
-=============== =========================== ============================================================================
-
-Return
-	*List[int]* of unique sorted IP protocol numbers
-Raises
-	*ValueError* if IP protocol numbers are outside valid range 0...255
-
-.. code:: python
-
-	import netports
-
-	ports = netports.iip("icmp,tcp,7,255")
-	print(ports)
-	# [1, 6, 7, 255]
-
-	ports = netports.iip(["icmp", "tcp,1", "6-7", 255])
-	print(ports)
-	# [1, 6, 7, 255]
-
-	ports = netports.iip(all=True)
-	print(ports)
-	# [0, 1, ..., 255]
-
-	try:
-		netports.iip("265")
-	except ValueError as ex:
-		print(ex)
-	# invalid_ip_numbers=[265], expected in range 0...255
-
-
-nip(items, strict)
-..................
-
-**IP protocol Names and Numbers** - Splits items to names and numbers and removes duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of IP protocol names and numbers, can be unsorted and with duplicates
-strict			*bool*						True - Raise ValueError, if in line is invalid item. False - Return output with invalid items. By default - True.
-=============== =========================== ============================================================================
-
-Return
-	*Tuple[List[str], List[int]]* Lists of IP protocol Names and IP protocol Numbers
-Raises
-	*ValueError* If IP protocol number are outside valid range 0...255, or IP protocol name is unknown
-
-.. code:: python
-
-	import netports
-
-	ports = netports.nip("icmp,tcp,7,255")
-	print(ports)
-	# (["icmp", "tcp"], [7, 255])
-
-	ports = netports.nip(["icmp", "tcp", 7, 255])
-	print(ports)
-	# (["icmp", "tcp"], [7, 255])
-
-	try:
-		netports.nip("icmp,typo")
-	except ValueError as ex:
-		print(ex)
-	# invalid_ip_names=["typo"]
-
-
-sip(items, all)
-...............
-
-**String IP protocol numbers** - Sorting numbers and removing duplicates.
-
-=============== =========================== ============================================================================
-Parameter		Type						Description
-=============== =========================== ============================================================================
-items         	*str, List[int], List[str]*	Range of IP protocol numbers or *List[int]*, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
-all				*bool*						True - Return all IP protocol numbers: "0-255"
-=============== =========================== ============================================================================
-
-Return
-	*str* of unique sorted IP protocol numbers
-Raises
-	*ValueError* if IP protocol numbers are outside valid range 0...255
-
-.. code:: python
-
-	import netports
-
-	ports = netports.sip("icmp,tcp,7,255")
-	print(ports)
-	# 1,6-7,255
-
-	ports = netports.sip(["icmp", "icmp,tcp,1", "6-7", 255])
-	print(ports)
-	# 1,6-7,255
-
-	ports = netports.sip([255, 255, 1, 6, 7])
-	print(ports)
-	# 1,6-7,255
-
-	ports = netports.sip(all=True)
-	print(ports)
-	# 0-255
-
-	try:
-		netports.sip("265")
-	except ValueError as ex:
-		print(ex)
-	# invalid_ip_numbers=[265], expected in range 0...255
-
+	lines = [
+		"interface Ethernet101/1/1",
+		"interface Ethernet101/1/2",
+		"interface Ethernet101/1/3",
+		"interface Ethernet102/1/1",
+		"interface Ethernet102/1/2",
+		"interface Ethernet102/1/3",
+	]
+	interfaces = [Interface4(line) for line in lines]
+	interfaces.sort(key=lambda o: o.id3)
+	for interface in interfaces:
+		print(interface)
+	# interface Ethernet101/1/1
+	# interface Ethernet102/1/1
+	# interface Ethernet101/1/2
+	# interface Ethernet102/1/2
+	# interface Ethernet101/1/3
+	# interface Ethernet102/1/3
