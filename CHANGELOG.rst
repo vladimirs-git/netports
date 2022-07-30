@@ -4,7 +4,7 @@
 CHANGELOG
 =========
 
-0.5.1 (2022-06-20)
+0.5.2 (2022-07-30)
 ------------------
 * [new] netports.ip_pairs(items, strict)
 * [chang] param is_verbose, by default True
