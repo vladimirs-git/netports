@@ -4,6 +4,13 @@
 CHANGELOG
 =========
 
+0.6.0 (2022-11-01)
+------------------
+* [rename] Interface4 > Intf
+* [new] IntfGM
+* [new] pyproject.toml
+
+
 0.5.2 (2022-07-30)
 ------------------
 * [new] netports.ip_pairs(items, strict)

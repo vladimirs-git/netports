@@ -21,7 +21,7 @@ except ValueError as ex:
 range_o = Range("1,3-5,typo", strict=False)
 assert range_o.line == "1,3-5"
 
-# Sorts numbers and removes duplicates
+# Sort numbers and removes duplicates
 ranges1 = Range("3-5,1")
 print(ranges1)
 # 1,3-5

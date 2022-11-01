@@ -1,6 +1,7 @@
 """netports"""
 
-from netports.interface4 import Interface4
+from netports.intf import Intf
+from netports.intf_gm import IntfGM, intfrange
 from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
 from netports.item import Item
 from netports.ports import inumbers, parse_range, snumbers

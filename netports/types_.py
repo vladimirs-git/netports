@@ -1,16 +1,8 @@
 """Typing"""
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 DAny = Dict[str, Any]
+DStr = Dict[str, str]
 DiAny = Dict[int, Any]
 IInt = Iterable[int]
 IStr = Iterable[str]
@@ -20,11 +12,14 @@ LStr = List[str]
 OInt = Optional[int]
 SInt = Set[int]
 SStr = Set[str]
-StrInt = Union[int, str]
+StrInt = Union[str, int]
 TIntStr = Tuple[int, str]
 
+DSStr = Dict[str, SStr]
 IStrInt = Union[IStr, IInt]
 LTIntStr = List[TIntStr]
 StrIInt = Union[str, int, IInt]
 T2SInt = Tuple[SInt, SInt]
+T2Str = Tuple[str, str]
+T3Str = Tuple[str, str, str]
 T5Str = Tuple[str, str, str, str, str]

@@ -12,14 +12,14 @@ class Item:
     def __init__(self, line: str):
         """Item, element of *Range*
         :param line: Item in *str* format
+        :type line: str
 
         :example:
-            Item("1-3")
-        result:
-            self.line == "1-3"
-            self.min == 1
-            self.max == 3
-            self.range == range(1, 3)
+            item = Item("1-3")
+            item.line == "1-3"
+            item.min == 1
+            item.max == 3
+            item.range == range(1, 3)
         """
         self.line = line
 

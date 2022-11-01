@@ -470,27 +470,31 @@ ALL_NUMBERS_S = f"{MIN_NUMBER}-{MAX_NUMBER}"
 
 # noinspection PyIncorrectDocstring
 def iip(items: Any = "", **kwargs) -> LInt:
-    """**Integer IP protocol numbers** - Sorts numbers and removes duplicates
+    """Sorting IP protocol numbers and removing duplicates
     :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
-        *str, List[int], List[str]*, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
-    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
-                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
-                         by default False
-    :param bool strict: True - Raises ValueError, if the protocol is unknown,
-                        False - Skips unknown protocols,
-                        by default - True
-    :param bool all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+        "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
+    :type items: str, List[int], List[str]
+
+    :param verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                    False - all protocol numbers in brief mode: [-1] to reduces RAM usage (default)
+    :type verbose: bool
+
+    :param strict: True - Raises ValueError, if the protocol is unknown (default)
+                   False - Skips unknown protocols
+
+    :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
+    :type all: bool
 
     :return: *List[int]* of unique sorted IP protocol numbers
+    :rtype: List[int]
+
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
-    :example: Converts mix of ip protocol names and numbers to numbers
-        items: "icmp,tcp,7,255"
-        return: [1, 6, 7, 255]
+    :example: Converts mix of ip protocol names and numbers to the numbers
+        iip("icmp,tcp,7,255") -> [1, 6, 7, 255]
 
     :example: Converts ip to full range of ip protocol numbers
-        items: "ip"
-        return: [0, 1, ... 254, 255]
+        iip("ip") -> [0, 1, ... 254, 255]
     """
     if h.is_all(**kwargs):
         if h.is_brief(**kwargs):
@@ -525,22 +529,29 @@ def iip(items: Any = "", **kwargs) -> LInt:
 
 # noinspection PyIncorrectDocstring
 def sip(items: Any = "", **kwargs) -> str:
-    """**String IP protocol numbers** - Sorts numbers and removes duplicates
+    """Soring string IP protocol numbers and removing duplicates
     :param items: Range of IP protocol numbers, can be unsorted and with duplicates,
-        *str, List[int], List[str]*, "ip" - mean all numbers in range 0...255
-    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
-                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
-                         by default False
-    :param bool strict: True - Raises ValueError, if the protocol is unknown,
-                        False - Skips unknown protocols,
-                        by default - True
-    :param bool all: True - Return all IP protocol numbers: "0-255"
+        "ip" - mean all numbers in range 0...255
+    :type items: str, List[int], List[str]
+
+    :param verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                    False - all protocol numbers in brief mode: [-1], to reduces RAM usage (default)
+    :type verbose: bool
+
+    :param strict: True - Raises ValueError, if the protocol is unknown (default),
+                   False - Skips unknown protocols
+    :type strict: bool
+
+    :param all: True - Return all IP protocol numbers: "0-255"
+    :type all: bool
+
     :return: *str* of unique sorted IP protocol numbers
+    :rtype: str
+
     :raises ValueError: If IP protocol numbers are outside valid range 0...255
 
     :example:
-        items: ["icmp", "tcp", "7", 255]
-        return: "1,6-7,255"
+        sip(["icmp", "tcp", "7", 255]) -> "1,6-7,255"
     """
     if h.is_all(**kwargs):
         return ALL_NUMBERS_S
@@ -557,18 +568,21 @@ def sip(items: Any = "", **kwargs) -> str:
 
 # noinspection PyIncorrectDocstring
 def ip_pairs(items: Any, **kwargs) -> Tuple[LTIntStr, LStr]:
-    """**IP protocol Pairs (number, name), Undefined** - Splits items to number-name pairs and
-    undefined-invalid protocols
+    """Splits items to IP protocol Number, Name and undefined-invalid protocols
     :param items: Range of IP protocols, can be unsorted and with duplicates
-    :param bool verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
-                         False - all protocol numbers in brief mode: [-1] (reduces RAM usage),
-                         by default False
+    :type items: str, List[int], List[str]
+
+    :param verbose: True - all protocol numbers in verbose mode: [0, 1, ..., 255],
+                    False - all protocol numbers in brief mode: [-1], to reduces RAM usage (default)
+    :type verbose: bool
+
     :return: *List[Tuple[int, str]]* Pairs of IP protocol number and name,
              *List[str]* Undefined protocol names and invalid numbers
+    :rtype: Tuple[List[Tuple[int, str]], List[str]]
 
     :example:
-        items: "tcp,1,typo,256" or ["tcp", 1, "typo", 256]
-        return: [(1, "icmp"), (6, "tcp")], ["256", "typo"]
+        ip_pairs("tcp,1,typo,256") -> [(1, "icmp"), (6, "tcp")], ["256", "typo"]
+        ip_pairs(["tcp", 1, "typo", 256]) -> [(1, "icmp"), (6, "tcp")], ["256", "typo"]
     """
     items_: LStr = [s.lower() for s in h.split(items)]
     if "ip" in items_:

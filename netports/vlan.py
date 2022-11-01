@@ -16,26 +16,37 @@ ALL_VLANS_S = f"{MIN_VLAN}-{MAX_VLAN}"
 
 # noinspection PyIncorrectDocstring
 def ivlan(items: Any = "", **kwargs) -> LInt:
-    """**Integer VLAN IDs** - Sorting VLANs and removing duplicates
+    """Sorting integer VLAN IDs and removing duplicates
     :param items: Range of VLANs, can be unsorted and with duplicates,
-        *str, List[int], List[str]*
-    :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
-                         False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
-                         by default False
-    :param bool all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
-    :param splitter: Separator character between items, by default ","
-    :param range_splitter: Separator between min and max numbers in range, by default "-"
+    :type items: str, List[int], List[str]
+
+    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                    False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
+    :type verbose: bool
+
+    :param all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
+    :type all: bool
+
+    :param splitter: Separator character between items (default ",")
+    :type splitter: str
+
+    :param range_splitter: Separator between min and max numbers in range (default "-")
+    :type range_splitter: str
+
     :param platform: Set `splitter` and `range_splitter` to platform specific values
         platform    splitter    range_splitter  description
         ==========  ==========  ==============  ==========================
         "cisco"     ","         "-"             Cisco IOS
         "hpe"       " "         " to "          Hewlett Packard Enterprise
+    :type platform: str
+
     :return: *List[int]* of unique sorted VLANs
+    :rtype: List[int]
+
     :raises ValueError: if VLANs are outside valid range 1...4094
 
     :example:
-        items: "1,3-5"
-        return: [1, 3, 4, 5]
+        ivlan("1,3-5") -> [1, 3, 4, 5]
     """
     if h.is_all(**kwargs):
         if h.is_brief(**kwargs):
@@ -60,26 +71,37 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
 
 # noinspection PyIncorrectDocstring
 def svlan(items: Any = "", **kwargs) -> str:
-    """**String VLAN IDs** - Sorting VLANs and removing duplicates
+    """Sorting string VLANs and removing duplicates
     :param items: Range of VLANs, can be unsorted and with duplicates,
-        *str, List[int], List[str]*
-    :param bool verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
-                         False - all VLAN IDs in brief mode: [-1] (reduces RAM usage),
-                         by default False
-    :param bool all: True - Returns all VLAN IDs: "1-4094"
-    :param splitter: Separator character between items, by default ","
-    :param range_splitter: Separator between min and max numbers in range, by default "-"
+    :type items str, List[int], List[str]
+
+    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                    False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
+    :type verbose: bool
+
+    :param all: True - Returns all VLAN IDs: "1-4094"
+    :type all: bool
+
+    :param splitter: Separator character between items (default ",")
+    :type splitter: str
+
+    :param range_splitter: Separator between min and max numbers in range (default "-")
+    :type range_splitter: str
+
     :param platform: Set `splitter` and `range_splitter` to platform specific values
         platform    splitter    range_splitter  description
         ==========  ==========  ==============  ==========================
         "cisco"     ","         "-"             Cisco IOS
         "hpe"       " "         " to "          Hewlett Packard Enterprise
+    :type platform: str
+
     :return: *str* of unique sorted VLANs
+    :rtype: str
+
     :raises ValueError: if VLANs are outside valid range 1...4094
 
     :example:
-        items: [1, 3, 4, 5]
-        return: "1,3-5"
+        svlan([1, 3, 4, 5]) -> "1,3-5"
     """
     kwargs = _update_splitters(**kwargs)
     if h.is_all(**kwargs):

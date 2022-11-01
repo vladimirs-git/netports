@@ -8,6 +8,62 @@ from netports import helpers as h
 class Test(unittest.TestCase):
     """unittest helpers.py"""
 
+    # ============================= str ==============================
+
+    def test_valid__join(self):
+        """join()"""
+        for items, req in [
+            ([], ""),
+            (["0", "1"], "0,1"),
+            ([0, 1], "0,1"),
+            ([[1]], "[1]"),
+        ]:
+            result = h.join(items=items)
+            self.assertEqual(result, req, msg=f"{items=}")
+
+    def test_valid__findall1(self):
+        """helpers.findall1()"""
+        for pattern, string, req in [
+            ("", "abcde", ""),
+            ("typo", "abcde", ""),
+            ("(typo)", "abcde", ""),
+            ("(b)", "abcde", "b"),
+            ("(bc)", "abcde", "bc"),
+            ("(b)(c)", "abcde", "b"),
+        ]:
+            result = h.findall1(pattern=pattern, string=string)
+            self.assertEqual(result, req, msg=f"{pattern=}")
+
+    def test_valid__findall2(self):
+        """helpers.findall2()"""
+        for pattern, string, req in [
+            ("", "abcde", ("", "")),
+            ("typo", "abcde", ("", "")),
+            ("(b)", "abcde", ("", "")),
+            ("(b)(typo)", "abcde", ("", "")),
+            ("(typo)(c)", "abcde", ("", "")),
+            ("(b)(c)", "abcde", ("b", "c")),
+            ("(b)(c)(d)", "abcde", ("b", "c")),
+        ]:
+            result = h.findall2(pattern=pattern, string=string)
+            self.assertEqual(result, req, msg=f"{pattern=}")
+
+    def test_valid__findall3(self):
+        """helpers.findall3()"""
+        for pattern, string, req in [
+            ("", "abcde", ("", "", "")),
+            ("typo", "abcde", ("", "", "")),
+            ("(b)", "abcde", ("", "", "")),
+            ("(b)(c)", "abcde", ("", "", "")),
+            ("(typo)(c)(d)", "abcde", ("", "", "")),
+            ("(b)(typo)(d)", "abcde", ("", "", "")),
+            ("(b)(c)(typo)", "abcde", ("", "", "")),
+            ("(b)(c)(d)", "abcde", ("b", "c", "d")),
+            ("(b)(c)(d)(e)", "abcde", ("b", "c", "d")),
+        ]:
+            result = h.findall3(pattern=pattern, string=string)
+            self.assertEqual(result, req, msg=f"{pattern=}")
+
     # =============================== bool ===============================
 
     def test_valid__is_all(self):
@@ -164,19 +220,6 @@ class Test(unittest.TestCase):
         ]:
             with self.assertRaises(error, msg=f"{error=}"):
                 h.split(items=items)
-
-    # ============================= str ==============================
-
-    def test_valid__join(self):
-        """join()"""
-        for items, req in [
-            ([], ""),
-            (["0", "1"], "0,1"),
-            ([0, 1], "0,1"),
-            ([[1]], "[1]"),
-        ]:
-            result = h.join(items=items)
-            self.assertEqual(result, req, msg=f"{items=}")
 
 
 if __name__ == "__main__":

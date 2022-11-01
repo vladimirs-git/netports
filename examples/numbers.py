@@ -2,7 +2,7 @@
 
 import netports
 
-# Sorts numbers and removes duplicates
+# Sort numbers and removes duplicates
 range_o = netports.parse_range("3\t- 5, 1 , 3-5\t,1\n")
 print(f"{range_o!r}")
 print(range_o.line)

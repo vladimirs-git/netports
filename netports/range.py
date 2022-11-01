@@ -13,17 +13,22 @@ from netports.types_ import LStr, LInt, OInt, IInt, T2SInt, StrInt, StrIInt, ISt
 
 @total_ordering
 class Range:
-    """**Range** - An object that converts items to *object*
-    that represents range as *str* and as *List[int]*"""
+    """An object that represents ports range as *str* and as *List[int]*"""
 
     def __init__(self, items: StrIInt = "", **kwargs):
         """Range
         :param items: Range of numbers. Numbers can be unsorted and duplicated
-            Type: *str*, *List[int]*
-        :param splitter: Separator character between numbers, by default ","
-        :param range_splitter: Separator between min and max digits in range, by default "-"
-        :param strict: True - Raise ValueError, if in line is invalid item
-                       False - Make Range without invalid items, By default - True
+        :type items: str, List[int]
+
+        :param splitter: Separator character between numbers (default ",")
+        :type splitter: str
+
+        :param range_splitter: Separator between min and max digits in range (default "-")
+        :type range_splitter: str
+
+        :param strict: True - Raise ValueError, if in line is invalid item (default)
+                       False - Make Range without invalid items
+        :type strict: bool
         """
         self.splitter = kwargs.get("splitter") or SPLITTER
         self.range_splitter = kwargs.get("range_splitter") or RANGE_SPLITTER
@@ -335,7 +340,7 @@ class Range:
 
     def _numbers_sets(self, other: Range) -> T2SInt:
         """Converts self and other *List[int]* numbers to *Set[int]*
-        :param other: Other Range *object*
+        :param other: Other *Range* object
         :return: Sets of numbers
         """
         if not isinstance(other, Range):
