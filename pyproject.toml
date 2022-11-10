@@ -1,12 +1,12 @@
 [project]
 name = "netports"
-version = "0.6.1"
+version = "0.6.2"
 authors = [{ name="Vladimir Prusakov", email="vladimir.prusakovs@gmail.com" }]
 description = "Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces"
 readme = "README.rst"
 license = { text="MIT" }
 requires-python = ">=3.8"
-keywords = ["interfaces", "ports", "tcp", "network", "telecommunication", "cisco", "ios"]
+keywords = ["networking", "port", "range", "tcp", "udp", "vlan", "ip", "interface"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
