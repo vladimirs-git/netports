@@ -7,6 +7,8 @@ CHANGELOG
 0.6.2 (2022-11-10)
 ------------------
 * [change] pyproject.toml
+* [change] vlan.py check_vlans()
+* [change] tcp.py check_tcp_ports()
 
 
 0.6.1 (2022-11-01)

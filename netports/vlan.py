@@ -56,12 +56,12 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
         if h.is_brief_in_items(items):
             items_ = h.remove_brief_items(items)
             ports = inumbers(items_)
-            _check_vlans(ports)
+            check_vlans(ports)
             return [BRIEF_ALL_I]
 
     kwargs = _update_splitters(**kwargs)
     vlans: LInt = inumbers(items, **kwargs)
-    _check_vlans(vlans)
+    check_vlans(vlans)
 
     if h.is_brief(**kwargs):
         if vlans == ALL_VLANS_L:
@@ -110,25 +110,15 @@ def svlan(items: Any = "", **kwargs) -> str:
         if h.is_brief_in_items(items):
             items_ = ",".join(h.lstr(h.remove_brief_items(items)))
             range_o: Range = parse_range(items_)
-            _check_vlans(range_o.numbers())
+            check_vlans(range_o.numbers())
             return _replace_range_splitter(ALL_VLANS_S, **kwargs)
 
     range_o = parse_range(items, **kwargs)
-    _check_vlans(range_o.numbers())
+    check_vlans(range_o.numbers())
     return str(range_o)
 
 
 # ============================= helpers ==============================
-
-def _check_vlans(items: LInt) -> bool:
-    """Checks VLAN IDs
-    :param items: VLAN IDs
-    :return: True if all items are in the valid VLAN range 1...4094
-    :raises ValueError: If on of item is outside valid range
-    """
-    if invalid_vlan := [i for i in items if i < MIN_VLAN or i > MAX_VLAN]:
-        raise ValueError(f"{invalid_vlan=}, expected in range 1...4094")
-    return True
 
 
 def _replace_range_splitter(item: str, **kwargs) -> str:
@@ -153,3 +143,16 @@ def _update_splitters(**kwargs):
     if platform == "hpe":
         return {**kwargs, **{"splitter": SPLITTER_HPE, "range_splitter": RANGE_SPLITTER_HPE}}
     return kwargs
+
+
+# ============================= functions ==============================
+
+def check_vlans(items: LInt) -> bool:
+    """Checks VLAN IDs
+    :param items: VLAN IDs
+    :return: True if all items are in the valid VLAN range 1...4094
+    :raises ValueError: If on of item is outside valid range
+    """
+    if invalid_vlan := [i for i in items if i < MIN_VLAN or i > MAX_VLAN]:
+        raise ValueError(f"{invalid_vlan=}, expected in range 1...4094")
+    return True

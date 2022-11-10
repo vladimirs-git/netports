@@ -21,7 +21,7 @@ classifiers = [
 "Homepage" = "https://github.com/vladimirs-git/netports"
 "Repository" = "https://github.com/vladimirs-git/netports"
 "Bug Tracker" = "https://github.com/vladimirs-git/netports/issues"
-"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.6.1.tar.gz"
+"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.6.2.tar.gz"
 [tool.setuptools.packages.find]
 include = ["netports"]
 [tool.setuptools.package-data]
