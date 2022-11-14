@@ -10,6 +10,7 @@ CHANGELOG
 * [change] vlan.py check_vlans()
 * [change] tcp.py check_tcp_ports()
 
+
 0.6.1 (2022-11-01)
 ------------------
 * [fix] py.typed

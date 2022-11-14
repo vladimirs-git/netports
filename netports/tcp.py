@@ -44,7 +44,7 @@ def itcp(items: Any = "", **kwargs) -> LInt:
             return [BRIEF_ALL_I]
 
     ports: LInt = inumbers(items)
-    _check_tcp_ports(ports)
+    check_tcp_ports(ports)
 
     if h.is_brief(**kwargs):
         if ports == ALL_PORTS_L:
@@ -79,17 +79,17 @@ def stcp(items: Any = "", **kwargs) -> str:
         if h.is_brief_in_items(items):
             items_ = ",".join(h.lstr(h.remove_brief_items(items)))
             range_o: Range = parse_range(items_)
-            _check_tcp_ports(range_o.numbers())
+            check_tcp_ports(range_o.numbers())
             return ALL_PORTS_S
 
     range_o = parse_range(items)
-    _check_tcp_ports(range_o.numbers())
+    check_tcp_ports(range_o.numbers())
     return str(range_o)
 
 
 # ============================= helpers ==============================
 
-def _check_tcp_ports(items: LInt) -> bool:
+def check_tcp_ports(items: LInt) -> bool:
     """Checks TCP/UDP ports
     :param items: TCP/UDP ports
     :type items: List[int]
