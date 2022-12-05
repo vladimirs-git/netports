@@ -4,6 +4,12 @@
 CHANGELOG
 =========
 
+0.7.0 (2022-12-05)
+------------------
+* [new] Intf.names()
+* [change] Intf.name_short
+
+
 0.6.2 (2022-11-14)
 ------------------
 * [change] pyproject.toml

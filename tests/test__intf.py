@@ -133,6 +133,24 @@ class Test(Helpers):
             intf_o = Intf(**kwargs)
             self._test_attrs(obj=intf_o, req_d=req_d, msg=f"{kwargs=}")
 
+    def test_name_short(self):
+        """Intf.name_short"""
+        for line, req in [
+            ("interface Ethernet1/2/3.4", "Eth1/2/3.4"),
+            ("interface FastEthernet1/2", "Fa1/2"),
+            ("interface fastethernet1/2", "Fa1/2"),
+            ("interface GigabitEthernet1/2", "Gi1/2"),
+            ("interface TenGigabitEthernet1/2", "Te1/2"),
+            ("interface Loopback0", "Lo0"),
+            ("interface Port-channel100", "Po100"),
+            ("interface Tunnel1", "Tu1"),
+            ("interface Tunnel-ip1", "Tu1"),
+            ("interface Vlan1", "Vl1"),
+        ]:
+            obj = Intf(line)
+            result = obj.name_short
+            self.assertEqual(result, req, msg=f"{line=}")
+
     # =========================== methods ============================
 
     def test_last_idx(self):
@@ -150,22 +168,16 @@ class Test(Helpers):
             result = obj.last_idx()
             self.assertEqual(result, req, msg=f"{line=}")
 
-    def test_name_short(self):
+    def test_names(self):
         """Intf.name_short()"""
         for line, req in [
-            ("interface Ethernet1/2/3.4", "Eth1/2/3.4"),
-            ("interface FastEthernet1/2", "Fa1/2"),
-            ("interface fastethernet1/2", "Fa1/2"),
-            ("interface GigabitEthernet1/2", "Gi1/2"),
-            ("interface TenGigabitEthernet1/2", "Te1/2"),
-            ("interface Loopback0", "Lo0"),
-            ("interface Port-channel100", "Po100"),
-            ("interface Tunnel1", "Tu1"),
-            ("interface Tunnel-ip1", "Tu1"),
-            ("interface Vlan1", "Vl1"),
+            ("interface Ethernet1/2/3.4",
+             ["interface Ethernet1/2/3.4", "Ethernet1/2/3.4", "Eth1/2/3.4"]),
+            ("interface Port-channel100",
+             ["interface Port-channel100", "Port-channel100", "Po100"]),
         ]:
             obj = Intf(line)
-            result = obj.name_short()
+            result = obj.names()
             self.assertEqual(result, req, msg=f"{line=}")
 
     def test_valid__parts(self):

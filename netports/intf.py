@@ -2,7 +2,7 @@
 Sorts the interfaces by indexes (not by alphabetic).
 """
 import re
-from functools import total_ordering
+from functools import cached_property, total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
 from netports.intf_name_map import long_to_short_lower
@@ -14,16 +14,17 @@ SPLITTER = ",./:"
 @total_ordering
 class Intf:
     """An object of interface name, that can contain up to 4 indexes.
-Sorts the interfaces by indexes (not by alphabetic).
+    Sorts the interfaces by indexes (not by alphabetic).
     """
 
     def __init__(self, line: str = "", **kwargs):
         """Intf
-        :param line: Interface name that can contain up to 4 indexes
-        :type line: str
+        ::
+            :param line: Interface name that can contain up to 4 indexes
+            :type line: str
 
-        :param splitter: Separator characters between indexes, by default ",./:"
-        :type splitter: str
+            :param splitter: Separator characters between indexes, by default ",./:"
+            :type splitter: str
         """
         self._splitter = str(kwargs.get("splitter") or SPLITTER)
         self._line = self._init_line(line)
@@ -90,91 +91,90 @@ Sorts the interfaces by indexes (not by alphabetic).
     @property
     def id0(self) -> str:
         """Interface name. Line without IDs
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.id0 -> "interface Ethernet"
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.id0 -> "interface Ethernet"
         """
         return self._ids[0]
 
     @property
     def id1(self) -> int:
         """Interface 1st ID
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.id1 -> 1
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.id1 -> 1
         """
         return int(self._ids[1]) if self._ids[1] else 0
 
     @property
     def id2(self) -> int:
         """Interface 2nd ID
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.id2 -> 2
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.id2 -> 2
         """
         return int(self._ids[2]) if self._ids[2] else 0
 
     @property
     def id3(self) -> int:
         """Interface 3rd ID
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.id3 -> 3
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.id3 -> 3
         """
         return int(self._ids[3]) if self._ids[3] else 0
 
     @property
     def id4(self) -> int:
         """Interface 4th ID
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.id4 -> 4
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.id4 -> 4
         """
         return int(self._ids[4]) if self._ids[4] else 0
 
     @property
     def ids(self) -> T5Str:
         """Interface all IDs
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.ids -> "interface Ethernet", "1", "2", "3", "4")
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.ids -> "interface Ethernet", "1", "2", "3", "4")
         """
         return self._ids
 
     @property
     def line(self) -> str:
         """Interface line
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.line -> "interface Ethernet1/2/3.4"
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.line -> "interface Ethernet1/2/3.4"
         """
         return self._line
 
     @property
     def name(self) -> str:
         """Interface name with IDs
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.name -> "Ethernet1/2/3.4"
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.name -> "Ethernet1/2/3.4"
         """
         return re.sub(r"^interface\s+", "", self.line)
 
-    # =========================== methods ============================
-
-    def last_idx(self) -> int:
-        """Index of last ID in interface line
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.last_idx() -> 4
-        """
-        ids = self._ids[1:]
-        return len([s for s in ids if s])
-
-    def name_short(self):
+    @cached_property
+    def name_short(self) -> str:
         """Interface short name with IDs
-        :example:
-            intf = Intf("interface FastEthernet1/2")
-            intf.name_short() -> "Fa1/2"
+        ::
+            :example:
+                intf = Intf("interface FastEthernet1/2")
+                intf.name_short() -> "Fa1/2"
         """
         name = self.name.lower()
         for long, short in long_to_short_lower.items():
@@ -182,11 +182,33 @@ Sorts the interfaces by indexes (not by alphabetic).
                 return name.replace(long, short)
         return name
 
+    # =========================== methods ============================
+
+    def last_idx(self) -> int:
+        """Index of last ID in interface line
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.last_idx() -> 4
+        """
+        ids = self._ids[1:]
+        return len([s for s in ids if s])
+
+    def names(self):
+        """Interface long and short names
+        ::
+            :example:
+                intf = Intf("interface FastEthernet1/2")
+                intf.names() -> ["interface FastEthernet1/2", "FastEthernet1/2", "Fa1/2"]
+        """
+        return [self.line, self.name, self.name_short]
+
     def part(self, idx: int) -> str:
         """Interface part before interested ID
-        :example:
-            intf = Intf("interface Ethernet1/2/3.4")
-            intf.parts(2) -> "Ethernet1/"
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3.4")
+                intf.parts(2) -> "Ethernet1/"
         """
         if idx <= 0:
             return ""
@@ -212,9 +234,10 @@ Sorts the interfaces by indexes (not by alphabetic).
 
     def _get_ids(self) -> T5Str:
         """Splits interface line to name and IDs
-        :example:
-            self.line: "interface Ethernet1/2/3.4"
-            return: ("interface Ethernet", "1", "2", "3", "4")
+        ::
+            :example:
+                self.line: "interface Ethernet1/2/3.4"
+                return: ("interface Ethernet", "1", "2", "3", "4")
         """
         intf = self._line
         for splitter in self._splitter:
@@ -229,9 +252,10 @@ Sorts the interfaces by indexes (not by alphabetic).
 
     def _get_delimiters(self) -> T3Str:
         """Splits interface line to splitters of IDs
-        :example:
-            self.line: "interface Ethernet1/2/3.4"
-            return: ("/, "/", ".")
+        ::
+            :example:
+                self.line: "interface Ethernet1/2/3.4"
+                return: ("/, "/", ".")
         """
         part1 = self._ids[0] + self._ids[1]
         len1 = len(part1)

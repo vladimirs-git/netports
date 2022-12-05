@@ -13,11 +13,12 @@ from netports.types_ import LAny, LStr, StrInt, IStrInt, LInt, T2Str, T3Str
 def findall1(pattern: str, string: str, flags=0) -> str:
     """Parses 1st item of re.findall(). If nothing is found, returns an empty string.
     Group with parentheses in pattern is required
-    :return: Interested substring
-    :example:
-        pattern: "a(b)cde"
-        string: "abcde"
-        return: "b"
+    ::
+        :return: Interested substring
+        :example:
+            pattern: "a(b)cde"
+            string: "abcde"
+            return: "b"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [""])[0]
     if isinstance(result, str):
@@ -30,11 +31,12 @@ def findall1(pattern: str, string: str, flags=0) -> str:
 def findall2(pattern: str, string: str, flags=0) -> T2Str:
     """Parses 2 items of re.findall(). If nothing is found, returns 2 empty strings.
     Group with parentheses in pattern is required
-    :return: Two interested substrings
-    :example:
-        pattern: "a(b)(c)de"
-        string: "abcde"
-        return: "b", "c"
+    ::
+        :return: Two interested substrings
+        :example:
+            pattern: "a(b)(c)de"
+            string: "abcde"
+            return: "b", "c"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "")])[0]
     if isinstance(result, tuple) and len(result) >= 2:
@@ -45,11 +47,12 @@ def findall2(pattern: str, string: str, flags=0) -> T2Str:
 def findall3(pattern: str, string: str, flags=0) -> T3Str:
     """Parses 3 items of re.findall(). If nothing is found, returns 3 empty strings.
     Group with parentheses in pattern is required
-    :return: Three interested substrings
-    :example:
-        pattern: "a(b)(c)(d)e"
-        string: "abcde"
-        return: "b", "c", "d"
+    ::
+        :return: Three interested substrings
+        :example:
+            pattern: "a(b)(c)(d)e"
+            string: "abcde"
+            return: "b", "c", "d"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "", "")])[0]
     if isinstance(result, tuple) and len(result) >= 3:
@@ -76,8 +79,9 @@ def is_brief(**kwargs) -> bool:
 
 def is_brief_in_items(items: Any) -> bool:
     """Checks is "-1" or -1 in `items`, used for verbose=False
-    :param items: *str, int, List[str], List[int]*
-    :return: True - if "-1" or -1 present in `items`
+    ::
+        :param items: *str, int, List[str], List[int]*
+        :return: True - if "-1" or -1 present in `items`
     """
     if isinstance(items, (str, int)):
         items = [items]
@@ -116,9 +120,10 @@ def is_strict(**kwargs) -> bool:
 
 def to_int(number: StrInt) -> int:
     """Converts *str* to *int*
-    :param number: *int* or digit as *str*
-    :return: *int*
-    :raises TypeError: If number is not digit
+    ::
+        :param number: *int* or digit as *str*
+        :return: *int*
+        :raises TypeError: If number is not digit
     """
     if isinstance(number, int):
         return number
@@ -129,9 +134,10 @@ def to_int(number: StrInt) -> int:
 
 def to_lint(numbers: IStrInt) -> LInt:
     """Converts *List[str]* to *List[int]*
-    :param numbers: *List[str]*
-    :return: *List[int]*
-    :raises TypeError: If number is not digit
+    ::
+        :param numbers: *List[str]*
+        :return: *List[int]*
+        :raises TypeError: If number is not digit
     """
     if not isinstance(numbers, (list, set, tuple)):
         raise TypeError(f"{numbers=} {list} expected")
@@ -158,9 +164,10 @@ def lstr(items: Any) -> LStr:
 
 
 def remove_brief_items(items: Any) -> list:
-    """Remove "-1", -1 from `items`
-    :param items: *str, int, List[str], List[int]*
-    :return: Items without "-1", -1
+    """Remove "-1", -1 from items
+    ::
+        :param items: *str, int, List[str], List[int]*
+        :return: Items without "-1", -1
     """
     if isinstance(items, (str, int)):
         items = [items]

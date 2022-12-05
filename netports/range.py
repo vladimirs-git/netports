@@ -17,18 +17,19 @@ class Range:
 
     def __init__(self, items: StrIInt = "", **kwargs):
         """Range
-        :param items: Range of numbers. Numbers can be unsorted and duplicated
-        :type items: str, List[int]
+        ::
+            :param items: Range of numbers. Numbers can be unsorted and duplicated
+            :type items: str, List[int]
 
-        :param splitter: Separator character between numbers (default ",")
-        :type splitter: str
+            :param splitter: Separator character between numbers (default ",")
+            :type splitter: str
 
-        :param range_splitter: Separator between min and max digits in range (default "-")
-        :type range_splitter: str
+            :param range_splitter: Separator between min and max digits in range (default "-")
+            :type range_splitter: str
 
-        :param strict: True - Raise ValueError, if in line is invalid item (default)
-                       False - Make Range without invalid items
-        :type strict: bool
+            :param strict: True - Raise ValueError, if in line is invalid item (default)
+                           False - Make Range without invalid items
+            :type strict: bool
         """
         self.splitter = kwargs.get("splitter") or SPLITTER
         self.range_splitter = kwargs.get("range_splitter") or RANGE_SPLITTER
@@ -187,8 +188,9 @@ class Range:
 
     def index(self, number: StrInt) -> int:
         """Index of number
-        :return: Returns index of number
-        :raises ValueError: if the number is not present in range
+        ::
+            :return: Returns index of number
+            :raises ValueError: if the number is not present in range
         """
         number_ = h.to_int(number)
         return self.numbers().index(number_)
@@ -222,7 +224,8 @@ class Range:
 
     def pop(self) -> int:
         """Removes and returns last number in *Range*
-        :raises IndexError: If list is empty or index is out of range
+        ::
+            :raises IndexError: If list is empty or index is out of range
         """
         numbers = self.numbers()
         number = numbers.pop()
@@ -231,7 +234,8 @@ class Range:
 
     def remove(self, number: StrInt) -> None:
         """Removes the specified number from self *Range*
-        :raises ValueError: If the numbers is not present
+        ::
+            :raises ValueError: If the numbers is not present
         """
         number_ = h.to_int(number)
         numbers = self.numbers()
@@ -302,8 +306,9 @@ class Range:
 
     def _items_to_line(self, items: LItem) -> str:
         """Converts  items *List[Item]* to line *str*
-        :param items: [Item("1"), Item("3-5")]
-        :return: "1,3-5"
+        ::
+            :param items: [Item("1"), Item("3-5")]
+            :return: "1,3-5"
         """
         lines = [o.line.replace("-", self.range_splitter) for o in items]
         line = self.splitter.join(lines)
@@ -312,8 +317,9 @@ class Range:
     @staticmethod
     def _items_wo_duplicates(items: LItem) -> LItem:
         """Removes duplicates digits in items
-        :param items: [Item(1), Item(4-5), Item(3-4), Item(1)]
-        :return: [Item(1), Item(3-5)]
+        ::
+            :param items: [Item(1), Item(4-5), Item(3-4), Item(1)]
+            :return: [Item(1), Item(3-5)]
         """
         items_: LStr = []  # result
         numbers: LInt = sorted({i for o in items for i in o.range})
@@ -340,8 +346,9 @@ class Range:
 
     def _numbers_sets(self, other: Range) -> T2SInt:
         """Converts self and other *List[int]* numbers to *Set[int]*
-        :param other: Other *Range* object
-        :return: Sets of numbers
+        ::
+            :param other: Other *Range* object
+            :return: Sets of numbers
         """
         if not isinstance(other, Range):
             raise TypeError(f"{other=} {Range} expected")
@@ -351,9 +358,10 @@ class Range:
 
     def _create_items(self, items: IStrInt) -> LItem:
         """Converts items *List[str]* to items *List[Items]*, removes duplicates
-        :param items: List of *str* items
-        :return: List of *Item* objects
-        :raises ValueError: If self._strict==True and item is invalid
+        ::
+            :param items: List of *str* items
+            :return: List of *Item* objects
+            :raises ValueError: If self._strict==True and item is invalid
         """
         items_: LItem = []
         items_wo_duplicates = sorted({str(i) for i in items})

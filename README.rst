@@ -34,13 +34,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.6.2.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.7.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.6.2
+    pip install git+https://github.com/vladimirs-git/netports@0.7.0
 
 
 
@@ -57,7 +57,7 @@ Integer TCP/UDP Ports. Sorting TCP/UDP ports and removing duplicates
 Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of TCP/UDP ports, can be unsorted and with duplicates
-verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1], to save RAM (default)
 all             *bool*                      True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False
 =============== =========================== ============================================================================
 
@@ -77,7 +77,7 @@ String TCP/UDP ports. Sorting TCP/UDP ports and removing duplicates
 Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of TCP/UDP ports, can be unsorted and with duplicates
-verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all ports in verbose mode: [1, 2, ..., 65535], False - all ports in brief mode: [-1], to save RAM (default)
 all             *bool*                      True - Returns all TCP/UDP ports: "1-65535"
 =============== =========================== ============================================================================
 
@@ -106,7 +106,7 @@ Sorting integer VLAN IDs and removing duplicates
 Parameter        Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of VLANs, can be unsorted and with duplicates
-verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1], to save RAM (default)
 all             *bool*                      True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
 splitter        *str*                       Separator character between items, by default ","
 range_splitter  *str*                       Separator between min and max numbers in range, by default "-"
@@ -128,7 +128,7 @@ Sorting string VLANs and removing duplicates
 Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of VLANs, can be unsorted and with duplicates
-verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all VLAN IDs in verbose mode: [1, 2, ..., 65535], False - all VLAN IDs in brief mode: [-1], to save RAM (default)
 all             *bool*                      True - Returns all VLAN IDs: "1-4094"
 splitter        *str*                       Separator character between items, by default ","
 range_splitter  *str*                       Separator between min and max numbers in range, by default "-"
@@ -167,7 +167,7 @@ Sorting IP protocol numbers and removing duplicates
 Parameter        Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of IP protocol numbers, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
-verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to save RAM (default)
 strict          *bool*                      True - Raises ValueError, if the protocol is unknown (default), False - Skips unknown protocols
 all             *bool*                      True - Return all IP protocol numbers: [0, 1, ..., 255]
 =============== =========================== ============================================================================
@@ -186,7 +186,7 @@ Soring string IP protocol numbers and removing duplicates
 Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of IP protocol numbers, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
-verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to save RAM (default)
 strict          *bool*                      True - Raises ValueError, if the protocol is unknown (default), False - Skips unknown protocols
 all             *bool*                      True - Return all IP protocol numbers: "0-255"
 =============== =========================== ============================================================================
@@ -206,7 +206,7 @@ Splits items to IP protocol Number, Name and undefined-invalid protocols
 Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of IP protocol names and numbers, can be unsorted and with duplicates
-verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to reduces RAM usage (default)
+verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to save RAM (default)
 =============== =========================== ============================================================================
 
 Return
@@ -417,6 +417,7 @@ id4             int          Interface 4th ID
 ids                          Interface all IDs
 line            str          Interface line
 name            str          Interface name with IDs
+name_short      str          Interface short name with IDs
 =============== ============ =======================================================================
 
 
@@ -426,10 +427,10 @@ last_idx()
 Index of last ID in interface line
 
 
-name_short()
-............
-**name_short()**
-Interface short name with IDs
+names()
+.......
+**names()**
+Interface long and short names
 
 
 part()

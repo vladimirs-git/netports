@@ -17,36 +17,37 @@ ALL_VLANS_S = f"{MIN_VLAN}-{MAX_VLAN}"
 # noinspection PyIncorrectDocstring
 def ivlan(items: Any = "", **kwargs) -> LInt:
     """Sorting integer VLAN IDs and removing duplicates
-    :param items: Range of VLANs, can be unsorted and with duplicates,
-    :type items: str, List[int], List[str]
+    ::
+        :param items: Range of VLANs, can be unsorted and with duplicates,
+        :type items: str, List[int], List[str]
 
-    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
-                    False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
-    :type verbose: bool
+        :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                        False - all VLAN IDs in brief mode: [-1], to save RAM (default)
+        :type verbose: bool
 
-    :param all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
-    :type all: bool
+        :param all: True - Returns all VLAN IDs: [1, 2, ..., 4094], or [-1] for verbose=False
+        :type all: bool
 
-    :param splitter: Separator character between items (default ",")
-    :type splitter: str
+        :param splitter: Separator character between items (default ",")
+        :type splitter: str
 
-    :param range_splitter: Separator between min and max numbers in range (default "-")
-    :type range_splitter: str
+        :param range_splitter: Separator between min and max numbers in range (default "-")
+        :type range_splitter: str
 
-    :param platform: Set `splitter` and `range_splitter` to platform specific values
-        platform    splitter    range_splitter  description
-        ==========  ==========  ==============  ==========================
-        "cisco"     ","         "-"             Cisco IOS
-        "hpe"       " "         " to "          Hewlett Packard Enterprise
-    :type platform: str
+        :param platform: Set `splitter` and `range_splitter` to platform specific values
+            platform    splitter    range_splitter  description
+            ==========  ==========  ==============  ==========================
+            "cisco"     ","         "-"             Cisco IOS
+            "hpe"       " "         " to "          Hewlett Packard Enterprise
+        :type platform: str
 
-    :return: *List[int]* of unique sorted VLANs
-    :rtype: List[int]
+        :return: *List[int]* of unique sorted VLANs
+        :rtype: List[int]
 
-    :raises ValueError: if VLANs are outside valid range 1...4094
+        :raises ValueError: if VLANs are outside valid range 1...4094
 
-    :example:
-        ivlan("1,3-5") -> [1, 3, 4, 5]
+        :example:
+            ivlan("1,3-5") -> [1, 3, 4, 5]
     """
     if h.is_all(**kwargs):
         if h.is_brief(**kwargs):
@@ -72,36 +73,37 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
 # noinspection PyIncorrectDocstring
 def svlan(items: Any = "", **kwargs) -> str:
     """Sorting string VLANs and removing duplicates
-    :param items: Range of VLANs, can be unsorted and with duplicates,
-    :type items str, List[int], List[str]
+    ::
+        :param items: Range of VLANs, can be unsorted and with duplicates,
+        :type items str, List[int], List[str]
 
-    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
-                    False - all VLAN IDs in brief mode: [-1], to reduces RAM usage (default)
-    :type verbose: bool
+        :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+                        False - all VLAN IDs in brief mode: [-1], to save RAM (default)
+        :type verbose: bool
 
-    :param all: True - Returns all VLAN IDs: "1-4094"
-    :type all: bool
+        :param all: True - Returns all VLAN IDs: "1-4094"
+        :type all: bool
 
-    :param splitter: Separator character between items (default ",")
-    :type splitter: str
+        :param splitter: Separator character between items (default ",")
+        :type splitter: str
 
-    :param range_splitter: Separator between min and max numbers in range (default "-")
-    :type range_splitter: str
+        :param range_splitter: Separator between min and max numbers in range (default "-")
+        :type range_splitter: str
 
-    :param platform: Set `splitter` and `range_splitter` to platform specific values
-        platform    splitter    range_splitter  description
-        ==========  ==========  ==============  ==========================
-        "cisco"     ","         "-"             Cisco IOS
-        "hpe"       " "         " to "          Hewlett Packard Enterprise
-    :type platform: str
+        :param platform: Set `splitter` and `range_splitter` to platform specific values
+            platform    splitter    range_splitter  description
+            ==========  ==========  ==============  ==========================
+            "cisco"     ","         "-"             Cisco IOS
+            "hpe"       " "         " to "          Hewlett Packard Enterprise
+        :type platform: str
 
-    :return: *str* of unique sorted VLANs
-    :rtype: str
+        :return: *str* of unique sorted VLANs
+        :rtype: str
 
-    :raises ValueError: if VLANs are outside valid range 1...4094
+        :raises ValueError: if VLANs are outside valid range 1...4094
 
-    :example:
-        svlan([1, 3, 4, 5]) -> "1,3-5"
+        :example:
+            svlan([1, 3, 4, 5]) -> "1,3-5"
     """
     kwargs = _update_splitters(**kwargs)
     if h.is_all(**kwargs):
@@ -149,9 +151,10 @@ def _update_splitters(**kwargs):
 
 def check_vlans(items: LInt) -> bool:
     """Checks VLAN IDs
-    :param items: VLAN IDs
-    :return: True if all items are in the valid VLAN range 1...4094
-    :raises ValueError: If on of item is outside valid range
+    ::
+        :param items: VLAN IDs
+        :return: True if all items are in the valid VLAN range 1...4094
+        :raises ValueError: If on of item is outside valid range
     """
     if invalid_vlan := [i for i in items if i < MIN_VLAN or i > MAX_VLAN]:
         raise ValueError(f"{invalid_vlan=}, expected in range 1...4094")
