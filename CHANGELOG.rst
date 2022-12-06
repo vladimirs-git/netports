@@ -4,6 +4,12 @@
 CHANGELOG
 =========
 
+0.7.1 (2022-12-06)
+------------------
+* [change] Intf.names() to Intf.all_names()
+* [new] intf_name_map.py short_to_long, short_to_long_lower
+
+
 0.7.0 (2022-12-05)
 ------------------
 * [new] Intf.names()

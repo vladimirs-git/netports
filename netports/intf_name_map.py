@@ -32,3 +32,5 @@ long_to_short: DStr = {
     "Virtual-Template": "Vt",
 }
 long_to_short_lower: DStr = {k.lower(): v for k, v in long_to_short.items()}
+short_to_long: DStr = {v: k for k, v in long_to_short.items()}
+short_to_long_lower: DStr = {k.lower(): v for k, v in short_to_long.items()}

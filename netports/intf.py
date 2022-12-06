@@ -5,8 +5,8 @@ import re
 from functools import cached_property, total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
-from netports.intf_name_map import long_to_short_lower
-from netports.types_ import T3Str, T5Str, LStr
+from netports.intf_name_map import long_to_short_lower, short_to_long, short_to_long_lower
+from netports.types_ import T3Str, T5Str, LStr, SStr
 
 SPLITTER = ",./:"
 
@@ -194,14 +194,38 @@ class Intf:
         ids = self._ids[1:]
         return len([s for s in ids if s])
 
-    def names(self):
-        """Interface long and short names
+    def all_names(self) -> LStr:
+        """All variants of names: long, short, upper-case, lover-case
         ::
             :example:
-                intf = Intf("interface FastEthernet1/2")
-                intf.names() -> ["interface FastEthernet1/2", "FastEthernet1/2", "Fa1/2"]
+                Intf("Eth1/2").names() -> [
+                    "interface Ethernet1/2",
+                    "interface ethernet1/2",
+                    "interface Eth1/2",
+                    "interface eth1/2",
+                    "Ethernet1/2",
+                    "ethernet1/2",
+                    "Eth1/2",
+                    "eth1/2",
+                ]
         """
-        return [self.line, self.name, self.name_short]
+        results: SStr = {self.line}
+        results.add(self.name)
+        results.add(self.name_short)
+
+        for name in [self.name, self.name_short]:
+            short_o = Intf(name)
+            maps = [(short_o.id0, short_to_long), (short_o.id0.lower(), short_to_long_lower)]
+            for id0_short, map_d in maps:
+                if id0_long := map_d.get(id0_short):
+                    name_long = short_o.line.replace(id0_short, id0_long, 1)
+                    results.add(name_long)
+                    results.add(f"interface {name_long}")
+
+        results.update([s.lower() for s in results])
+        results_: LStr = sorted(results)
+        results_.sort(key=lambda s: len(s), reverse=True)
+        return results_
 
     def part(self, idx: int) -> str:
         """Interface part before interested ID

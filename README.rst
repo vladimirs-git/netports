@@ -34,13 +34,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.7.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.7.1.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.7.0
+    pip install git+https://github.com/vladimirs-git/netports@0.7.1
 
 
 
@@ -427,10 +427,10 @@ last_idx()
 Index of last ID in interface line
 
 
-names()
+all_names()
 .......
-**names()**
-Interface long and short names
+**all_names()**
+All variants of names: long, short, upper-case, lover-case
 
 
 part()
