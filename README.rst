@@ -428,7 +428,7 @@ Index of last ID in interface line
 
 
 all_names()
-.......
+...........
 **all_names()**
 All variants of names: long, short, upper-case, lover-case
 
