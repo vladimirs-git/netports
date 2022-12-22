@@ -4,6 +4,11 @@
 CHANGELOG
 =========
 
+0.7.2 (2022-12-17)
+------------------
+* [fix] Intf.all_names() for HP Procurve
+
+
 0.7.1 (2022-12-06)
 ------------------
 * [change] Intf.names() to Intf.all_names()

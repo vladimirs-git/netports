@@ -215,12 +215,14 @@ class Intf:
 
         for name in [self.name, self.name_short]:
             short_o = Intf(name)
-            maps = [(short_o.id0, short_to_long), (short_o.id0.lower(), short_to_long_lower)]
-            for id0_short, map_d in maps:
-                if id0_long := map_d.get(id0_short):
-                    name_long = short_o.line.replace(id0_short, id0_long, 1)
-                    results.add(name_long)
-                    results.add(f"interface {name_long}")
+            for id0_short, map_d in [
+                (short_o.id0, short_to_long),
+                (short_o.id0.lower(), short_to_long_lower),
+            ]:
+                id0_long = map_d.get(id0_short) or ""
+                name_long = short_o.line.replace(id0_short, id0_long, 1)
+                results.add(name_long)
+                results.add(f"interface {name_long}")
 
         results.update([s.lower() for s in results])
         results_: LStr = sorted(results)

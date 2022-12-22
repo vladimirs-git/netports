@@ -171,18 +171,19 @@ class Test(Helpers):
     def test_names(self):
         """Intf.name_short()"""
         all_eth = ["interface Ethernet1/2", "interface ethernet1/2",
-                   "interface Eth1/2", "interface eth1/2",
-                   "Ethernet1/2", "ethernet1/2", "Eth1/2", "eth1/2"]
-        all_tun_ip = ["interface Tunnel-ip1", "interface tunnel-ip1",
-                      "interface Tunnel1", "interface tunnel1", "interface Tu1", "interface tu1",
-                      "Tunnel-ip1", "tunnel-ip1", "Tunnel1", "tunnel1", "Tu1", "tu1"]
+                   "interface Eth1/2", "interface eth1/2", "interface 1/2",
+                   "Ethernet1/2", "ethernet1/2", "Eth1/2", "eth1/2", "1/2"]
+        all_tun_ip = ["interface Tunnel-ip1", "interface tunnel-ip1", "interface Tunnel1",
+                      "interface tunnel1", "interface Tu1", "interface tu1", "interface 1",
+                      "Tunnel-ip1", "tunnel-ip1", "Tunnel1", "tunnel1", "Tu1", "tu1", "1"]
         all_tun = ["interface Tunnel1", "interface tunnel1", "interface Tu1", "interface tu1",
-                   "Tunnel1", "tunnel1", "Tu1", "tu1"]
+                   "interface 1", "Tunnel1", "tunnel1", "Tu1", "tu1", "1"]
         for line, req in [
             ("interface Ethernet1/2", all_eth),
             ("Eth1/2", all_eth),
             ("interface Tunnel-ip1", all_tun_ip),
             ("Tunnel1", all_tun),
+            ("1", ["interface 1", "1"]),
         ]:
             obj = Intf(line)
             result = obj.all_names()
