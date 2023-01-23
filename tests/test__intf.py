@@ -16,28 +16,28 @@ class Test(Helpers):
         """Intf.__hash__()"""
         intf1 = "interface Ethernet1/2/3.4"
         intf_o = Intf(intf1)
-        result = intf_o.__hash__()
-        req = hash(("interface Ethernet", 1, 2, 3, 4))
-        self.assertEqual(result, req, msg=f"{intf1=}")
+        actual = intf_o.__hash__()
+        expected = hash(("interface Ethernet", 1, 2, 3, 4))
+        self.assertEqual(expected, actual, msg=f"{intf1=}")
 
     def test_valid__eq__(self):
         """Intf.__eq__() __ne__()"""
         intf1 = "interface Ethernet1/2/3.4"
         intf_o = Intf(intf1)
-        for other_o, req, in [
+        for other_o, expected, in [
             (Intf(intf1), True),
             (Intf("interface Ethernet1.2.3.4"), True),
             (Intf("interface Ethernet1/1"), False),
         ]:
-            result = intf_o.__eq__(other_o)
-            self.assertEqual(result, req, msg=f"{intf_o=} {other_o=}")
-            result = intf_o.__ne__(other_o)
-            self.assertEqual(result, not req, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__eq__(other_o)
+            self.assertEqual(expected, actual, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__ne__(other_o)
+            self.assertEqual(not expected, actual, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__(self):
         """Intf.__lt__() __le__() __gt__() __ge__()"""
         intf1 = "interface Eth1/2/3.4"
-        for intf_o, other_o, req_lt, req_le, req_gt, req_ge in [
+        for intf_o, other_o, exp_lt, exp_le, exp_gt, exp_ge in [
             (Intf(intf1), intf1, False, False, True, True),
             (Intf(intf1), Intf("1"), False, False, True, True),
             (Intf(intf1), Intf("a 9"), False, False, True, True),
@@ -49,14 +49,14 @@ class Test(Helpers):
             (Intf(intf1), Intf(intf1), False, True, False, True),
             (Intf(intf1), Intf("interface Eth1.2.3.4"), False, True, False, True),
         ]:
-            result = intf_o.__lt__(other_o)
-            self.assertEqual(result, req_lt, msg=f"{intf_o=} {other_o=}")
-            result = intf_o.__le__(other_o)
-            self.assertEqual(result, req_le, msg=f"{intf_o=} {other_o=}")
-            result = intf_o.__gt__(other_o)
-            self.assertEqual(result, req_gt, msg=f"{intf_o=} {other_o=}")
-            result = intf_o.__ge__(other_o)
-            self.assertEqual(result, req_ge, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__lt__(other_o)
+            self.assertEqual(exp_lt, actual, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__le__(other_o)
+            self.assertEqual(exp_le, actual, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__gt__(other_o)
+            self.assertEqual(exp_gt, actual, msg=f"{intf_o=} {other_o=}")
+            actual = intf_o.__ge__(other_o)
+            self.assertEqual(exp_ge, actual, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__sort(self):
         """Intf.__lt__(), Intf.__le__()"""
@@ -82,32 +82,32 @@ class Test(Helpers):
             [Intf("interface Ethernet1.2.3.4"), Intf(intf1)],
             [Intf(intf1), Intf("interface Ethernet1.2.3.5")],
         ]:
-            req = items.copy()
-            result = sorted(items)
-            self.assertEqual(result, req, msg=f"{items=}")
+            expected = items.copy()
+            actual = sorted(items)
+            self.assertEqual(expected, actual, msg=f"{items=}")
             items[0], items[1] = items[1], items[0]
-            result = sorted(items)
-            self.assertEqual(result, req, msg=f"{items=}")
+            actual = sorted(items)
+            self.assertEqual(expected, actual, msg=f"{items=}")
 
     # =========================== property ===========================
 
     def test_valid__line(self):
         """Intf.line"""
         intf = "interface Ethernet"
-        req1 = dict(line=f"{intf}1", name="Ethernet1", id0=intf, id1=1, id2=0, id3=0, id4=0)
-        req2 = dict(line=f"{intf}1/2", name="Ethernet1/2", id0=intf, id1=1, id2=2, id3=0, id4=0)
-        req3 = dict(line=f"{intf}1/2/3", name="Ethernet1/2/3", id0=intf, id1=1, id2=2, id3=3, id4=0)
-        req4 = dict(line=f"{intf}1/2/3.4", name="Ethernet1/2/3.4",
+        exp1 = dict(line=f"{intf}1", name="Ethernet1", id0=intf, id1=1, id2=0, id3=0, id4=0)
+        exp2 = dict(line=f"{intf}1/2", name="Ethernet1/2", id0=intf, id1=1, id2=2, id3=0, id4=0)
+        exp3 = dict(line=f"{intf}1/2/3", name="Ethernet1/2/3", id0=intf, id1=1, id2=2, id3=3, id4=0)
+        exp4 = dict(line=f"{intf}1/2/3.4", name="Ethernet1/2/3.4",
                     id0=intf, id1=1, id2=2, id3=3, id4=4)
-        req5 = dict(line=f"{intf}1.2.3.4", name="Ethernet1.2.3.4",
+        exp5 = dict(line=f"{intf}1.2.3.4", name="Ethernet1.2.3.4",
                     id0=intf, id1=1, id2=2, id3=3, id4=4)
-        req6 = dict(line=f"{intf}1,2,3,4", name="Ethernet1,2,3,4",
+        exp6 = dict(line=f"{intf}1,2,3,4", name="Ethernet1,2,3,4",
                     id0=intf, id1=1, id2=2, id3=3, id4=4)
-        req7 = dict(line=f"{intf}1:2:3:4", name="Ethernet1:2:3:4",
+        exp7 = dict(line=f"{intf}1:2:3:4", name="Ethernet1:2:3:4",
                     id0=intf, id1=1, id2=2, id3=3, id4=4)
-        req8 = dict(line=f"{intf}1-2-3-4", name="Ethernet1-2-3-4",
+        exp8 = dict(line=f"{intf}1-2-3-4", name="Ethernet1-2-3-4",
                     id0=intf, id1=1, id2=2, id3=3, id4=4)
-        for kwargs, req_d in [
+        for kwargs, exp_d in [
             (dict(line=""), dict(line="", name="", id0="", id1=0, id2=0, id3=0, id4=0)),
             (dict(line="1"), dict(line="1", name="1", id0="", id1=1, id2=0, id3=0, id4=0)),
             (dict(line="1/2"), dict(line="1/2", name="1/2", id0="", id1=1, id2=2, id3=0, id4=0)),
@@ -119,23 +119,23 @@ class Test(Helpers):
                                      id0="text", id1=0, id2=0, id3=0, id4=0)),
             (dict(line=intf), dict(line=intf, name="Ethernet",
                                    id0=intf, id1=0, id2=0, id3=0, id4=0)),
-            (dict(line=f"{intf}1"), req1),
-            (dict(line=f"{intf}1/2"), req2),
-            (dict(line=f"{intf}1/2/3"), req3),
-            (dict(line=f"{intf}1/2/3.4"), req4),
-            (dict(line=f"{intf}1/2/3.4-5"), req4),
-            (dict(line=f"{intf}1/2/3.4text"), req4),
-            (dict(line=f"{intf}1.2.3.4"), req5),
-            (dict(line=f"{intf}1,2,3,4"), req6),
-            (dict(line=f"{intf}1:2:3:4"), req7),
-            # (dict(line=f"{intf}1-2-3-4", splitter="-"), req8),
+            (dict(line=f"{intf}1"), exp1),
+            (dict(line=f"{intf}1/2"), exp2),
+            (dict(line=f"{intf}1/2/3"), exp3),
+            (dict(line=f"{intf}1/2/3.4"), exp4),
+            (dict(line=f"{intf}1/2/3.4-5"), exp4),
+            (dict(line=f"{intf}1/2/3.4text"), exp4),
+            (dict(line=f"{intf}1.2.3.4"), exp5),
+            (dict(line=f"{intf}1,2,3,4"), exp6),
+            (dict(line=f"{intf}1:2:3:4"), exp7),
+            # (dict(line=f"{intf}1-2-3-4", splitter="-"), exp8),
         ]:
             intf_o = Intf(**kwargs)
-            self._test_attrs(obj=intf_o, req_d=req_d, msg=f"{kwargs=}")
+            self._test_attrs(obj=intf_o, exp_d=exp_d, msg=f"{kwargs=}")
 
     def test_name_short(self):
         """Intf.name_short"""
-        for line, req in [
+        for line, expected in [
             ("interface Ethernet1/2/3.4", "Eth1/2/3.4"),
             ("interface FastEthernet1/2", "Fa1/2"),
             ("interface fastethernet1/2", "Fa1/2"),
@@ -148,14 +148,14 @@ class Test(Helpers):
             ("interface Vlan1", "Vl1"),
         ]:
             obj = Intf(line)
-            result = obj.name_short
-            self.assertEqual(result, req, msg=f"{line=}")
+            actual = obj.name_short
+            self.assertEqual(expected, actual, msg=f"{line=}")
 
     # =========================== methods ============================
 
     def test_last_idx(self):
         """Intf.last_idx()"""
-        for line, req in [
+        for line, expected in [
             ("", 0),
             ("Ethernet", 0),
             ("Ethernet1", 1),
@@ -165,33 +165,69 @@ class Test(Helpers):
             ("Ethernet1/2/3.4-5", 4),
         ]:
             obj = Intf(line)
-            result = obj.last_idx()
-            self.assertEqual(result, req, msg=f"{line=}")
+            actual = obj.last_idx()
+            self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_names(self):
         """Intf.name_short()"""
-        all_eth = ["interface Ethernet1/2", "interface ethernet1/2",
-                   "interface Eth1/2", "interface eth1/2", "interface 1/2",
-                   "Ethernet1/2", "ethernet1/2", "Eth1/2", "eth1/2", "1/2"]
-        all_tun_ip = ["interface Tunnel-ip1", "interface tunnel-ip1", "interface Tunnel1",
-                      "interface tunnel1", "interface Tu1", "interface tu1", "interface 1",
-                      "Tunnel-ip1", "tunnel-ip1", "Tunnel1", "tunnel1", "Tu1", "tu1", "1"]
-        all_tun = ["interface Tunnel1", "interface tunnel1", "interface Tu1", "interface tu1",
-                   "interface 1", "Tunnel1", "tunnel1", "Tu1", "tu1", "1"]
-        for line, req in [
+        all_eth = [
+            "interface Ethernet1/2",
+            "interface ethernet1/2",
+            "interface Eth1/2",
+            "interface eth1/2",
+            "Ethernet1/2",
+            "ethernet1/2",
+            "Eth1/2",
+            "eth1/2",
+        ]
+        all_tun_ip = [
+            "interface Tunnel-ip1",
+            "interface tunnel-ip1",
+            "interface Tunnel1",
+            "interface tunnel1",
+            "interface Tu1",
+            "interface tu1",
+            "Tunnel-ip1",
+            "tunnel-ip1",
+            "Tunnel1",
+            "tunnel1",
+            "Tu1",
+            "tu1",
+        ]
+        all_tun = [
+            "interface Tunnel1",
+            "interface tunnel1",
+            "interface Tu1",
+            "interface tu1",
+            "Tunnel1",
+            "tunnel1",
+            "Tu1",
+            "tu1",
+        ]
+        all_mgmt = [
+            "interface mgmt0",
+            "mgmt0",
+        ]
+        all_1 = [
+            "interface 1",
+            "1",
+        ]
+        for line, expected in [
             ("interface Ethernet1/2", all_eth),
             ("Eth1/2", all_eth),
             ("interface Tunnel-ip1", all_tun_ip),
             ("Tunnel1", all_tun),
-            ("1", ["interface 1", "1"]),
+            ("interface mgmt0", all_mgmt),
+            ("mgmt0", all_mgmt),
+            ("1", all_1),
         ]:
             obj = Intf(line)
-            result = obj.all_names()
-            self.assertEqual(result, req, msg=f"{line=}")
+            actual = obj.all_names()
+            self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_valid__parts(self):
         """Intf.parts()"""
-        for line, idx, req in [
+        for line, idx, expected in [
             ("", -1, ""),
             ("", 0, ""),
             ("", 1, ""),
@@ -222,15 +258,15 @@ class Test(Helpers):
             ("interface Ethernet1/2/3.4", 6, "interface Ethernet1/2/3.4"),
         ]:
             obj = Intf(line)
-            result = obj.part(idx)
-            self.assertEqual(result, req, msg=f"{line=}")
+            actual = obj.part(idx)
+            self.assertEqual(expected, actual, msg=f"{line=}")
 
     # =========================== helpers ============================
 
     def test_valid__get_ids(self):
         """Intf._get_ids()"""
 
-        for line, req in [
+        for line, expected in [
             ("1", ("", "1", "", "", "")),
             ("1/2", ("", "1", "2", "", "")),
             ("port1", ("port", "1", "", "", "")),
@@ -246,8 +282,8 @@ class Test(Helpers):
             ("interface Ethernet1:2:3:4", ("interface Ethernet", "1", "2", "3", "4")),
         ]:
             obj = Intf(line)
-            result = obj._get_ids()
-            self.assertEqual(result, req, msg=f"{line=}")
+            actual = obj._get_ids()
+            self.assertEqual(expected, actual, msg=f"{line=}")
 
 
 if __name__ == "__main__":

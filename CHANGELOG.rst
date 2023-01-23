@@ -4,6 +4,11 @@
 CHANGELOG
 =========
 
+0.7.3 (2023-01-24)
+------------------
+* [fix] Intf.all_names() > mgmt0
+
+
 0.7.2 (2022-12-17)
 ------------------
 * [fix] Intf.all_names() for HP Procurve

@@ -209,24 +209,29 @@ class Intf:
                     "eth1/2",
                 ]
         """
-        results: SStr = {self.line}
-        results.add(self.name)
-        results.add(self.name_short)
+        results: SStr = set()
+        for name_ in [self.line, self.name]:
+            results.add(name_)
+            if not name_.startswith("interface "):
+                name_ = f"interface {name_}"
+                results.add(name_)
+        # results.add(self.name_short)
 
         for name in [self.name, self.name_short]:
-            short_o = Intf(name)
+            intf_o = Intf(name)
             for id0_short, map_d in [
-                (short_o.id0, short_to_long),
-                (short_o.id0.lower(), short_to_long_lower),
+                (intf_o.id0, short_to_long),
+                (intf_o.id0.lower(), short_to_long_lower),
             ]:
-                id0_long = map_d.get(id0_short) or ""
-                name_long = short_o.line.replace(id0_short, id0_long, 1)
-                results.add(name_long)
-                results.add(f"interface {name_long}")
+                if id0_long := map_d.get(id0_short) or "":
+                    name_long = intf_o.line.replace(id0_short, id0_long, 1)
+                    results.add(name_long)
+                    if not name_long.startswith("interface "):
+                        results.add(f"interface {name_long}")
 
         results.update([s.lower() for s in results])
         results_: LStr = sorted(results)
-        results_.sort(key=lambda s: len(s), reverse=True)
+        results_.sort(key=len, reverse=True)
         return results_
 
     def part(self, idx: int) -> str:

@@ -638,11 +638,11 @@ class Test(Helpers):
         ]:
             # getter
             range_o = Range(**kwargs)
-            self._test_attrs(obj=range_o, req_d=req_d, msg=f"getter {kwargs=}")
+            self._test_attrs(obj=range_o, exp_d=req_d, msg=f"getter {kwargs=}")
             # setter
             if kwargs and isinstance(kwargs["items"], str):
                 range_o.line = kwargs["items"]
-                self._test_attrs(obj=range_o, req_d=req_d, msg=f"setter {kwargs=}")
+                self._test_attrs(obj=range_o, exp_d=req_d, msg=f"setter {kwargs=}")
         # deleter
         with self.assertRaises(AttributeError, msg="deleter line"):
             # noinspection PyPropertyAccess

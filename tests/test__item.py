@@ -89,10 +89,10 @@ class Test(Helpers):
         ]:
             # getter
             item_o = Item(line)
-            self._test_attrs(obj=item_o, req_d=req_d, msg=f"getter {line=}")
+            self._test_attrs(obj=item_o, exp_d=req_d, msg=f"getter {line=}")
             # setter
             item_o.line = line
-            self._test_attrs(obj=item_o, req_d=req_d, msg=f"setter {line=}")
+            self._test_attrs(obj=item_o, exp_d=req_d, msg=f"setter {line=}")
         # deleter
         with self.assertRaises(AttributeError, msg="deleter line"):
             # noinspection PyPropertyAccess

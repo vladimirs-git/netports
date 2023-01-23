@@ -7,23 +7,23 @@ from typing import Callable
 class Helpers(unittest.TestCase):
     """Address"""
 
-    def _test_attrs(self, obj, req_d, msg: str):
+    def _test_attrs(self, obj, exp_d, msg: str):
         """Test obj.line and attributes in req_d
         :param obj: Tested object
-        :param req_d: Valid attributes and values
+        :param exp_d: Valid attributes and values
         :param msg: Message
         """
-        result = obj.line
-        req = req_d["line"]
-        self.assertEqual(result, req, msg=f"{msg} line")
-        result = str(obj)
-        self.assertEqual(result, req, msg=f"{msg} str")
-        for attr, req in req_d.items():
+        actual = obj.line
+        expected = exp_d["line"]
+        self.assertEqual(expected, actual, msg=f"{msg} line")
+        actual = str(obj)
+        self.assertEqual(expected, actual, msg=f"{msg} str")
+        for attr, expected in exp_d.items():
             if attr == "numbers":
                 method: Callable = getattr(obj, attr)
-                result = method()
+                actual = method()
             else:
-                result = getattr(obj, attr)
-            if hasattr(result, "line"):
-                result = str(result)
-            self.assertEqual(result, req, msg=f"{msg} {attr=}")
+                actual = getattr(obj, attr)
+            if hasattr(actual, "line"):
+                actual = str(actual)
+            self.assertEqual(expected, actual, msg=f"{msg} {attr=}")

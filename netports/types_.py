@@ -15,6 +15,7 @@ SStr = Set[str]
 StrInt = Union[str, int]
 TIntStr = Tuple[int, str]
 
+DLStr = Dict[str, LStr]
 DSStr = Dict[str, SStr]
 IStrInt = Union[IStr, IInt]
 LTIntStr = List[TIntStr]

@@ -8,4 +8,3 @@ from netports.ports import inumbers, parse_range, snumbers
 from netports.range import Range
 from netports.tcp import stcp, itcp
 from netports.vlan import ivlan, svlan
-
