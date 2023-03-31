@@ -1,5 +1,6 @@
 """Static settings"""
 
+PLATFORMS = ["cisco_asr"]
 RANGE_SPLITTER = "-"
 RANGE_SPLITTER_HPE = " to "
 RANGE_SPLITTERS = [RANGE_SPLITTER, RANGE_SPLITTER_HPE]

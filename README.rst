@@ -390,7 +390,7 @@ Return
 
 Intf()
 ......
-**Intf(line, splitter)**
+**Intf(line, platform, splitter)**
 An object of interface name, that can contain up to 4 indexes.
 Sorts the interfaces by indexes (not by alphabetic).
 
@@ -398,7 +398,8 @@ Sorts the interfaces by indexes (not by alphabetic).
 Parameter       Type    Description
 =============== ======= ============================================================================
 line            *str*   Interface name that can contain up to 4 indexes
-splitter        *str*   Separator characters between indexes. By default ",./:"
+platform        *str*   Platform: "", "cisco_asr" (default "")
+splitter        *str*   Separator of characters between indexes (default ",./:")
 =============== ======= ============================================================================
 
 
@@ -409,14 +410,16 @@ Attributes
 Attributes      Type         Description
 =============== ============ =======================================================================
 delimiters                   Interface all delimiters
-id0             str          Interface name. Line without IDs
-id1             int          Interface 1st ID
-id2             int          Interface 2nd ID
-id3             int          Interface 3rd ID
-id4             int          Interface 4th ID
+id0             *str*        Interface name. Line without IDs
+id1             *int*        Interface 1st ID
+id2             *int*        Interface 2nd ID
+id3             *int*        Interface 3rd ID
+id4             *int*        Interface 4th ID
 ids                          Interface all IDs
-line            str          Interface line
-name            str          Interface name with IDs
+line            *str*        Interface line
+name            *str*        Interface name with IDs
+splitter        *str*        Separator of characters between indexes
+platform        *str*        Platform
 =============== ============ =======================================================================
 
 
@@ -429,7 +432,7 @@ Index of last ID in interface line
 all_names()
 ...........
 **all_names()**
-All variants of names: long, short, upper-case, lover-case
+All variants of names: long, short, upper-case, lover-case. Platform specific
 
 
 name_full()
@@ -447,7 +450,7 @@ Interface long name with IDs and without interface keyword
 name_short()
 ............
 **name_short()**
-Interface short name with IDs
+Interface short name with IDs, platform specific
 
 
 part_after()
@@ -458,9 +461,12 @@ Interface part after interested ID
 =========== ============ ===========================================================================
 Parameter   Type         Description
 =========== ============ ===========================================================================
-idx         *int*        Returns the part of the interface name after this index
+idx         *int*        Interface index
 splitter    *bool*       True - Include splitter from edge, False - Skip splitter from edge
 =========== ============ ===========================================================================
+
+Return
+    *str* Part of the interface name after specified interface index
 
 
 part_before()
@@ -471,9 +477,12 @@ Interface part before interested ID
 =========== ============ ===========================================================================
 Parameter   Type         Description
 =========== ============ ===========================================================================
-idx         *int*        Returns the part of the interface name before this index
+idx         *int*        Interface index
 splitter    *bool*       True - Include splitter from edge, False - Skip splitter from edge
 =========== ============ ===========================================================================
+
+Return
+    *str* Part of the interface name before specified interface index
 
 
 **Examples**

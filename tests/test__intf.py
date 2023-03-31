@@ -3,6 +3,7 @@
 import unittest
 
 from netports.intf import Intf
+from tests import helpers_ as th
 from tests.helpers_ import Helpers
 
 
@@ -91,104 +92,112 @@ class Test(Helpers):
 
     # =========================== property ===========================
 
-    def test_valid__line(self):
-        """Intf.line"""
+    def test_valid__init__(self):
+        """Intf.__init__()"""
         id0 = "interface Ethernet"
-        exp1 = dict(line=f"{id0}1", name="Ethernet1", id0=id0, id1=1, id2=0, id3=0, id4=0)
-        exp2 = dict(line=f"{id0}1/2", name="Ethernet1/2", id0=id0, id1=1, id2=2, id3=0, id4=0)
-        exp3 = dict(line=f"{id0}1/2/3", name="Ethernet1/2/3", id0=id0, id1=1, id2=2, id3=3, id4=0)
-        exp4 = dict(line=f"{id0}1/2/3.4", name="Ethernet1/2/3.4",
-                    id0=id0, id1=1, id2=2, id3=3, id4=4)
-        exp5 = dict(line=f"{id0}1.2.3.4", name="Ethernet1.2.3.4",
-                    id0=id0, id1=1, id2=2, id3=3, id4=4)
-        exp6 = dict(line=f"{id0}1,2,3,4", name="Ethernet1,2,3,4",
-                    id0=id0, id1=1, id2=2, id3=3, id4=4)
-        exp7 = dict(line=f"{id0}1:2:3:4", name="Ethernet1:2:3:4",
-                    id0=id0, id1=1, id2=2, id3=3, id4=4)
-        exp8 = dict(line=f"{id0}1-2-3-4", name="Ethernet1-2-3-4",
-                    id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp_a1 = dict(line="1", name="1", id0="", id1=1, id2=0, id3=0, id4=0)
+        exp_a2 = dict(line="1/2", name="1/2", id0="", id1=1, id2=2, id3=0, id4=0)
+        exp_a3 = dict(line="port1", name="port1", id0="port", id1=1, id2=0, id3=0, id4=0)
+        exp_a4 = dict(line="port1.2", name="port1.2", id0="port", id1=1, id2=2, id3=0, id4=0)
+        exp_a5 = dict(line="text", name="text", id0="text", id1=0, id2=0, id3=0, id4=0)
+        exp_a6 = dict(line=id0, name="Ethernet", id0=id0, id1=0, id2=0, id3=0, id4=0)
+
+        exp_b1 = dict(line=f"{id0}1", name="Ethernet1", id0=id0, id1=1, id2=0, id3=0, id4=0)
+        exp_b2 = dict(line=f"{id0}1/2", name="Ethernet1/2", id0=id0, id1=1, id2=2, id3=0, id4=0)
+        exp_b3 = dict(line=f"{id0}1/2/3", name="Ethernet1/2/3", id0=id0, id1=1, id2=2, id3=3, id4=0)
+        exp_b4 = dict(line=f"{id0}1/2/3.4", name="Ethernet1/2/3.4",
+                      id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp_b5 = dict(line=f"{id0}1.2.3.4", name="Ethernet1.2.3.4", _splitter=",./:",
+                      id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp_b6 = dict(line=f"{id0}1,2,3,4", name="Ethernet1,2,3,4", _splitter=",./:",
+                      id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp_b7 = dict(line=f"{id0}1:2:3:4", name="Ethernet1:2:3:4", _splitter=",./:",
+                      id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp_b8 = dict(line=f"{id0}1-2-3-4", name="Ethernet1-2-3-4", _splitter="-",
+                      id0=id0, id1=1, id2=2, id3=3, id4=4)
+
+        exp_c1 = dict(line=f"{id0}1/1", name="Ethernet1/1", id0=id0, id1=1, id2=1, id3=0, id4=0)
         for kwargs, exp_d in [
-            (dict(line=""), dict(line="", name="", id0="", id1=0, id2=0, id3=0, id4=0)),
-            (dict(line="1"), dict(line="1", name="1", id0="", id1=1, id2=0, id3=0, id4=0)),
-            (dict(line="1/2"), dict(line="1/2", name="1/2", id0="", id1=1, id2=2, id3=0, id4=0)),
-            (dict(line="port1"), dict(line="port1", name="port1", id0="port",
-                                      id1=1, id2=0, id3=0, id4=0)),
-            (dict(line="port1.2"), dict(line="port1.2", name="port1.2",
-                                        id0="port", id1=1, id2=2, id3=0, id4=0)),
-            (dict(line="text"), dict(line="text", name="text",
-                                     id0="text", id1=0, id2=0, id3=0, id4=0)),
-            (dict(line=id0), dict(line=id0, name="Ethernet",
-                                  id0=id0, id1=0, id2=0, id3=0, id4=0)),
-            (dict(line=f"{id0}1"), exp1),
-            (dict(line=f"{id0}1/2"), exp2),
-            (dict(line=f"{id0}1/2/3"), exp3),
-            (dict(line=f"{id0}1/2/3.4"), exp4),
-            (dict(line=f"{id0}1/2/3.4-5"), exp4),
-            (dict(line=f"{id0}1/2/3.4text"), exp4),
-            (dict(line=f"{id0}1.2.3.4"), exp5),
-            (dict(line=f"{id0}1,2,3,4"), exp6),
-            (dict(line=f"{id0}1:2:3:4"), exp7),
-            (dict(line=f"{id0}1-2-3-4", splitter="-"), exp8),
+            (dict(line="1"), exp_a1),
+            (dict(line="1/2"), exp_a2),
+            (dict(line="port1"), exp_a3),
+            (dict(line="port1.2"), exp_a4),
+            (dict(line="text"), exp_a5),
+            (dict(line=id0), exp_a6),
+            # splitter
+            (dict(line=f"{id0}1"), exp_b1),
+            (dict(line=f"{id0}1/2"), exp_b2),
+            (dict(line=f"{id0}1/2/3"), exp_b3),
+            (dict(line=f"{id0}1/2/3.4"), exp_b4),
+            (dict(line=f"{id0}1/2/3.4-5"), exp_b4),
+            (dict(line=f"{id0}1/2/3.4text"), exp_b4),
+            (dict(line=f"{id0}1.2.3.4"), exp_b5),
+            (dict(line=f"{id0}1,2,3,4"), exp_b6),
+            (dict(line=f"{id0}1:2:3:4"), exp_b7),
+            (dict(line=f"{id0}1-2-3-4", splitter="-"), exp_b8),
+            # platform
+            (dict(line="interface Ethernet1/1", platform=""), exp_c1),
+            (dict(line="interface Ethernet1/1", platform="cisco_ios"), exp_c1),
+            (dict(line="interface Ethernet1/1", platform="cisco_asr"), exp_c1),
         ]:
             intf_o = Intf(**kwargs)
             self._test_attrs(obj=intf_o, exp_d=exp_d, msg=f"{kwargs=}")
+
+    def test_invalid__init__(self):
+        """Intf.__init__()"""
+        for kwargs, error in [
+            (dict(line="Ethernet1/1", platform="typo"), ValueError),
+        ]:
+            with self.assertRaises(error, msg=f"{kwargs=}"):
+                Intf(**kwargs)
 
     # =========================== methods ============================
 
     def test_valid__all_names(self):
         """Intf.all_names()"""
-        all_eth = [
-            "interface Ethernet1/2",
-            "interface ethernet1/2",
-            "interface Eth1/2",
-            "interface eth1/2",
-            "Ethernet1/2",
-            "ethernet1/2",
-            "Eth1/2",
-            "eth1/2",
-        ]
-        all_tun_ip = [
-            "interface Tunnel-ip1",
-            "interface tunnel-ip1",
-            "interface Tunnel1",
-            "interface tunnel1",
-            "interface Tu1",
-            "interface tu1",
-            "Tunnel-ip1",
-            "tunnel-ip1",
-            "Tunnel1",
-            "tunnel1",
-            "Tu1",
-            "tu1",
-        ]
-        all_tun = [
-            "interface Tunnel1",
-            "interface tunnel1",
-            "interface Tu1",
-            "interface tu1",
-            "Tunnel1",
-            "tunnel1",
-            "Tu1",
-            "tu1",
-        ]
-        all_mgmt = [
-            "interface mgmt0",
-            "mgmt0",
-        ]
-        all_1 = [
-            "interface 1",
-            "1",
-        ]
         for line, expected in [
-            ("interface Ethernet1/2", all_eth),
-            ("Eth1/2", all_eth),
-            ("interface Tunnel-ip1", all_tun_ip),
-            ("Tunnel1", all_tun),
-            ("interface mgmt0", all_mgmt),
-            ("mgmt0", all_mgmt),
-            ("1", all_1),
+            # upper
+            ("interface Ethernet1/2", th.ALL_NAMES_ETH),
+            ("Ethernet1/2", th.ALL_NAMES_ETH),
+            ("Eth1/2", th.ALL_NAMES_ETH),
+            ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("Tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("interface Tunnel1", th.ALL_NAMES_TUN),
+            ("Tunnel1", th.ALL_NAMES_TUN),
+            ("Tu1", th.ALL_NAMES_TUN),
+            ("interface mgmt0", th.ALL_NAMES_MGMT),
+            ("mgmt0", th.ALL_NAMES_MGMT),
+            ("1", th.ALL_NAMES_1),
+            # lower
+            ("interface ethernet1/2", th.ALL_NAMES_ETH),
+            ("ethernet1/2", th.ALL_NAMES_ETH),
+            ("eth1/2", th.ALL_NAMES_ETH),
+            ("interface tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("interface tunnel1", th.ALL_NAMES_TUN),
+            ("tunnel1", th.ALL_NAMES_TUN),
+            ("tu1", th.ALL_NAMES_TUN),
+            ("interface mgmt0", th.ALL_NAMES_MGMT),
+            ("mgmt0", th.ALL_NAMES_MGMT),
+            ("1", th.ALL_NAMES_1),
         ]:
             obj = Intf(line)
+            actual = obj.all_names()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__all_names__cisco_asr(self):
+        """Intf.all_names() platform="cisco_asr" """
+        for line, expected in [
+            # upper
+            ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP_),
+            ("Tunnel-ip1", th.ALL_NAMES_TUN_IP_),
+            ("Tu1", th.ALL_NAMES_TUN_IP_),
+            # lower
+            ("interface tunnel-ip1", th.ALL_NAMES_TUN_IP_),
+            ("tunnel-ip1", th.ALL_NAMES_TUN_IP_),
+            ("tu1", th.ALL_NAMES_TUN_IP_),
+        ]:
+            obj = Intf(line=line, platform="cisco_asr")
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
@@ -218,18 +227,18 @@ class Test(Helpers):
             ("interface Loopback0", "interface Loopback0"),
             ("interface Port-channel100", "interface Port-channel100"),
             ("interface Tunnel1", "interface Tunnel1"),
-            # ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # TODO platform
             ("interface Vlan1", "interface Vlan1"),
+            ("interface mgmt0", "interface mgmt0"),  # nxos
             # long to full
-            ("interface Ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
-            ("interface FastEthernet1/2", "interface FastEthernet1/2"),
-            ("interface GigabitEthernet1/2", "interface GigabitEthernet1/2"),
-            ("interface TenGigabitEthernet1/2", "interface TenGigabitEthernet1/2"),
-            ("interface Loopback0", "interface Loopback0"),
-            ("interface Port-channel100", "interface Port-channel100"),
-            ("interface Tunnel1", "interface Tunnel1"),
-            # ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # TODO platform
-            ("interface Vlan1", "interface Vlan1"),
+            ("Ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("FastEthernet1/2", "interface FastEthernet1/2"),
+            ("GigabitEthernet1/2", "interface GigabitEthernet1/2"),
+            ("TenGigabitEthernet1/2", "interface TenGigabitEthernet1/2"),
+            ("Loopback0", "interface Loopback0"),
+            ("Port-channel100", "interface Port-channel100"),
+            ("Tunnel1", "interface Tunnel1"),
+            ("Vlan1", "interface Vlan1"),
+            ("mgmt0", "interface mgmt0"),  # nxos
             # short to full
             ("Eth1/2/3.4", "interface Ethernet1/2/3.4"),
             ("Fa1/2", "interface FastEthernet1/2"),
@@ -238,9 +247,9 @@ class Test(Helpers):
             ("Lo0", "interface Loopback0"),
             ("Po100", "interface Port-channel100"),
             ("Tu1", "interface Tunnel1"),
-            # ("Tu1", "interface Tunnel-ip1"),  # TODO platform
             ("Vl1", "interface Vlan1"),
             ("V1", "interface Vlan1"),
+            ("mgmt0", "interface mgmt0"),  # nxos
             # lower
             ("interface ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
             ("interface fastethernet1/2", "interface FastEthernet1/2"),
@@ -254,7 +263,19 @@ class Test(Helpers):
             actual = obj.name_full()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__name_long(self):  # TODO
+    def test_valid__name_full__cisco_asr(self):
+        """Intf.name_full() platform="cisco_asr" """
+        platform = "cisco_asr"
+        for line, expected in [
+            ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # full to full
+            ("Tunnel-ip1", "interface Tunnel-ip1"),  # long to full
+            ("Tu1", "interface Tunnel-ip1"),  # short to full
+        ]:
+            obj = Intf(line=line, platform=platform)
+            actual = obj.name_full()
+            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
+
+    def test_valid__name_long(self):
         """Intf.name_long()"""
         for line, expected in [
             # full to long
@@ -265,18 +286,18 @@ class Test(Helpers):
             ("interface Loopback0", "Loopback0"),
             ("interface Port-channel100", "Port-channel100"),
             ("interface Tunnel1", "Tunnel1"),
-            # ("interface Tunnel-ip1", "Tunnel-ip1"),  # TODO platform
             ("interface Vlan1", "Vlan1"),
+            ("interface mgmt0", "mgmt0"),  # nxos
             # long to long
-            ("interface Ethernet1/2/3.4", "Ethernet1/2/3.4"),
-            ("interface FastEthernet1/2", "FastEthernet1/2"),
-            ("interface GigabitEthernet1/2", "GigabitEthernet1/2"),
-            ("interface TenGigabitEthernet1/2", "TenGigabitEthernet1/2"),
-            ("interface Loopback0", "Loopback0"),
-            ("interface Port-channel100", "Port-channel100"),
-            ("interface Tunnel1", "Tunnel1"),
-            # ("interface Tunnel-ip1", "Tunnel-ip1"),  # TODO platform
-            ("interface Vlan1", "Vlan1"),
+            ("Ethernet1/2/3.4", "Ethernet1/2/3.4"),
+            ("FastEthernet1/2", "FastEthernet1/2"),
+            ("GigabitEthernet1/2", "GigabitEthernet1/2"),
+            ("TenGigabitEthernet1/2", "TenGigabitEthernet1/2"),
+            ("Loopback0", "Loopback0"),
+            ("Port-channel100", "Port-channel100"),
+            ("Tunnel1", "Tunnel1"),
+            ("Vlan1", "Vlan1"),
+            ("mgmt0", "mgmt0"),  # nxos
             # short to long
             ("Eth1/2/3.4", "Ethernet1/2/3.4"),
             ("Fa1/2", "FastEthernet1/2"),
@@ -285,9 +306,9 @@ class Test(Helpers):
             ("Lo0", "Loopback0"),
             ("Po100", "Port-channel100"),
             ("Tu1", "Tunnel1"),
-            # ("Tu1", "Tunnel-ip1"),  # TODO platform
             ("Vl1", "Vlan1"),
             ("V1", "Vlan1"),
+            ("mgmt0", "mgmt0"),  # nxos
             # lower
             ("interface ethernet1/2/3.4", "Ethernet1/2/3.4"),
             ("interface fastethernet1/2", "FastEthernet1/2"),
@@ -301,6 +322,18 @@ class Test(Helpers):
             actual = obj.name_long()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
+    def test_valid__name_long__cisco_asr(self):
+        """Intf.name_long() platform="cisco_asr" """
+        platform = "cisco_asr"
+        for line, expected in [
+            ("interface Tunnel-ip1", "Tunnel-ip1"),  # full to full
+            ("Tunnel-ip1", "Tunnel-ip1"),  # long to full
+            ("Tu1", "Tunnel-ip1"),  # short to full
+        ]:
+            obj = Intf(line=line, platform=platform)
+            actual = obj.name_long()
+            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
+
     def test_valid__name_short(self):
         """Intf.name_short()"""
         for line, expected in [
@@ -312,8 +345,8 @@ class Test(Helpers):
             ("interface Loopback0", "Lo0"),
             ("interface Port-channel100", "Po100"),
             ("interface Tunnel1", "Tu1"),
-            # ("interface Tunnel-ip1", "Tu1"),  # TODO platform
             ("interface Vlan1", "V1"),
+            ("interface mgmt0", "mgmt0"),  # nxos
             # long to short
             ("Ethernet1/2/3.4", "Eth1/2/3.4"),
             ("FastEthernet1/2", "Fa1/2"),
@@ -322,8 +355,8 @@ class Test(Helpers):
             ("Loopback0", "Lo0"),
             ("Port-channel100", "Po100"),
             ("Tunnel1", "Tu1"),
-            # ("Tunnel-ip1", "Tu1"),  # TODO platform
             ("Vlan1", "V1"),
+            ("mgmt0", "mgmt0"),  # nxos
             # short to short
             ("Eth1/2/3.4", "Eth1/2/3.4"),
             ("Fa1/2", "Fa1/2"),
@@ -332,9 +365,9 @@ class Test(Helpers):
             ("Lo0", "Lo0"),
             ("Po100", "Po100"),
             ("Tu1", "Tu1"),
-            # ("Tu1", "Tu1"),  # TODO platform
             ("Vl1", "V1"),
             ("V1", "V1"),
+            ("mgmt0", "mgmt0"),  # nxos
             # lower
             ("interface ethernet1/2/3.4", "Eth1/2/3.4"),
             ("interface fastethernet1/2", "Fa1/2"),
@@ -347,6 +380,18 @@ class Test(Helpers):
             obj = Intf(line)
             actual = obj.name_short()
             self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__name_short__cisco_asr(self):
+        """Intf.name_short() platform="cisco_asr" """
+        platform = "cisco_asr"
+        for line, expected in [
+            ("interface Tunnel-ip1", "Tu1"),  # full to full
+            ("Tunnel-ip1", "Tu1"),  # long to full
+            ("Tu1", "Tu1"),  # short to full
+        ]:
+            obj = Intf(line=line, platform=platform)
+            actual = obj.name_short()
+            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
 
     def test_valid__part_after(self):
         """Intf.part_after()"""

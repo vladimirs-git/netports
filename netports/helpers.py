@@ -163,6 +163,15 @@ def lstr(items: Any) -> LStr:
     return items_
 
 
+def no_dupl(items: Iterable) -> list:
+    """Remove duplicate items from list"""
+    items_ = []
+    for item in items:
+        if item not in items_:
+            items_.append(item)
+    return items_
+
+
 def remove_brief_items(items: Any) -> list:
     """Remove "-1", -1 from items
     ::

@@ -179,6 +179,21 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{error=}"):
                 h.lstr(items=items)
 
+    def test_valid__no_dupl(self):
+        """no_dupl()"""
+        for members, req in [
+            ([], []),
+            (["a"], ["a"]),
+            (["a", "b", "a"], ["a", "b"]),  # list
+            (("a", "b", "a"), ["a", "b"]),  # tuple
+            (("b", "a", "b"), ["b", "a"]),
+            ([1, 2, 1], [1, 2]),
+            ([["a"], ["b"], ["a"]], [["a"], ["b"]]),
+            ([{"a": 1}, {"b": 2}, {"a": 1}], [{"a": 1}, {"b": 2}]),
+        ]:
+            result = h.no_dupl(members)
+            self.assertEqual(result, req, msg=f"{members=}")
+
     def test_valid__remove_brief_items(self):
         """remove_brief_items()"""
         for items, expected in [

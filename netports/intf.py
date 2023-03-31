@@ -5,14 +5,16 @@ import re
 from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
+from netports import helpers as h
 from netports.intf_name_map import (
+    get_short_to_long,
+    get_short_to_long_lower,
     long_to_long_lower,
     long_to_short_lower,
-    short_to_long,
-    short_to_long_lower,
     short_to_short,
 )
-from netports.types_ import T3Str, T5Str, LStr, SStr
+from netports.static import PLATFORMS
+from netports.types_ import T3Str, T5Str, LStr, SStr, DStr
 
 SPLITTER = ",./:"
 
@@ -28,11 +30,12 @@ class Intf:
         ::
             :param line: Interface name that can contain up to 4 indexes
             :type line: str
-            :param platform: Platform: "ios", "nxos", etc.  # TODO
-            :type splitter: str
-            :param splitter: Separator characters between indexes, by default ",./:"
+            :param platform: Platform: "", "cisco_asr" (default "")
+            :type platform: str
+            :param splitter: Separator of characters between indexes (default ",./:")
             :type splitter: str
         """
+        self._platform = self._init_platform(**kwargs)
         self._splitter = str(kwargs.get("splitter") or SPLITTER)
         self._line = self._init_line(line)
 
@@ -87,6 +90,15 @@ class Intf:
             self._ids[4],
         ]
         return "".join(items)
+
+    @staticmethod
+    def _init_platform(**kwargs) -> str:
+        """Init platform"""
+        platform = str(kwargs.get("platform") or "")
+        expected = ["", *PLATFORMS]
+        if platform not in expected:
+            raise ValueError(f"invalid {platform=} {expected=}")
+        return platform
 
     # =========================== property ===========================
 
@@ -175,6 +187,16 @@ class Intf:
         """
         return re.sub(r"^interface\s+", "", self.line)
 
+    @property
+    def platform(self) -> str:
+        """Platform"""
+        return self._platform
+
+    @property
+    def splitter(self) -> str:
+        """Separator of characters between indexes"""
+        return self._splitter
+
     # =========================== methods ============================
 
     def all_names(self) -> LStr:
@@ -193,17 +215,21 @@ class Intf:
                 ]
         """
         results: SStr = set()
-        for name_ in [self.line, self.name]:
+        names_: LStr = [self.line, self.name, self.name_full(), self.name_long(), self.name_short()]
+        names_ = h.no_dupl(names_)
+        for name_ in names_:
             results.add(name_)
             if not name_.startswith("interface "):
                 name_ = f"interface {name_}"
                 results.add(name_)
 
-        for name in [self.name, self.name_short()]:
-            intf_o = Intf(name)
+        names: LStr = [self.name, self.name_short()]
+        names = h.no_dupl(names)
+        for name in names:
+            intf_o = Intf(line=name, platform=self.platform)
             for id0_short, map_d in [
-                (intf_o.id0, short_to_long),
-                (intf_o.id0.lower(), short_to_long_lower),
+                (intf_o.id0, get_short_to_long(self._platform)),
+                (intf_o.id0.lower(), get_short_to_long_lower(self._platform)),
             ]:
                 if id0_long := map_d.get(id0_short) or "":
                     name_long = intf_o.line.replace(id0_short, id0_long, 1)
@@ -236,6 +262,7 @@ class Intf:
         name = self.name_long()
         return f"interface {name}"
 
+    # noinspection DuplicatedCode
     def name_long(self) -> str:
         """Interface long name with IDs and without interface keyword
         ::
@@ -247,7 +274,8 @@ class Intf:
         if id0.startswith("interface "):
             id0 = id0.replace("interface ", "", 1)
 
-        for short, long in short_to_long_lower.items():
+        short_to_long: DStr = get_short_to_long_lower(self._platform)
+        for short, long in short_to_long.items():
             if id0 == short:
                 id0 = long
                 break
@@ -261,6 +289,7 @@ class Intf:
         name = f"{id0}{id1}"
         return name
 
+    # noinspection DuplicatedCode
     def name_short(self) -> str:
         """Interface short name with IDs
         ::
@@ -289,12 +318,14 @@ class Intf:
     def part_after(self, idx: int, splitter=True) -> str:
         """Interface part after interested ID
         ::
-            :param idx: Returns the part of the interface name after this index
+            :param idx: Interface index
             :param splitter: True - Include splitter from edge, False - Skip splitter from edge
+            :return: Part of the interface name after specified interface index
             :example:
                 intf = Intf("Ethernet1/2/3.4")
                 intf.part_after(2) -> "/3.4"
                 intf.part_after(3) -> ".4"
+                intf.part_after(2, splitter=False) -> "3.4"
         """
         if idx >= 4:
             return ""
@@ -327,12 +358,14 @@ class Intf:
     def part_before(self, idx: int, splitter=True) -> str:
         """Interface part before interested ID
         ::
-            :param idx: Returns the part of the interface name before this index
+            :param idx: Interface index
             :param splitter: True - Include splitter from edge, False - Skip splitter from edge
+            :return: Part of the interface name before specified interface index
             :example:
                 intf = Intf("Ethernet1/2/3.4")
                 intf.part_before(2) -> "Ethernet1/"
-                intf.part_before(3) -> "Ethernet1/2"
+                intf.part_before(3) -> "Ethernet1/2/"
+                intf.part_before(3, splitter=False) -> "Ethernet1/2"
         """
         if idx <= 0:
             return ""
