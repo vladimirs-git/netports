@@ -2,9 +2,9 @@
 
 from typing import Any
 
+from netports import Range, NetportsValueError
 from netports import helpers as h
 from netports.ports import inumbers, parse_range
-from netports.range import Range
 from netports.static import BRIEF_ALL_I, RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
 from netports.types_ import LInt
 
@@ -44,7 +44,7 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
         :return: *List[int]* of unique sorted VLANs
         :rtype: List[int]
 
-        :raises ValueError: if VLANs are outside valid range 1...4094
+        :raises NetportsValueError: if VLANs are outside valid range 1...4094
 
         :example:
             ivlan("1,3-5") -> [1, 3, 4, 5]
@@ -100,7 +100,7 @@ def svlan(items: Any = "", **kwargs) -> str:
         :return: *str* of unique sorted VLANs
         :rtype: str
 
-        :raises ValueError: if VLANs are outside valid range 1...4094
+        :raises NetportsValueError: if VLANs are outside valid range 1...4094
 
         :example:
             svlan([1, 3, 4, 5]) -> "1,3-5"
@@ -154,8 +154,8 @@ def check_vlans(items: LInt) -> bool:
     ::
         :param items: VLAN IDs
         :return: True if all items are in the valid VLAN range 1...4094
-        :raises ValueError: If on of item is outside valid range
+        :raises NetportsValueError: If on of item is outside valid range
     """
     if invalid_vlan := [i for i in items if i < MIN_VLAN or i > MAX_VLAN]:
-        raise ValueError(f"{invalid_vlan=}, expected in range 1...4094")
+        raise NetportsValueError(f"{invalid_vlan=}, expected in range 1...4094")
     return True

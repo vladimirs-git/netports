@@ -3,6 +3,7 @@
 from pprint import pprint
 
 import netports
+from netports import NetportsValueError
 
 # IP_NAMES
 pprint(netports.IP_NAMES)
@@ -40,7 +41,7 @@ print(ports)
 
 try:
     netports.iip("265")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_ip_numbers=[265], expected in range 0...255
 
@@ -72,6 +73,6 @@ print(ports)
 
 try:
     netports.sip("265")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_ip_numbers=[265], expected in range 0...255

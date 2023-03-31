@@ -41,7 +41,8 @@ def parse_range(line: str, **kwargs) -> Range:
     items_ = [s.replace("__splitter__", splitter) for s in items_]
     items_ = [s.replace("__range__", range_splitter) for s in items_]
     line_ = splitter.join(items_)
-    return Range(items=line_, splitter=splitter, range_splitter=range_splitter)
+    range_o = Range(items=line_, splitter=splitter, range_splitter=range_splitter)
+    return range_o
 
 
 # noinspection PyIncorrectDocstring

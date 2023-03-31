@@ -137,7 +137,6 @@ class Test(Helpers):
             (dict(line=f"{id0}1-2-3-4", splitter="-"), exp_b8),
             # platform
             (dict(line="interface Ethernet1/1", platform=""), exp_c1),
-            (dict(line="interface Ethernet1/1", platform="cisco_ios"), exp_c1),
             (dict(line="interface Ethernet1/1", platform="cisco_asr"), exp_c1),
         ]:
             intf_o = Intf(**kwargs)

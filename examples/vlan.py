@@ -3,6 +3,7 @@
 import re
 
 import netports
+from netports import NetportsValueError
 
 # ivlan(items, all, splitter, range_splitter, platform)
 config = """
@@ -34,7 +35,7 @@ print(vlans)
 
 try:
     netports.ivlan("4095")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_vlan=[4095], expected in range 1...4094
 
@@ -67,6 +68,6 @@ print(vlans)
 
 try:
     netports.svlan("4095")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_vlan=[4095], expected in range 1...4094

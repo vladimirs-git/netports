@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import ports
+from netports import ports, NetportsValueError
 
 
 class Test(unittest.TestCase):
@@ -44,9 +44,9 @@ class Test(unittest.TestCase):
     def test_invalid__inumbers(self):
         """inumbers()"""
         for items, error in [
-            ("1-2-3", ValueError),
-            ("1-a", ValueError),
-            ("2-1", ValueError),
+            ("1-2-3", NetportsValueError),
+            ("1-a", NetportsValueError),
+            ("2-1", NetportsValueError),
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
                 ports.inumbers(items)
@@ -82,10 +82,10 @@ class Test(unittest.TestCase):
     def test_invalid__sports(self):
         """sports()"""
         for items, error in [
-            ([[1]], ValueError),
-            (b"a", ValueError),
-            ([{}], ValueError),
-            ("1 3 to 5", ValueError),  # HP style
+            ([[1]], NetportsValueError),
+            (b"a", NetportsValueError),
+            ([{}], NetportsValueError),
+            ("1 3 to 5", NetportsValueError),  # HP style
         ]:
             with self.assertRaises(error, msg=f"{items=}"):
                 ports.snumbers(items=items)

@@ -97,7 +97,7 @@ class Intf:
         platform = str(kwargs.get("platform") or "")
         expected = ["", *PLATFORMS]
         if platform not in expected:
-            raise ValueError(f"invalid {platform=} {expected=}")
+            raise ValueError(f"{platform=} {expected=}")
         return platform
 
     # =========================== property ===========================

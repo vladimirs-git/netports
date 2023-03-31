@@ -6,6 +6,7 @@ from __future__ import annotations
 from functools import total_ordering
 
 from netports import helpers as h
+from netports.exceptions import NetportsValueError
 from netports.item import Item, LItem
 from netports.static import SPLITTER, RANGE_SPLITTER
 from netports.types_ import LStr, LInt, OInt, IInt, T2SInt, StrInt, StrIInt, IStrInt
@@ -390,7 +391,7 @@ class Range:
                 if not item.isdigit():
                     if not self._strict:
                         continue
-                    raise ValueError(f"invalid {item=} in {line=}")
+                    raise NetportsValueError(f"{item=} in {line=}")
             line_ = splitter.join(items_)
             lines.append(line_)
         return range_splitter.join(lines)

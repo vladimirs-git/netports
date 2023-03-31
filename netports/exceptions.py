@@ -1,5 +1,5 @@
 """netports exceptions"""
 
 
-class NetportsNameError(ValueError):
+class NetportsValueError(ValueError):
     """Hostname naming convention error"""

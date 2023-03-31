@@ -1,6 +1,7 @@
 """Examples TCP/UDP"""
 
 import netports
+from netports import NetportsValueError
 
 # itcp(items, all)
 ports = netports.itcp("80,20,21-22")
@@ -17,7 +18,7 @@ print(ports)
 
 try:
     netports.itcp("65536")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_port=[65536], expected in range 1...65535
 
@@ -41,6 +42,6 @@ print(ports)
 
 try:
     netports.stcp("65536")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid_port=[65536], expected in range 1...65535

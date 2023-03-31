@@ -4,7 +4,7 @@ import unittest
 
 import dictdiffer  # type: ignore
 
-from netports import vlan
+from netports import vlan, NetportsValueError
 
 ALL = list(range(1, 4095))
 
@@ -68,22 +68,23 @@ class Test(unittest.TestCase):
         """ivlan() svlan()"""
         for kwargs, error in [
             # vlans
-            (dict(items=0), ValueError),
-            (dict(items="0"), ValueError),
-            (dict(items=[0]), ValueError),
-            (dict(items=4095), ValueError),
-            (dict(items="4095"), ValueError),
-            (dict(items=[4095]), ValueError),
+            (dict(items=0), NetportsValueError),
+            (dict(items="0"), NetportsValueError),
+            (dict(items=[0]), NetportsValueError),
+            (dict(items=4095), NetportsValueError),
+            (dict(items="4095"), NetportsValueError),
+            (dict(items=[4095]), NetportsValueError),
             # typo
             (dict(items="typo"), ValueError),
             # splitter
-            (dict(items="1,3-5", platform="hpe"), ValueError),
-            (dict(items="1 3 to 5", platform="cisco"), ValueError),
+            (dict(items="1,3-5", platform="hpe"), NetportsValueError),
+            (dict(items="1 3 to 5", platform="cisco"), NetportsValueError),
             # splitter -1 verbose
-            (dict(items="-1", verbose=True, platform="cisco"), ValueError),
-            (dict(items="-1", verbose=True, platform="hpe"), ValueError),
-            (dict(items="-1", verbose=True, splitter=",", range_splitter="-"), ValueError),
-            (dict(items="-1", verbose=True, splitter=" ", range_splitter=" to "), ValueError),
+            (dict(items="-1", verbose=True, platform="cisco"), NetportsValueError),
+            (dict(items="-1", verbose=True, platform="hpe"), NetportsValueError),
+            (dict(items="-1", verbose=True, splitter=",", range_splitter="-"), NetportsValueError),
+            (dict(items="-1", verbose=True, splitter=" ", range_splitter=" to "),
+             NetportsValueError),
         ]:
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 vlan.ivlan(**kwargs)

@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import ip
+from netports import ip, NetportsValueError
 
 ALL = list(range(0, 256))
 
@@ -70,11 +70,11 @@ class Test(unittest.TestCase):
         """iip()"""
         for kwargs, error in [
             # ports
-            (dict(items=256), ValueError),
-            (dict(items="256"), ValueError),
-            (dict(items=[256]), ValueError),
+            (dict(items=256), NetportsValueError),
+            (dict(items="256"), NetportsValueError),
+            (dict(items=[256]), NetportsValueError),
             # typo
-            (dict(items="typo"), ValueError),
+            (dict(items="typo"), NetportsValueError),
         ]:
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 ip.iip(**kwargs)

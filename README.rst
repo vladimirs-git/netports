@@ -64,7 +64,7 @@ all             *bool*                      True - Returns all TCP/UDP ports: [1
 Return
     *List[int]* of unique sorted TCP/UDP ports
 Raises
-    *ValueError* if TCP/UDP ports are outside valid range 1...65535
+    *NetportsValueError* if TCP/UDP ports are outside valid range 1...65535
 
 
 
@@ -84,7 +84,7 @@ all             *bool*                      True - Returns all TCP/UDP ports: "1
 Return
     *str* of unique sorted TCP/UDP ports
 Raises
-    *ValueError* if TCP/UDP ports are outside valid range 1...65535
+    *NetportsValueError* if TCP/UDP ports are outside valid range 1...65535
 
 
 **Examples**
@@ -116,7 +116,7 @@ platform        *str*                       Set ``splitter`` and ``range_splitte
 Return
     *List[int]* of unique sorted VLANs
 Raises
-    *ValueError* if VLANs are outside valid range 1...4094
+    *NetportsValueError* if VLANs are outside valid range 1...4094
 
 
 svlan()
@@ -138,7 +138,7 @@ platform        *str*                       Set ``splitter`` and ``range_splitte
 Return
     *str* of unique sorted VLANs
 Raises
-    *ValueError* if VLANs are outside valid range 1...4094
+    *NetportsValueError* if VLANs are outside valid range 1...4094
 
 
 **Examples**
@@ -168,14 +168,14 @@ Parameter        Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of IP protocol numbers, can be unsorted and with duplicates, "ip" - Return all IP protocol numbers: [0, 1, ..., 255]
 verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to save RAM (default)
-strict          *bool*                      True - Raises ValueError, if the protocol is unknown (default), False - Skips unknown protocols
+strict          *bool*                      True - Raises NetportsValueError, if the protocol is unknown (default), False - Skips unknown protocols
 all             *bool*                      True - Return all IP protocol numbers: [0, 1, ..., 255]
 =============== =========================== ============================================================================
 
 Return
     *List[int]* of unique sorted IP protocol numbers
 Raises
-    *ValueError* if IP protocol numbers are outside valid range 0...255
+    *NetportsValueError* if IP protocol numbers are outside valid range 0...255
 
 sip()
 .....
@@ -187,14 +187,14 @@ Parameter       Type                        Description
 =============== =========================== ============================================================================
 items           *str, List[int], List[str]* Range of IP protocol numbers, can be unsorted and with duplicates. "ip" - mean all numbers in range 0...255.
 verbose         *bool*                      True - all protocols in verbose mode: [0, 1, ..., 255], False - all protocols in brief mode: [-1], to save RAM (default)
-strict          *bool*                      True - Raises ValueError, if the protocol is unknown (default), False - Skips unknown protocols
+strict          *bool*                      True - Raises NetportsValueError, if the protocol is unknown (default), False - Skips unknown protocols
 all             *bool*                      True - Return all IP protocol numbers: "0-255"
 =============== =========================== ============================================================================
 
 Return
     *str* of unique sorted IP protocol numbers
 Raises
-    *ValueError* if IP protocol numbers are outside valid range 0...255
+    *NetportsValueError* if IP protocol numbers are outside valid range 0...255
 
 
 ip_pairs()
@@ -236,7 +236,7 @@ Parameter       Type                        Description
 items           *str*, *List[int]*          Range of numbers. Numbers can be unsorted and duplicated.
 splitter        *str*                       Separator character between items, by default ","
 range_splitter  *str*                       Separator between min and max numbers in range, by default "-"
-strict          *bool*                      True - Raise ValueError, if in items is invalid item. False - Make Range without invalid items. By default True.
+strict          *bool*                      True - Raise NetportsValueError, if in items is invalid item. False - Make Range without invalid items. By default True.
 =============== =========================== ============================================================================
 
 Attributes demonstration

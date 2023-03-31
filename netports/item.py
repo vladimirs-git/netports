@@ -4,6 +4,8 @@ import re
 from functools import total_ordering
 from typing import List
 
+from netports.exceptions import NetportsValueError
+
 
 @total_ordering
 class Item:
@@ -58,12 +60,12 @@ class Item:
     @line.setter
     def line(self, line: str) -> None:
         if not re.match(r"\d+(-\d+)?$", line):
-            raise ValueError(f"invalid {line=}, expected range")
+            raise NetportsValueError(f"{line=}, expected range")
         items = line.split("-")
         self._min = int(items[0])
         self._max = self._min if len(items) == 1 else int(items[1])
         if self.min > self.max:
-            raise ValueError(f"{self.max=} < {self.min=}")
+            raise NetportsValueError(f"{self.max=} < {self.min=}")
         self._line = line
 
     @property

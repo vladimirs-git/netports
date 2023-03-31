@@ -4,6 +4,7 @@ from operator import itemgetter
 from typing import Any, Tuple
 
 from netports import helpers as h
+from netports.exceptions import NetportsValueError
 from netports.ports import snumbers
 from netports.range import Range
 from netports.static import BRIEF_ALL_I
@@ -480,7 +481,7 @@ def iip(items: Any = "", **kwargs) -> LInt:
                         False - all protocol numbers in brief mode: [-1] to save RAM (default)
         :type verbose: bool
 
-        :param strict: True - Raises ValueError, if the protocol is unknown (default)
+        :param strict: True - Raises NetportsValueError, if the protocol is unknown (default)
                        False - Skips unknown protocols
 
         :param all: True - Return all IP protocol numbers: [0, 1, ..., 255]
@@ -489,7 +490,7 @@ def iip(items: Any = "", **kwargs) -> LInt:
         :return: *List[int]* of unique sorted IP protocol numbers
         :rtype: List[int]
 
-        :raises ValueError: If IP protocol numbers are outside valid range 0...255
+        :raises NetportsValueError: If IP protocol numbers are outside valid range 0...255
 
         :example: Converts mix of ip protocol names and numbers to the numbers
             iip("icmp,tcp,7,255") -> [1, 6, 7, 255]
@@ -517,7 +518,7 @@ def iip(items: Any = "", **kwargs) -> LInt:
     pairs, invalid = ip_pairs(items=items_, **kwargs)
     if h.is_strict(**kwargs):
         if invalid:
-            raise ValueError(f"{invalid=}")
+            raise NetportsValueError(f"{invalid=}")
     if not pairs:
         return []
     numbers, names = [list(t) for t in zip(*pairs)]
@@ -540,7 +541,7 @@ def sip(items: Any = "", **kwargs) -> str:
                         False - all protocol numbers in brief mode: [-1], to save RAM (default)
         :type verbose: bool
 
-        :param strict: True - Raises ValueError, if the protocol is unknown (default),
+        :param strict: True - Raises NetportsValueError, if the protocol is unknown (default),
                        False - Skips unknown protocols
         :type strict: bool
 
@@ -550,7 +551,7 @@ def sip(items: Any = "", **kwargs) -> str:
         :return: *str* of unique sorted IP protocol numbers
         :rtype: str
 
-        :raises ValueError: If IP protocol numbers are outside valid range 0...255
+        :raises NetportsValueError: If IP protocol numbers are outside valid range 0...255
 
         :example:
             sip(["icmp", "tcp", "7", 255]) -> "1,6-7,255"
@@ -644,7 +645,7 @@ def _split_numbers_names(items: LStr) -> Tuple[SInt, SStr]:
         try:
             range_o = Range(item)
             numbers.update(range_o.numbers())
-        except ValueError:
+        except NetportsValueError:
             names.add(item)
     return numbers, names
 

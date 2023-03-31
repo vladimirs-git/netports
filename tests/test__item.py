@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import Item
+from netports import Item, NetportsValueError
 from tests.helpers_ import Helpers
 
 
@@ -103,8 +103,8 @@ class Test(Helpers):
         for line, error in [
             (1, TypeError),
             (["1"], TypeError),
-            ("0,1", ValueError),
-            ("1,3-5", ValueError),
+            ("0,1", NetportsValueError),
+            ("1,3-5", NetportsValueError),
         ]:
             with self.assertRaises(error, msg=f"{line=}"):
                 Item(line)

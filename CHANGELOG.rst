@@ -10,6 +10,7 @@ CHANGELOG
 * [new] Intf.part_after()
 * [new] Intf.part_before()
 * [change] Intf.name_short > Intf.name_short(), property changed to method
+* [change] ValueError > NetportsValueError
 
 
 0.7.3 (2023-01-24)

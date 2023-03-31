@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import Range, Item
+from netports import Range, Item, NetportsValueError
 from tests.helpers_ import Helpers
 
 
@@ -349,7 +349,7 @@ class Test(Helpers):
         for number, error, in [
             (3, TypeError),
             ("3", TypeError),
-            (["a"], ValueError),
+            (["a"], NetportsValueError),
         ]:
             with self.assertRaises(error, msg=f"{number=}"):
                 range_o.extend(number)

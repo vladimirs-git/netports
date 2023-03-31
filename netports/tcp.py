@@ -3,6 +3,7 @@
 from typing import Any
 
 from netports import helpers as h
+from netports.exceptions import NetportsValueError
 from netports.ports import inumbers, parse_range
 from netports.range import Range
 from netports.static import BRIEF_ALL_I
@@ -31,7 +32,7 @@ def itcp(items: Any = "", **kwargs) -> LInt:
         :return: *List[int]* of unique sorted TCP/UDP ports
         :rtype: List[int]
 
-        :raises ValueError: If TCP/UDP ports are outside valid range 1...65535
+        :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535
 
         :example:
             itcp("1,3-5") -> [1, 3, 4, 5]
@@ -70,7 +71,7 @@ def stcp(items: Any = "", **kwargs) -> str:
         :return: *str* of unique sorted TCP/UDP ports
         :rtype: str
 
-        :raises ValueError: If TCP/UDP ports are outside valid range 1...65535
+        :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535
 
         :example:
             stcp([1, 3, 4, 5]) -> "1,3-5"
@@ -100,8 +101,8 @@ def check_tcp_ports(items: LInt) -> bool:
         :return: True if all items are in the valid TCP/UDP range 1...65535
         :rtype: bool
 
-        :raises ValueError: If on of item is outside valid range
+        :raises NetportsValueError: If on of item is outside valid range
     """
     if invalid_port := [i for i in items if i < MIN_PORT or i > MAX_PORT]:
-        raise ValueError(f"{invalid_port=}, expected in range 1...65535")
+        raise NetportsValueError(f"{invalid_port=}, expected in range 1...65535")
     return True

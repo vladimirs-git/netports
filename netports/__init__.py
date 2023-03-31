@@ -1,6 +1,6 @@
 """netports"""
 
-from netports.exceptions import NetportsNameError
+from netports.exceptions import NetportsValueError
 from netports.intf import Intf
 from netports.intf_gm import IntfGM, intfrange
 from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
@@ -16,7 +16,7 @@ __all__ = [
     "Intf",
     "IntfGM",
     "Item",
-    "NetportsNameError",
+    "NetportsValueError",
     "Range",
     "iip",
     "intfrange",

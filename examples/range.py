@@ -1,6 +1,6 @@
 """Examples Range"""
 
-from netports import Range
+from netports import Range, NetportsValueError
 
 # Attributes demonstration
 range_o = Range("1,3-5")
@@ -10,14 +10,14 @@ assert range_o.numbers() == [1, 3, 4, 5]
 assert list(range_o) == [1, 3, 4, 5]
 assert Range("1,3-5") == Range([1, 3, 4, 5])
 
-# Raise ValueError if one of item is invalid
+# Raise NetportsValueError if one of item is invalid
 try:
     Range("1,3-5,typo")
-except ValueError as ex:
+except NetportsValueError as ex:
     print(ex)
 # invalid item="typo" in line="1,3-5,typo"
 
-# Make Range without invalid items (not raise ValueError)
+# Make Range without invalid items (not raise NetportsValueError)
 range_o = Range("1,3-5,typo", strict=False)
 assert range_o.line == "1,3-5"
 

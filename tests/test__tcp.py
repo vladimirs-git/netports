@@ -2,7 +2,7 @@
 
 import unittest
 
-from netports import tcp
+from netports import tcp, NetportsValueError
 
 ALL = list(range(1, 65536))
 
@@ -57,12 +57,12 @@ class Test(unittest.TestCase):
         """itcp() stcp()"""
         for kwargs, error in [
             # ports
-            (dict(items=0), ValueError),
-            (dict(items="0"), ValueError),
-            (dict(items=[0]), ValueError),
-            (dict(items=65536), ValueError),
-            (dict(items="65536"), ValueError),
-            (dict(items=[65536]), ValueError),
+            (dict(items=0), NetportsValueError),
+            (dict(items="0"), NetportsValueError),
+            (dict(items=[0]), NetportsValueError),
+            (dict(items=65536), NetportsValueError),
+            (dict(items="65536"), NetportsValueError),
+            (dict(items=[65536]), NetportsValueError),
             # typo
             (dict(items="typo"), ValueError),
         ]:
