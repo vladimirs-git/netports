@@ -34,13 +34,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.7.3.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.8.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.7.3
+    pip install git+https://github.com/vladimirs-git/netports@0.8.0
 
 
 
@@ -417,7 +417,6 @@ id4             int          Interface 4th ID
 ids                          Interface all IDs
 line            str          Interface line
 name            str          Interface name with IDs
-name_short      str          Interface short name with IDs
 =============== ============ =======================================================================
 
 
@@ -433,10 +432,48 @@ all_names()
 All variants of names: long, short, upper-case, lover-case
 
 
-part()
-......
-**part(idx)**
+name_full()
+...........
+**name_full()**
+Interface long name with IDs and with interface keyword
+
+
+name_long()
+...........
+**name_long()**
+Interface long name with IDs and without interface keyword
+
+
+name_short()
+............
+**name_short()**
+Interface short name with IDs
+
+
+part_after()
+............
+**part_after(idx, splitter)**
+Interface part after interested ID
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+idx         *int*        Returns the part of the interface name after this index
+splitter    *bool*       True - Include splitter from edge, False - Skip splitter from edge
+=========== ============ ===========================================================================
+
+
+part_before()
+.............
+**part_before(idx, splitter)**
 Interface part before interested ID
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+idx         *int*        Returns the part of the interface name before this index
+splitter    *bool*       True - Include splitter from edge, False - Skip splitter from edge
+=========== ============ ===========================================================================
 
 
 **Examples**

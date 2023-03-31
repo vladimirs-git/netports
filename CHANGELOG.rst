@@ -4,6 +4,14 @@
 CHANGELOG
 =========
 
+0.8.0 (2023-03-31)
+------------------
+* [delete] Intf.part()
+* [new] Intf.part_after()
+* [new] Intf.part_before()
+* [change] Intf.name_short > Intf.name_short(), property changed to method
+
+
 0.7.3 (2023-01-24)
 ------------------
 * [fix] Intf.all_names() > mgmt0

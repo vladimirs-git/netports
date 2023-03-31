@@ -8,8 +8,8 @@ from netports import Intf
 interface = Intf("interface Ethernet1/2/3.4")
 assert interface.line == "interface Ethernet1/2/3.4"
 assert interface.name == "Ethernet1/2/3.4"
-assert interface.ids == ('interface Ethernet', '1', '2', '3', '4')
-assert interface.delimiters == ('/', '/', '.')
+assert interface.ids == ("interface Ethernet", "1", "2", "3", "4")
+assert interface.delimiters == ("/", "/", ".")
 assert interface.id0 == "interface Ethernet"
 assert interface.id1 == 1
 assert interface.id2 == 2
@@ -19,11 +19,23 @@ assert interface.id4 == 4
 # Methods
 print("last_idx", interface.last_idx())
 print("name_short", interface.name_short())
-print("part before id", 2, interface.part(2))
+print("name_long", interface.name_long())
+print("name_full", interface.name_full())
+print("part before id", 2, interface.part_before(idx=2))
+print("part before id", 3, interface.part_before(idx=3))
+print("part before id", 4, interface.part_before(idx=4))
+print("part before id", 4, interface.part_before(idx=4, splitter=False))
+print("part after id", 3, interface.part_before(idx=3))
+print("part after id", 3, interface.part_before(idx=3, splitter=False))
 print()
 # last_idx 4
 # name_short Eth1/2/3.4
 # part before id 2 interface Ethernet1/
+# part before id 3 interface Ethernet1/2/
+# part before id 4 interface Ethernet1/2/3.
+# part before id 4 interface Ethernet1/2/3
+# part after id 3 interface Ethernet1/2/
+# part after id 3 interface Ethernet1/2
 
 
 # Sorting by indexes

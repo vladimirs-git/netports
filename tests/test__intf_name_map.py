@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
             ("Tunnel", ["Tu"]),
             ("Port-channel", ["Po"]),
             ("Loopback", ["Lo"]),
-            ("Vlan", ["Vl", "V"]),
+            ("Vlan", ["V", "Vl"]),
         ]:
             actual = intf_name_map.long_to_shorts[long]
             self.assertEqual(expected, actual, msg=f"{long=}")
@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
             ("Tunnel", "Tu"),
             ("Port-channel", "Po"),
             ("Loopback", "Lo"),
-            ("Vlan", "Vl"),
+            ("Vlan", "V"),
         ]:
             actual = intf_name_map.long_to_short[long]
             self.assertEqual(expected, actual, msg=f"{long=}")
@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
             ("tunnel", "Tu"),
             ("port-channel", "Po"),
             ("loopback", "Lo"),
-            ("vlan", "Vl"),
+            ("vlan", "V"),
         ]:
             actual = intf_name_map.long_to_short_lower[long]
             self.assertEqual(expected, actual, msg=f"{long=}")

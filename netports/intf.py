@@ -2,10 +2,16 @@
 Sorts the interfaces by indexes (not by alphabetic).
 """
 import re
-from functools import cached_property, total_ordering
+from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
-from netports.intf_name_map import long_to_short_lower, short_to_long, short_to_long_lower
+from netports.intf_name_map import (
+    long_to_long_lower,
+    long_to_short_lower,
+    short_to_long,
+    short_to_long_lower,
+    short_to_short,
+)
 from netports.types_ import T3Str, T5Str, LStr, SStr
 
 SPLITTER = ",./:"
@@ -22,7 +28,8 @@ class Intf:
         ::
             :param line: Interface name that can contain up to 4 indexes
             :type line: str
-
+            :param platform: Platform: "ios", "nxos", etc.  # TODO
+            :type splitter: str
             :param splitter: Separator characters between indexes, by default ",./:"
             :type splitter: str
         """
@@ -168,31 +175,7 @@ class Intf:
         """
         return re.sub(r"^interface\s+", "", self.line)
 
-    @cached_property
-    def name_short(self) -> str:
-        """Interface short name with IDs
-        ::
-            :example:
-                intf = Intf("interface FastEthernet1/2")
-                intf.name_short() -> "Fa1/2"
-        """
-        name = self.name.lower()
-        for long, short in long_to_short_lower.items():
-            if name.startswith(long):
-                return name.replace(long, short)
-        return name
-
     # =========================== methods ============================
-
-    def last_idx(self) -> int:
-        """Index of last ID in interface line
-        ::
-            :example:
-                intf = Intf("interface Ethernet1/2/3.4")
-                intf.last_idx() -> 4
-        """
-        ids = self._ids[1:]
-        return len([s for s in ids if s])
 
     def all_names(self) -> LStr:
         """All variants of names: long, short, upper-case, lover-case
@@ -215,9 +198,8 @@ class Intf:
             if not name_.startswith("interface "):
                 name_ = f"interface {name_}"
                 results.add(name_)
-        # results.add(self.name_short)
 
-        for name in [self.name, self.name_short]:
+        for name in [self.name, self.name_short()]:
             intf_o = Intf(name)
             for id0_short, map_d in [
                 (intf_o.id0, short_to_long),
@@ -234,29 +216,147 @@ class Intf:
         results_.sort(key=len, reverse=True)
         return results_
 
-    def part(self, idx: int) -> str:
-        """Interface part before interested ID
+    def last_idx(self) -> int:
+        """Index of last ID in interface line
         ::
             :example:
                 intf = Intf("interface Ethernet1/2/3.4")
-                intf.parts(2) -> "Ethernet1/"
+                intf.last_idx() -> 4
+        """
+        ids = self._ids[1:]
+        return len([s for s in ids if s])
+
+    def name_full(self) -> str:
+        """Interface long name with IDs and with interface keyword
+        ::
+            :example:
+                intf = Intf("Eth1/2")
+                intf.name_full() -> "interface Ethernet1/2"
+        """
+        name = self.name_long()
+        return f"interface {name}"
+
+    def name_long(self) -> str:
+        """Interface long name with IDs and without interface keyword
+        ::
+            :example:
+                intf = Intf("Eth1/2")
+                intf.name_long() -> "Ethernet1/2"
+        """
+        id0 = self.id0.lower()
+        if id0.startswith("interface "):
+            id0 = id0.replace("interface ", "", 1)
+
+        for short, long in short_to_long_lower.items():
+            if id0 == short:
+                id0 = long
+                break
+        else:
+            for long, long_ in long_to_long_lower.items():
+                if id0 == long:
+                    id0 = long_
+                    break
+
+        id1 = self.part_after(idx=0)
+        name = f"{id0}{id1}"
+        return name
+
+    def name_short(self) -> str:
+        """Interface short name with IDs
+        ::
+            :example:
+                intf = Intf("interface FastEthernet1/2")
+                intf.name_short() -> "Fa1/2"
+        """
+        id0 = self.id0.lower()
+        if id0.startswith("interface "):
+            id0 = id0.replace("interface ", "", 1)
+
+        for long, short in long_to_short_lower.items():
+            if id0 == long:
+                id0 = short
+                break
+        else:
+            for short, short_ in short_to_short.items():
+                if id0 == short:
+                    id0 = short_
+                    break
+
+        id1 = self.part_after(idx=0)
+        name = f"{id0}{id1}"
+        return name
+
+    def part_after(self, idx: int, splitter=True) -> str:
+        """Interface part after interested ID
+        ::
+            :param idx: Returns the part of the interface name after this index
+            :param splitter: True - Include splitter from edge, False - Skip splitter from edge
+            :example:
+                intf = Intf("Ethernet1/2/3.4")
+                intf.part_after(2) -> "/3.4"
+                intf.part_after(3) -> ".4"
+        """
+        if idx >= 4:
+            return ""
+
+        parts = self._ids[4]
+        if idx == 3:
+            if splitter:
+                return self._dels[2] + parts
+            return parts
+
+        parts = self._ids[3] + self._dels[2] + parts
+        if idx == 2:
+            if splitter:
+                return self._dels[1] + parts
+            return parts
+
+        parts = self._ids[2] + self._dels[1] + parts
+        if idx == 1:
+            if splitter:
+                return self._dels[0] + parts
+            return parts
+
+        parts = self._ids[1] + self._dels[0] + parts
+        if idx == 0:
+            return parts
+
+        parts = self._ids[0] + parts
+        return parts
+
+    def part_before(self, idx: int, splitter=True) -> str:
+        """Interface part before interested ID
+        ::
+            :param idx: Returns the part of the interface name before this index
+            :param splitter: True - Include splitter from edge, False - Skip splitter from edge
+            :example:
+                intf = Intf("Ethernet1/2/3.4")
+                intf.part_before(2) -> "Ethernet1/"
+                intf.part_before(3) -> "Ethernet1/2"
         """
         if idx <= 0:
             return ""
+
         parts = self._ids[0]
         if idx == 1:
             return parts
 
-        parts += self._ids[1] + self._dels[0]
+        parts += self._ids[1]
         if idx == 2:
+            if splitter:
+                return parts + self._dels[0]
             return parts
 
-        parts += self._ids[2] + self._dels[1]
+        parts += self._dels[0] + self._ids[2]
         if idx == 3:
+            if splitter:
+                return parts + self._dels[1]
             return parts
 
-        parts += self._ids[3] + self._dels[2]
+        parts += self._dels[1] + self._ids[3]
         if idx == 4:
+            if splitter:
+                return parts + self._dels[2]
             return parts
 
         return self._line

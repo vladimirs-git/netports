@@ -84,12 +84,12 @@ class IntfGM:
         data: DSStr = {}
         for intf in items:
             idx = intf.last_idx()
-            part = intf.part(idx)
+            part = intf.part_before(idx)
             data[part] = set()
 
         for intf in items:
             idx = intf.last_idx()
-            part_ = intf.part(idx)
+            part_ = intf.part_before(idx)
             id_ = intf.ids[idx]
             data[part_].add(id_)
 
@@ -114,7 +114,7 @@ class IntfGM:
         for long_intf in long_intfs:
             long_intf = long_intf.lower()
             intf_o = Intf(long_intf)
-            name_short = intf_o.name_short
+            name_short = intf_o.name_short()
             postfix = long_intf.replace(intf_o.line, "")
             short_intf = name_short + postfix
             short_intfs.append(short_intf)

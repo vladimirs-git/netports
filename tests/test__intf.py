@@ -93,20 +93,20 @@ class Test(Helpers):
 
     def test_valid__line(self):
         """Intf.line"""
-        intf = "interface Ethernet"
-        exp1 = dict(line=f"{intf}1", name="Ethernet1", id0=intf, id1=1, id2=0, id3=0, id4=0)
-        exp2 = dict(line=f"{intf}1/2", name="Ethernet1/2", id0=intf, id1=1, id2=2, id3=0, id4=0)
-        exp3 = dict(line=f"{intf}1/2/3", name="Ethernet1/2/3", id0=intf, id1=1, id2=2, id3=3, id4=0)
-        exp4 = dict(line=f"{intf}1/2/3.4", name="Ethernet1/2/3.4",
-                    id0=intf, id1=1, id2=2, id3=3, id4=4)
-        exp5 = dict(line=f"{intf}1.2.3.4", name="Ethernet1.2.3.4",
-                    id0=intf, id1=1, id2=2, id3=3, id4=4)
-        exp6 = dict(line=f"{intf}1,2,3,4", name="Ethernet1,2,3,4",
-                    id0=intf, id1=1, id2=2, id3=3, id4=4)
-        exp7 = dict(line=f"{intf}1:2:3:4", name="Ethernet1:2:3:4",
-                    id0=intf, id1=1, id2=2, id3=3, id4=4)
-        exp8 = dict(line=f"{intf}1-2-3-4", name="Ethernet1-2-3-4",
-                    id0=intf, id1=1, id2=2, id3=3, id4=4)
+        id0 = "interface Ethernet"
+        exp1 = dict(line=f"{id0}1", name="Ethernet1", id0=id0, id1=1, id2=0, id3=0, id4=0)
+        exp2 = dict(line=f"{id0}1/2", name="Ethernet1/2", id0=id0, id1=1, id2=2, id3=0, id4=0)
+        exp3 = dict(line=f"{id0}1/2/3", name="Ethernet1/2/3", id0=id0, id1=1, id2=2, id3=3, id4=0)
+        exp4 = dict(line=f"{id0}1/2/3.4", name="Ethernet1/2/3.4",
+                    id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp5 = dict(line=f"{id0}1.2.3.4", name="Ethernet1.2.3.4",
+                    id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp6 = dict(line=f"{id0}1,2,3,4", name="Ethernet1,2,3,4",
+                    id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp7 = dict(line=f"{id0}1:2:3:4", name="Ethernet1:2:3:4",
+                    id0=id0, id1=1, id2=2, id3=3, id4=4)
+        exp8 = dict(line=f"{id0}1-2-3-4", name="Ethernet1-2-3-4",
+                    id0=id0, id1=1, id2=2, id3=3, id4=4)
         for kwargs, exp_d in [
             (dict(line=""), dict(line="", name="", id0="", id1=0, id2=0, id3=0, id4=0)),
             (dict(line="1"), dict(line="1", name="1", id0="", id1=1, id2=0, id3=0, id4=0)),
@@ -117,59 +117,26 @@ class Test(Helpers):
                                         id0="port", id1=1, id2=2, id3=0, id4=0)),
             (dict(line="text"), dict(line="text", name="text",
                                      id0="text", id1=0, id2=0, id3=0, id4=0)),
-            (dict(line=intf), dict(line=intf, name="Ethernet",
-                                   id0=intf, id1=0, id2=0, id3=0, id4=0)),
-            (dict(line=f"{intf}1"), exp1),
-            (dict(line=f"{intf}1/2"), exp2),
-            (dict(line=f"{intf}1/2/3"), exp3),
-            (dict(line=f"{intf}1/2/3.4"), exp4),
-            (dict(line=f"{intf}1/2/3.4-5"), exp4),
-            (dict(line=f"{intf}1/2/3.4text"), exp4),
-            (dict(line=f"{intf}1.2.3.4"), exp5),
-            (dict(line=f"{intf}1,2,3,4"), exp6),
-            (dict(line=f"{intf}1:2:3:4"), exp7),
-            # (dict(line=f"{intf}1-2-3-4", splitter="-"), exp8),
+            (dict(line=id0), dict(line=id0, name="Ethernet",
+                                  id0=id0, id1=0, id2=0, id3=0, id4=0)),
+            (dict(line=f"{id0}1"), exp1),
+            (dict(line=f"{id0}1/2"), exp2),
+            (dict(line=f"{id0}1/2/3"), exp3),
+            (dict(line=f"{id0}1/2/3.4"), exp4),
+            (dict(line=f"{id0}1/2/3.4-5"), exp4),
+            (dict(line=f"{id0}1/2/3.4text"), exp4),
+            (dict(line=f"{id0}1.2.3.4"), exp5),
+            (dict(line=f"{id0}1,2,3,4"), exp6),
+            (dict(line=f"{id0}1:2:3:4"), exp7),
+            (dict(line=f"{id0}1-2-3-4", splitter="-"), exp8),
         ]:
             intf_o = Intf(**kwargs)
             self._test_attrs(obj=intf_o, exp_d=exp_d, msg=f"{kwargs=}")
 
-    def test_name_short(self):
-        """Intf.name_short"""
-        for line, expected in [
-            ("interface Ethernet1/2/3.4", "Eth1/2/3.4"),
-            ("interface FastEthernet1/2", "Fa1/2"),
-            ("interface fastethernet1/2", "Fa1/2"),
-            ("interface GigabitEthernet1/2", "Gi1/2"),
-            ("interface TenGigabitEthernet1/2", "Te1/2"),
-            ("interface Loopback0", "Lo0"),
-            ("interface Port-channel100", "Po100"),
-            ("interface Tunnel1", "Tu1"),
-            ("interface Tunnel-ip1", "Tu1"),
-            ("interface Vlan1", "Vl1"),
-        ]:
-            obj = Intf(line)
-            actual = obj.name_short
-            self.assertEqual(expected, actual, msg=f"{line=}")
-
     # =========================== methods ============================
 
-    def test_last_idx(self):
-        """Intf.last_idx()"""
-        for line, expected in [
-            ("", 0),
-            ("Ethernet", 0),
-            ("Ethernet1", 1),
-            ("Ethernet1/2", 2),
-            ("Ethernet1/2/3", 3),
-            ("Ethernet1/2/3.4", 4),
-            ("Ethernet1/2/3.4-5", 4),
-        ]:
-            obj = Intf(line)
-            actual = obj.last_idx()
-            self.assertEqual(expected, actual, msg=f"{line=}")
-
-    def test_names(self):
-        """Intf.name_short()"""
+    def test_valid__all_names(self):
+        """Intf.all_names()"""
         all_eth = [
             "interface Ethernet1/2",
             "interface ethernet1/2",
@@ -225,47 +192,343 @@ class Test(Helpers):
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__parts(self):
-        """Intf.parts()"""
-        for line, idx, expected in [
-            ("", -1, ""),
-            ("", 0, ""),
-            ("", 1, ""),
-            ("1", 1, ""),
-            ("1", 2, "1"),
-            ("1/2", 1, ""),
-            ("1/2", 2, "1/"),
-            ("1/2", 3, "1/2"),
-            # port1
-            ("port1", 1, "port"),
-            ("port1", 2, "port1"),
-            # port1.2
-            ("port1.2", 1, "port"),
-            ("port1.2", 2, "port1."),
-            ("port1.2", 3, "port1.2"),
-            # interface Ethernet1/2
-            ("interface Ethernet1/2", 1, "interface Ethernet"),
-            ("interface Ethernet1/2", 2, "interface Ethernet1/"),
-            ("interface Ethernet1/2", 3, "interface Ethernet1/2"),
-            # interface Ethernet1/2/3.4
-            ("interface Ethernet1/2/3.4", -1, ""),
-            ("interface Ethernet1/2/3.4", 0, ""),
-            ("interface Ethernet1/2/3.4", 1, "interface Ethernet"),
-            ("interface Ethernet1/2/3.4", 2, "interface Ethernet1/"),
-            ("interface Ethernet1/2/3.4", 3, "interface Ethernet1/2/"),
-            ("interface Ethernet1/2/3.4", 4, "interface Ethernet1/2/3."),
-            ("interface Ethernet1/2/3.4", 5, "interface Ethernet1/2/3.4"),
-            ("interface Ethernet1/2/3.4", 6, "interface Ethernet1/2/3.4"),
+    def test_valid__last_idx(self):
+        """Intf.last_idx()"""
+        for line, expected in [
+            ("", 0),
+            ("Ethernet", 0),
+            ("Ethernet1", 1),
+            ("Ethernet1/2", 2),
+            ("Ethernet1/2/3", 3),
+            ("Ethernet1/2/3.4", 4),
+            ("Ethernet1/2/3.4-5", 4),
         ]:
             obj = Intf(line)
-            actual = obj.part(idx)
+            actual = obj.last_idx()
             self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__name_full(self):
+        """Intf.name_full()"""
+        for line, expected in [
+            # full to full
+            ("interface Ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("interface FastEthernet1/2", "interface FastEthernet1/2"),
+            ("interface GigabitEthernet1/2", "interface GigabitEthernet1/2"),
+            ("interface TenGigabitEthernet1/2", "interface TenGigabitEthernet1/2"),
+            ("interface Loopback0", "interface Loopback0"),
+            ("interface Port-channel100", "interface Port-channel100"),
+            ("interface Tunnel1", "interface Tunnel1"),
+            # ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # TODO platform
+            ("interface Vlan1", "interface Vlan1"),
+            # long to full
+            ("interface Ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("interface FastEthernet1/2", "interface FastEthernet1/2"),
+            ("interface GigabitEthernet1/2", "interface GigabitEthernet1/2"),
+            ("interface TenGigabitEthernet1/2", "interface TenGigabitEthernet1/2"),
+            ("interface Loopback0", "interface Loopback0"),
+            ("interface Port-channel100", "interface Port-channel100"),
+            ("interface Tunnel1", "interface Tunnel1"),
+            # ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # TODO platform
+            ("interface Vlan1", "interface Vlan1"),
+            # short to full
+            ("Eth1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("Fa1/2", "interface FastEthernet1/2"),
+            ("Gi1/2", "interface GigabitEthernet1/2"),
+            ("Te1/2", "interface TenGigabitEthernet1/2"),
+            ("Lo0", "interface Loopback0"),
+            ("Po100", "interface Port-channel100"),
+            ("Tu1", "interface Tunnel1"),
+            # ("Tu1", "interface Tunnel-ip1"),  # TODO platform
+            ("Vl1", "interface Vlan1"),
+            ("V1", "interface Vlan1"),
+            # lower
+            ("interface ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("interface fastethernet1/2", "interface FastEthernet1/2"),
+            ("ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("fastethernet1/2", "interface FastEthernet1/2"),
+            ("eth1/2/3.4", "interface Ethernet1/2/3.4"),
+            ("fa1/2", "interface FastEthernet1/2"),
+            ("v1", "interface Vlan1"),
+        ]:
+            obj = Intf(line)
+            actual = obj.name_full()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__name_long(self):  # TODO
+        """Intf.name_long()"""
+        for line, expected in [
+            # full to long
+            ("interface Ethernet1/2/3.4", "Ethernet1/2/3.4"),
+            ("interface FastEthernet1/2", "FastEthernet1/2"),
+            ("interface GigabitEthernet1/2", "GigabitEthernet1/2"),
+            ("interface TenGigabitEthernet1/2", "TenGigabitEthernet1/2"),
+            ("interface Loopback0", "Loopback0"),
+            ("interface Port-channel100", "Port-channel100"),
+            ("interface Tunnel1", "Tunnel1"),
+            # ("interface Tunnel-ip1", "Tunnel-ip1"),  # TODO platform
+            ("interface Vlan1", "Vlan1"),
+            # long to long
+            ("interface Ethernet1/2/3.4", "Ethernet1/2/3.4"),
+            ("interface FastEthernet1/2", "FastEthernet1/2"),
+            ("interface GigabitEthernet1/2", "GigabitEthernet1/2"),
+            ("interface TenGigabitEthernet1/2", "TenGigabitEthernet1/2"),
+            ("interface Loopback0", "Loopback0"),
+            ("interface Port-channel100", "Port-channel100"),
+            ("interface Tunnel1", "Tunnel1"),
+            # ("interface Tunnel-ip1", "Tunnel-ip1"),  # TODO platform
+            ("interface Vlan1", "Vlan1"),
+            # short to long
+            ("Eth1/2/3.4", "Ethernet1/2/3.4"),
+            ("Fa1/2", "FastEthernet1/2"),
+            ("Gi1/2", "GigabitEthernet1/2"),
+            ("Te1/2", "TenGigabitEthernet1/2"),
+            ("Lo0", "Loopback0"),
+            ("Po100", "Port-channel100"),
+            ("Tu1", "Tunnel1"),
+            # ("Tu1", "Tunnel-ip1"),  # TODO platform
+            ("Vl1", "Vlan1"),
+            ("V1", "Vlan1"),
+            # lower
+            ("interface ethernet1/2/3.4", "Ethernet1/2/3.4"),
+            ("interface fastethernet1/2", "FastEthernet1/2"),
+            ("ethernet1/2/3.4", "Ethernet1/2/3.4"),
+            ("fastethernet1/2", "FastEthernet1/2"),
+            ("eth1/2/3.4", "Ethernet1/2/3.4"),
+            ("fa1/2", "FastEthernet1/2"),
+            ("v1", "Vlan1"),
+        ]:
+            obj = Intf(line)
+            actual = obj.name_long()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__name_short(self):
+        """Intf.name_short()"""
+        for line, expected in [
+            # full to short
+            ("interface Ethernet1/2/3.4", "Eth1/2/3.4"),
+            ("interface FastEthernet1/2", "Fa1/2"),
+            ("interface GigabitEthernet1/2", "Gi1/2"),
+            ("interface TenGigabitEthernet1/2", "Te1/2"),
+            ("interface Loopback0", "Lo0"),
+            ("interface Port-channel100", "Po100"),
+            ("interface Tunnel1", "Tu1"),
+            # ("interface Tunnel-ip1", "Tu1"),  # TODO platform
+            ("interface Vlan1", "V1"),
+            # long to short
+            ("Ethernet1/2/3.4", "Eth1/2/3.4"),
+            ("FastEthernet1/2", "Fa1/2"),
+            ("GigabitEthernet1/2", "Gi1/2"),
+            ("TenGigabitEthernet1/2", "Te1/2"),
+            ("Loopback0", "Lo0"),
+            ("Port-channel100", "Po100"),
+            ("Tunnel1", "Tu1"),
+            # ("Tunnel-ip1", "Tu1"),  # TODO platform
+            ("Vlan1", "V1"),
+            # short to short
+            ("Eth1/2/3.4", "Eth1/2/3.4"),
+            ("Fa1/2", "Fa1/2"),
+            ("Gi1/2", "Gi1/2"),
+            ("Te1/2", "Te1/2"),
+            ("Lo0", "Lo0"),
+            ("Po100", "Po100"),
+            ("Tu1", "Tu1"),
+            # ("Tu1", "Tu1"),  # TODO platform
+            ("Vl1", "V1"),
+            ("V1", "V1"),
+            # lower
+            ("interface ethernet1/2/3.4", "Eth1/2/3.4"),
+            ("interface fastethernet1/2", "Fa1/2"),
+            ("ethernet1/2/3.4", "Eth1/2/3.4"),
+            ("fastethernet1/2", "Fa1/2"),
+            ("eth1/2/3.4", "Eth1/2/3.4"),
+            ("fa1/2", "Fa1/2"),
+            ("v1", "V1"),
+        ]:
+            obj = Intf(line)
+            actual = obj.name_short()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__part_after(self):
+        """Intf.part_after()"""
+        for line, kwargs, expected in [
+            # splitter=True
+            ("", dict(idx=-1, splitter=True), ""),
+            ("", dict(idx=0, splitter=True), ""),
+            ("", dict(idx=1, splitter=True), ""),
+            ("1", dict(idx=-1, splitter=True), "1"),
+            ("1", dict(idx=0, splitter=True), "1"),
+            ("1", dict(idx=1, splitter=True), ""),
+            ("1", dict(idx=2, splitter=True), ""),
+            ("1/2", dict(idx=-1, splitter=True), "1/2"),
+            ("1/2", dict(idx=0, splitter=True), "1/2"),
+            ("1/2", dict(idx=1, splitter=True), "/2"),
+            ("1/2", dict(idx=2, splitter=True), ""),
+            ("1/2", dict(idx=3, splitter=True), ""),
+            # port1
+            ("port1", dict(idx=-1, splitter=True), "port1"),
+            ("port1", dict(idx=0, splitter=True), "1"),
+            ("port1", dict(idx=1, splitter=True), ""),
+            ("port1", dict(idx=2, splitter=True), ""),
+            # port1.2
+            ("port1.2", dict(idx=-1, splitter=True), "port1.2"),
+            ("port1.2", dict(idx=0, splitter=True), "1.2"),
+            ("port1.2", dict(idx=1, splitter=True), ".2"),
+            ("port1.2", dict(idx=2, splitter=True), ""),
+            ("port1.2", dict(idx=3, splitter=True), ""),
+            ("port1.2", dict(idx=4, splitter=True), ""),
+            # interface Ethernet1/2
+            ("interface Ethernet1/2", dict(idx=-1, splitter=True), "interface Ethernet1/2"),
+            ("interface Ethernet1/2", dict(idx=0, splitter=True), "1/2"),
+            ("interface Ethernet1/2", dict(idx=1, splitter=True), "/2"),
+            ("interface Ethernet1/2", dict(idx=2, splitter=True), ""),
+            ("interface Ethernet1/2", dict(idx=3, splitter=True), ""),
+            ("interface Ethernet1/2", dict(idx=4, splitter=True), ""),
+            # interface Ethernet1/2/3.4
+            ("interface Ethernet1/2/3.4", dict(idx=-1, splitter=True), "interface Ethernet1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=0, splitter=True), "1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=1, splitter=True), "/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=2, splitter=True), "/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=3, splitter=True), ".4"),
+            ("interface Ethernet1/2/3.4", dict(idx=4, splitter=True), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=5, splitter=True), ""),
+
+            # splitter=False
+            ("", dict(idx=-1, splitter=False), ""),
+            ("", dict(idx=0, splitter=False), ""),
+            ("", dict(idx=1, splitter=False), ""),
+            ("1", dict(idx=-1, splitter=False), "1"),
+            ("1", dict(idx=0, splitter=False), "1"),
+            ("1", dict(idx=1, splitter=False), ""),
+            ("1", dict(idx=2, splitter=False), ""),
+            ("1/2", dict(idx=-1, splitter=False), "1/2"),
+            ("1/2", dict(idx=0, splitter=False), "1/2"),
+            ("1/2", dict(idx=1, splitter=False), "2"),
+            ("1/2", dict(idx=2, splitter=False), ""),
+            ("1/2", dict(idx=3, splitter=False), ""),
+            # port1
+            ("port1", dict(idx=-1, splitter=False), "port1"),
+            ("port1", dict(idx=0, splitter=False), "1"),
+            ("port1", dict(idx=1, splitter=False), ""),
+            ("port1", dict(idx=2, splitter=False), ""),
+            # port1.2
+            ("port1.2", dict(idx=-1, splitter=False), "port1.2"),
+            ("port1.2", dict(idx=0, splitter=False), "1.2"),
+            ("port1.2", dict(idx=1, splitter=False), "2"),
+            ("port1.2", dict(idx=2, splitter=False), ""),
+            ("port1.2", dict(idx=3, splitter=False), ""),
+            ("port1.2", dict(idx=4, splitter=False), ""),
+            # interface Ethernet1/2
+            ("interface Ethernet1/2", dict(idx=-1, splitter=False), "interface Ethernet1/2"),
+            ("interface Ethernet1/2", dict(idx=0, splitter=False), "1/2"),
+            ("interface Ethernet1/2", dict(idx=1, splitter=False), "2"),
+            ("interface Ethernet1/2", dict(idx=2, splitter=False), ""),
+            ("interface Ethernet1/2", dict(idx=3, splitter=False), ""),
+            ("interface Ethernet1/2", dict(idx=4, splitter=False), ""),
+            # interface Ethernet1/2/3.4
+            ("interface Ethernet1/2/3.4",
+             dict(idx=-1, splitter=False), "interface Ethernet1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=0, splitter=False), "1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=1, splitter=False), "2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=2, splitter=False), "3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=3, splitter=False), "4"),
+            ("interface Ethernet1/2/3.4", dict(idx=4, splitter=False), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=5, splitter=False), ""),
+        ]:
+            obj = Intf(line)
+            actual = obj.part_after(**kwargs)
+            self.assertEqual(expected, actual, msg=f"{line=} {kwargs=}")
+
+    def test_valid__part_before(self):
+        """Intf.part_before()"""
+        for line, kwargs, expected in [
+            # splitter=True
+            ("", dict(idx=-1, splitter=True), ""),
+            ("", dict(idx=0, splitter=True), ""),
+            ("", dict(idx=1, splitter=True), ""),
+            ("1", dict(idx=-1, splitter=True), ""),
+            ("1", dict(idx=0, splitter=True), ""),
+            ("1", dict(idx=1, splitter=True), ""),
+            ("1", dict(idx=2, splitter=True), "1"),
+            ("1/2", dict(idx=-1, splitter=True), ""),
+            ("1/2", dict(idx=0, splitter=True), ""),
+            ("1/2", dict(idx=1, splitter=True), ""),
+            ("1/2", dict(idx=2, splitter=True), "1/"),
+            ("1/2", dict(idx=3, splitter=True), "1/2"),
+            # port1
+            ("port1", dict(idx=-1, splitter=True), ""),
+            ("port1", dict(idx=0, splitter=True), ""),
+            ("port1", dict(idx=1, splitter=True), "port"),
+            ("port1", dict(idx=2, splitter=True), "port1"),
+            # port1.2
+            ("port1.2", dict(idx=-1, splitter=True), ""),
+            ("port1.2", dict(idx=0, splitter=True), ""),
+            ("port1.2", dict(idx=1, splitter=True), "port"),
+            ("port1.2", dict(idx=2, splitter=True), "port1."),
+            ("port1.2", dict(idx=3, splitter=True), "port1.2"),
+            # interface Ethernet1/2
+            ("interface Ethernet1/2", dict(idx=-1, splitter=True), ""),
+            ("interface Ethernet1/2", dict(idx=0, splitter=True), ""),
+            ("interface Ethernet1/2", dict(idx=1, splitter=True), "interface Ethernet"),
+            ("interface Ethernet1/2", dict(idx=2, splitter=True), "interface Ethernet1/"),
+            ("interface Ethernet1/2", dict(idx=3, splitter=True), "interface Ethernet1/2"),
+            # interface Ethernet1/2/3.4
+            ("interface Ethernet1/2/3.4", dict(idx=-1, splitter=True), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=0, splitter=True), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=1, splitter=True), "interface Ethernet"),
+            ("interface Ethernet1/2/3.4", dict(idx=2, splitter=True), "interface Ethernet1/"),
+            ("interface Ethernet1/2/3.4", dict(idx=3, splitter=True), "interface Ethernet1/2/"),
+            ("interface Ethernet1/2/3.4", dict(idx=4, splitter=True), "interface Ethernet1/2/3."),
+            ("interface Ethernet1/2/3.4", dict(idx=5, splitter=True), "interface Ethernet1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=6, splitter=True), "interface Ethernet1/2/3.4"),
+
+            # splitter=False
+            ("", dict(idx=-1, splitter=False), ""),
+            ("", dict(idx=0, splitter=False), ""),
+            ("", dict(idx=1, splitter=False), ""),
+            ("1", dict(idx=-1, splitter=False), ""),
+            ("1", dict(idx=0, splitter=False), ""),
+            ("1", dict(idx=1, splitter=False), ""),
+            ("1", dict(idx=2, splitter=False), "1"),
+            ("1/2", dict(idx=-1, splitter=False), ""),
+            ("1/2", dict(idx=0, splitter=False), ""),
+            ("1/2", dict(idx=1, splitter=False), ""),
+            ("1/2", dict(idx=2, splitter=False), "1"),
+            ("1/2", dict(idx=3, splitter=False), "1/2"),
+            # port1
+            ("port1", dict(idx=-1, splitter=False), ""),
+            ("port1", dict(idx=0, splitter=False), ""),
+            ("port1", dict(idx=1, splitter=False), "port"),
+            ("port1", dict(idx=2, splitter=False), "port1"),
+            # port1.2
+            ("port1.2", dict(idx=-1, splitter=False), ""),
+            ("port1.2", dict(idx=0, splitter=False), ""),
+            ("port1.2", dict(idx=1, splitter=False), "port"),
+            ("port1.2", dict(idx=2, splitter=False), "port1"),
+            ("port1.2", dict(idx=3, splitter=False), "port1.2"),
+            # interface Ethernet1/2
+            ("interface Ethernet1/2", dict(idx=-1, splitter=False), ""),
+            ("interface Ethernet1/2", dict(idx=0, splitter=False), ""),
+            ("interface Ethernet1/2", dict(idx=1, splitter=False), "interface Ethernet"),
+            ("interface Ethernet1/2", dict(idx=2, splitter=False), "interface Ethernet1"),
+            ("interface Ethernet1/2", dict(idx=3, splitter=False), "interface Ethernet1/2"),
+            # interface Ethernet1/2/3.4
+            ("interface Ethernet1/2/3.4", dict(idx=-1, splitter=False), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=0, splitter=False), ""),
+            ("interface Ethernet1/2/3.4", dict(idx=1, splitter=False), "interface Ethernet"),
+            ("interface Ethernet1/2/3.4", dict(idx=2, splitter=False), "interface Ethernet1"),
+            ("interface Ethernet1/2/3.4", dict(idx=3, splitter=False), "interface Ethernet1/2"),
+            ("interface Ethernet1/2/3.4", dict(idx=4, splitter=False), "interface Ethernet1/2/3"),
+            ("interface Ethernet1/2/3.4", dict(idx=5, splitter=False), "interface Ethernet1/2/3.4"),
+            ("interface Ethernet1/2/3.4", dict(idx=6, splitter=False), "interface Ethernet1/2/3.4"),
+        ]:
+            obj = Intf(line)
+            actual = obj.part_before(**kwargs)
+            self.assertEqual(expected, actual, msg=f"{line=} {kwargs=}")
 
     # =========================== helpers ============================
 
     def test_valid__get_ids(self):
         """Intf._get_ids()"""
-
         for line, expected in [
             ("1", ("", "1", "", "", "")),
             ("1/2", ("", "1", "2", "", "")),

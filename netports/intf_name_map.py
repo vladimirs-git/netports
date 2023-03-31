@@ -16,7 +16,7 @@ long_to_shorts: DLStr = {
     "Tunnel": ["Tu"],  # Cisco IOS
     "Port-channel": ["Po"],  # Cisco IOS
     "Loopback": ["Lo"],  # Cisco IOS
-    "Vlan": ["Vl", "V"],  # Cisco IOS
+    "Vlan": ["V", "Vl"],  # Cisco IOS
     # other rear
     "ATM": ["At"],
     "EOBC": ["EO"],
@@ -30,7 +30,9 @@ long_to_shorts: DLStr = {
     "Virtual-Access": ["Vi"],
     "Virtual-Template": ["Vt"],
 }
-long_to_short = {k: ls[0] for k, ls in long_to_shorts.items()}
-long_to_short_lower: DStr = {k.lower(): v for k, v in long_to_short.items()}
-short_to_long: DStr = {v: k for k, v in long_to_short.items()}
+long_to_long_lower = {k.lower(): k for k in long_to_shorts}
+long_to_short = {k: ls[0] for k, ls in long_to_shorts.items()}  # single value
+long_to_short_lower: DStr = {k.lower(): v for k, v in long_to_short.items()}  # single value
+short_to_long: DStr = {v: k for k, ls in long_to_shorts.items() for v in ls}
 short_to_long_lower: DStr = {k.lower(): v for k, v in short_to_long.items()}
+short_to_short: DStr = {v.lower(): ls[0] for k, ls in long_to_shorts.items() for v in ls}
