@@ -105,7 +105,7 @@ print()
 # ["Eth101/1/1-3",
 #  "Eth102/1/1-3"]
 
-# Interface name mapping long to short and vice versa
+# Interface name mapping long-to-short
 long_to_short = netports.long_to_short()
 pprint(long_to_short, width=50)
 print()
@@ -114,6 +114,7 @@ print()
 #  "GigabitEthernet": "Gi",
 #  ...
 
+# Interface name mapping short-to-long
 short_to_long = netports.short_to_long()
 pprint(short_to_long, width=50)
 print()
