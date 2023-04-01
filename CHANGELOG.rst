@@ -4,13 +4,14 @@
 CHANGELOG
 =========
 
-0.8.0 (2023-03-31)
+0.8.0 (2023-04-01)
 ------------------
 * [delete] Intf.part()
 * [new] Intf.part_after()
 * [new] Intf.part_before()
 * [change] Intf.name_short > Intf.name_short(), property changed to method
 * [change] ValueError > NetportsValueError
+* [new] intf_map.short_to_long() intf_map.long_to_short()
 
 
 0.7.3 (2023-01-24)

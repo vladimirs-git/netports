@@ -219,9 +219,9 @@ Return
 `./examples/ip.py`_
 
 
+
 Objects
 -------
-
 
 Range()
 .......
@@ -371,7 +371,6 @@ Return
 Interfaces
 ----------
 
-
 intfrange()
 ...........
 **intfrange(items, fmt)**
@@ -386,6 +385,74 @@ fmt         *str*        Format option: "long"  - Long names: ["interface Ethern
 
 Return
     *List[str]* Interface ranges
+
+
+long_to_short()
+...............
+**long_to_short(platform, key_lower, value_lower)**
+Returns Interfaces map long-to-short, platform specific
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+key_lower       *bool*                      True - keys lower-case, False - keys upper-case
+value_lower     *bool*                      True - values lower-case, False - values upper-case
+=============== =========================== ============================================================================
+
+Return
+    *Dict[str, str]* Interfaces map
+
+
+long_to_long()
+..............
+**long_to_long(platform, key_lower, value_lower)**
+Returns Interfaces map long-to-long, platform specific
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+key_lower       *bool*                      True - keys lower-case, False - keys upper-case
+value_lower     *bool*                      True - values lower-case, False - values upper-case
+=============== =========================== ============================================================================
+
+Return
+    *Dict[str, str]* Interfaces map
+
+
+short_to_long()
+...............
+**short_to_long(platform, key_lower, value_lower)**
+Returns Interfaces map short-to-long, platform specific
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+key_lower       *bool*                      True - keys lower-case, False - keys upper-case
+value_lower     *bool*                      True - values lower-case, False - values upper-case
+=============== =========================== ============================================================================
+
+Return
+    *Dict[str, str]* Interfaces map
+
+
+short_to_short()
+................
+**short_to_short(platform, key_lower, value_lower)**
+Returns Interfaces map short-to-short, platform specific
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+key_lower       *bool*                      True - keys lower-case, False - keys upper-case
+value_lower     *bool*                      True - values lower-case, False - values upper-case
+=============== =========================== ============================================================================
+
+Return
+    *Dict[str, str]* Interfaces map
 
 
 Intf()

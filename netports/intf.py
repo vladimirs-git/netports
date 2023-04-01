@@ -5,14 +5,7 @@ import re
 from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
-from netports import helpers as h
-from netports.intf_name_map import (
-    get_short_to_long,
-    get_short_to_long_lower,
-    long_to_long_lower,
-    long_to_short_lower,
-    short_to_short,
-)
+from netports import intf_map, helpers as h
 from netports.static import PLATFORMS
 from netports.types_ import T3Str, T5Str, LStr, SStr, DStr
 
@@ -223,15 +216,17 @@ class Intf:
                 name_ = f"interface {name_}"
                 results.add(name_)
 
+        intf_map_upper: DStr = intf_map.short_to_long(self._platform)
+        intf_map_lower: DStr = intf_map.short_to_long(self._platform, key_lower=True)
         names: LStr = [self.name, self.name_short()]
         names = h.no_dupl(names)
         for name in names:
             intf_o = Intf(line=name, platform=self.platform)
-            for id0_short, map_d in [
-                (intf_o.id0, get_short_to_long(self._platform)),
-                (intf_o.id0.lower(), get_short_to_long_lower(self._platform)),
+            for id0_short, intf_map_d in [
+                (intf_o.id0, intf_map_upper),
+                (intf_o.id0.lower(), intf_map_lower),
             ]:
-                if id0_long := map_d.get(id0_short) or "":
+                if id0_long := intf_map_d.get(id0_short) or "":
                     name_long = intf_o.line.replace(id0_short, id0_long, 1)
                     results.add(name_long)
                     if not name_long.startswith("interface "):
@@ -274,15 +269,16 @@ class Intf:
         if id0.startswith("interface "):
             id0 = id0.replace("interface ", "", 1)
 
-        short_to_long: DStr = get_short_to_long_lower(self._platform)
-        for short, long in short_to_long.items():
-            if id0 == short:
-                id0 = long
+        intf_map_short: DStr = intf_map.short_to_long(self._platform, key_lower=True)
+        for short_lower, long_upper in intf_map_short.items():
+            if id0 == short_lower:
+                id0 = long_upper
                 break
         else:
-            for long, long_ in long_to_long_lower.items():
-                if id0 == long:
-                    id0 = long_
+            intf_map_long: DStr = intf_map.long_to_long(self._platform, key_lower=True)
+            for long_lower, long_upper in intf_map_long.items():
+                if id0 == long_lower:
+                    id0 = long_upper
                     break
 
         id1 = self.part_after(idx=0)
@@ -301,14 +297,16 @@ class Intf:
         if id0.startswith("interface "):
             id0 = id0.replace("interface ", "", 1)
 
-        for long, short in long_to_short_lower.items():
-            if id0 == long:
-                id0 = short
+        intf_map_l2s: DStr = intf_map.long_to_short(self._platform, key_lower=True)
+        for long_lower, short_upper in intf_map_l2s.items():
+            if id0 == long_lower:
+                id0 = short_upper
                 break
         else:
-            for short, short_ in short_to_short.items():
-                if id0 == short:
-                    id0 = short_
+            intf_map_s2s: DStr = intf_map.short_to_short(self._platform, key_lower=True)
+            for short_lower, short_upper in intf_map_s2s.items():
+                if id0 == short_lower:
+                    id0 = short_upper
                     break
 
         id1 = self.part_after(idx=0)

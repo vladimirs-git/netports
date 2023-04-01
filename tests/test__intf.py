@@ -159,8 +159,8 @@ class Test(Helpers):
             ("interface Ethernet1/2", th.ALL_NAMES_ETH),
             ("Ethernet1/2", th.ALL_NAMES_ETH),
             ("Eth1/2", th.ALL_NAMES_ETH),
-            ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP),
-            ("Tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("interface tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("tunnel-ip1", th.ALL_NAMES_TUN_IP),
             ("interface Tunnel1", th.ALL_NAMES_TUN),
             ("Tunnel1", th.ALL_NAMES_TUN),
             ("Tu1", th.ALL_NAMES_TUN),
@@ -188,13 +188,14 @@ class Test(Helpers):
         """Intf.all_names() platform="cisco_asr" """
         for line, expected in [
             # upper
-            ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP_),
-            ("Tunnel-ip1", th.ALL_NAMES_TUN_IP_),
-            ("Tu1", th.ALL_NAMES_TUN_IP_),
+            ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP_UPPER),
+            ("Tunnel-ip1", th.ALL_NAMES_TUN_IP_UPPER),
+            ("Tu1", th.ALL_NAMES_TUN_IP_UPPER2),
             # lower
-            ("interface tunnel-ip1", th.ALL_NAMES_TUN_IP_),
-            ("tunnel-ip1", th.ALL_NAMES_TUN_IP_),
-            ("tu1", th.ALL_NAMES_TUN_IP_),
+            ("interface tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("tunnel-ip1", th.ALL_NAMES_TUN_IP),
+            ("tu1", th.ALL_NAMES_TUN_IP_LOWER),
+            ("ti1", th.ALL_NAMES_TUN_IP),
         ]:
             obj = Intf(line=line, platform="cisco_asr")
             actual = obj.all_names()
@@ -246,7 +247,6 @@ class Test(Helpers):
             ("Lo0", "interface Loopback0"),
             ("Po100", "interface Port-channel100"),
             ("Tu1", "interface Tunnel1"),
-            ("Vl1", "interface Vlan1"),
             ("V1", "interface Vlan1"),
             ("mgmt0", "interface mgmt0"),  # nxos
             # lower
@@ -266,9 +266,11 @@ class Test(Helpers):
         """Intf.name_full() platform="cisco_asr" """
         platform = "cisco_asr"
         for line, expected in [
-            ("interface Tunnel-ip1", "interface Tunnel-ip1"),  # full to full
-            ("Tunnel-ip1", "interface Tunnel-ip1"),  # long to full
-            ("Tu1", "interface Tunnel-ip1"),  # short to full
+            ("interface tunnel-ip1", "interface tunnel-ip1"),
+            ("tunnel-ip1", "interface tunnel-ip1"),
+            ("Tu1", "interface tunnel-ip1"),
+            ("tu1", "interface tunnel-ip1"),
+            ("ti1", "interface tunnel-ip1"),
         ]:
             obj = Intf(line=line, platform=platform)
             actual = obj.name_full()
@@ -305,7 +307,6 @@ class Test(Helpers):
             ("Lo0", "Loopback0"),
             ("Po100", "Port-channel100"),
             ("Tu1", "Tunnel1"),
-            ("Vl1", "Vlan1"),
             ("V1", "Vlan1"),
             ("mgmt0", "mgmt0"),  # nxos
             # lower
@@ -325,9 +326,11 @@ class Test(Helpers):
         """Intf.name_long() platform="cisco_asr" """
         platform = "cisco_asr"
         for line, expected in [
-            ("interface Tunnel-ip1", "Tunnel-ip1"),  # full to full
-            ("Tunnel-ip1", "Tunnel-ip1"),  # long to full
-            ("Tu1", "Tunnel-ip1"),  # short to full
+            ("interface tunnel-ip1", "tunnel-ip1"),
+            ("tunnel-ip1", "tunnel-ip1"),
+            ("Tu1", "tunnel-ip1"),
+            ("tu1", "tunnel-ip1"),
+            ("ti1", "tunnel-ip1"),
         ]:
             obj = Intf(line=line, platform=platform)
             actual = obj.name_long()
@@ -364,7 +367,6 @@ class Test(Helpers):
             ("Lo0", "Lo0"),
             ("Po100", "Po100"),
             ("Tu1", "Tu1"),
-            ("Vl1", "V1"),
             ("V1", "V1"),
             ("mgmt0", "mgmt0"),  # nxos
             # lower
@@ -384,9 +386,11 @@ class Test(Helpers):
         """Intf.name_short() platform="cisco_asr" """
         platform = "cisco_asr"
         for line, expected in [
-            ("interface Tunnel-ip1", "Tu1"),  # full to full
-            ("Tunnel-ip1", "Tu1"),  # long to full
-            ("Tu1", "Tu1"),  # short to full
+            ("interface tunnel-ip1", "ti1"),
+            ("tunnel-ip1", "ti1"),
+            ("Tu1", "ti1"),
+            ("tu1", "ti1"),
+            ("ti1", "ti1"),
         ]:
             obj = Intf(line=line, platform=platform)
             actual = obj.name_short()

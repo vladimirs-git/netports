@@ -14,27 +14,35 @@ ALL_NAMES_ETH = [
     "eth1/2",
 ]
 ALL_NAMES_TUN_IP = [
-    "interface Tunnel-ip1",
     "interface tunnel-ip1",
-    "interface Tunnel1",
-    "interface tunnel1",
-    "interface Tu1",
-    "interface tu1",
-    "Tunnel-ip1",
+    "interface ti1",
     "tunnel-ip1",
-    "Tunnel1",
-    "tunnel1",
-    "Tu1",
+    "ti1",
+]
+ALL_NAMES_TUN_IP_LOWER = [
+    "interface tunnel-ip1",
+    "interface ti1",
+    "interface tu1",
+    "tunnel-ip1",
+    "ti1",
     "tu1",
 ]
-ALL_NAMES_TUN_IP_ = [
+ALL_NAMES_TUN_IP_UPPER = [
     "interface Tunnel-ip1",
     "interface tunnel-ip1",
-    "interface Tu1",
-    "interface tu1",
+    "interface ti1",
     "Tunnel-ip1",
     "tunnel-ip1",
+    "ti1",
+]
+ALL_NAMES_TUN_IP_UPPER2 = [
+    "interface tunnel-ip1",
+    "interface Tu1",
+    "interface ti1",
+    "interface tu1",
+    "tunnel-ip1",
     "Tu1",
+    "ti1",
     "tu1",
 ]
 ALL_NAMES_TUN = [

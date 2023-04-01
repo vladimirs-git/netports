@@ -5,37 +5,37 @@ import netports
 from netports import Intf
 
 # Attributes demonstration
-interface = Intf("interface Ethernet1/2/3.4")
-assert interface.line == "interface Ethernet1/2/3.4"
-assert interface.name == "Ethernet1/2/3.4"
-assert interface.ids == ("interface Ethernet", "1", "2", "3", "4")
-assert interface.delimiters == ("/", "/", ".")
-assert interface.id0 == "interface Ethernet"
-assert interface.id1 == 1
-assert interface.id2 == 2
-assert interface.id3 == 3
-assert interface.id4 == 4
+intf = Intf("interface Ethernet1/2/3.4")
+assert intf.line == "interface Ethernet1/2/3.4"
+assert intf.name == "Ethernet1/2/3.4"
+assert intf.ids == ("interface Ethernet", "1", "2", "3", "4")
+assert intf.delimiters == ("/", "/", ".")
+assert intf.id0 == "interface Ethernet"
+assert intf.id1 == 1
+assert intf.id2 == 2
+assert intf.id3 == 3
+assert intf.id4 == 4
 
 # Methods
-print("last_idx", interface.last_idx())
-print("name_short", interface.name_short())
-print("name_long", interface.name_long())
-print("name_full", interface.name_full())
-print("part before id", 2, interface.part_before(idx=2))
-print("part before id", 3, interface.part_before(idx=3))
-print("part before id", 4, interface.part_before(idx=4))
-print("part before id", 4, interface.part_before(idx=4, splitter=False))
-print("part after id", 3, interface.part_before(idx=3))
-print("part after id", 3, interface.part_before(idx=3, splitter=False))
+print("last_idx", intf.last_idx())
+print("name_short", intf.name_short())
+print("name_long", intf.name_long())
+print("name_full", intf.name_full())
+print("part before id", intf.part_before(idx=3))
+print("part before id", intf.part_before(idx=4))
+print("part before id", intf.part_before(idx=4, splitter=False))
+print("part after id", intf.part_before(idx=3))
+print("part after id", intf.part_before(idx=3, splitter=False))
 print()
 # last_idx 4
 # name_short Eth1/2/3.4
-# part before id 2 interface Ethernet1/
-# part before id 3 interface Ethernet1/2/
-# part before id 4 interface Ethernet1/2/3.
-# part before id 4 interface Ethernet1/2/3
-# part after id 3 interface Ethernet1/2/
-# part after id 3 interface Ethernet1/2
+# name_long Ethernet1/2/3.4
+# name_full interface Ethernet1/2/3.4
+# part before id interface Ethernet1/2/
+# part before id interface Ethernet1/2/3.
+# part before id interface Ethernet1/2/3
+# part after id interface Ethernet1/2/
+# part after id interface Ethernet1/2
 
 
 # Sorting by indexes
@@ -59,8 +59,8 @@ print()
 #  "interface Ethernet1/3/1.1"]
 
 # Sorting by indexes. This approach is useful in scripting
-interfaces = [Intf(line) for line in lines]
-pprint(interfaces, width=50)
+intfs = [Intf(line) for line in lines]
+pprint(intfs, width=50)
 print()
 # [Intf("interface Ethernet1/1/1.1"),
 #  Intf("interface Ethernet10/1/1.1"),
@@ -79,9 +79,9 @@ lines = [
     "interface Ethernet102/1/2",
     "interface Ethernet102/1/3",
 ]
-interfaces = [Intf(line) for line in lines]
-interfaces.sort(key=lambda o: o.id3)
-pprint(interfaces, width=50)
+intfs = [Intf(line) for line in lines]
+intfs.sort(key=lambda o: o.id3)
+pprint(intfs, width=50)
 print()
 # [Intf("interface Ethernet101/1/1"),
 #  Intf("interface Ethernet102/1/1"),
@@ -104,3 +104,20 @@ pprint(ranges, width=30)
 print()
 # ["Eth101/1/1-3",
 #  "Eth102/1/1-3"]
+
+# Interface name mapping long to short and vice versa
+long_to_short = netports.long_to_short()
+pprint(long_to_short, width=50)
+print()
+# {"Ethernet": "Eth",
+#  "FastEthernet": "Fa",
+#  "GigabitEthernet": "Gi",
+#  ...
+
+short_to_long = netports.short_to_long()
+pprint(short_to_long, width=50)
+print()
+# {"Eth": "Ethernet",
+#  "Fa": "FastEthernet",
+#  "Gi": "GigabitEthernet",
+#  ...
