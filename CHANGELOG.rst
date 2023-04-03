@@ -4,7 +4,7 @@
 CHANGELOG
 =========
 
-0.8.0 (2023-04-01)
+0.8.0 (2023-04-03)
 ------------------
 * [delete] Intf.part()
 * [new] Intf.part_after()
