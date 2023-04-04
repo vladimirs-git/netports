@@ -201,6 +201,16 @@ class Test(Helpers):
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
+    def test_valid__all_names__hp_procurve(self):
+        """Intf.all_names() platform="hp_procurve" """
+        for line, expected in [
+            ("interface 1", th.ALL_NAMES_HPC),
+            ("1", th.ALL_NAMES_HPC),
+        ]:
+            obj = Intf(line=line, platform="hp_procurve")
+            actual = obj.all_names()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
     def test_valid__last_idx(self):
         """Intf.last_idx()"""
         for line, expected in [

@@ -34,13 +34,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.8.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.8.1.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.8.0
+    pip install git+https://github.com/vladimirs-git/netports@0.8.1
 
 
 
@@ -465,7 +465,7 @@ Sorts the interfaces by indexes (not by alphabetic).
 Parameter       Type    Description
 =============== ======= ============================================================================
 line            *str*   Interface name that can contain up to 4 indexes
-platform        *str*   Platform: "", "cisco_asr" (default "")
+platform        *str*   Platform like in Netmiko (default "")
 splitter        *str*   Separator of characters between indexes (default ",./:")
 =============== ======= ============================================================================
 

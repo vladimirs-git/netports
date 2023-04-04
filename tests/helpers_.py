@@ -63,6 +63,11 @@ ALL_NAMES_1 = [
     "interface 1",
     "1",
 ]
+ALL_NAMES_HPC = [
+    "interface 1",
+    "1",
+    "interface 1/1",
+]
 
 
 class Helpers(unittest.TestCase):

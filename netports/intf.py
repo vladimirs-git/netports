@@ -23,7 +23,7 @@ class Intf:
         ::
             :param line: Interface name that can contain up to 4 indexes
             :type line: str
-            :param platform: Platform: "", "cisco_asr" (default "")
+            :param platform: Platform like in Netmiko (default "")
             :type platform: str
             :param splitter: Separator of characters between indexes (default ",./:")
             :type splitter: str
@@ -235,6 +235,11 @@ class Intf:
         results.update([s.lower() for s in results])
         results_: LStr = sorted(results)
         results_.sort(key=len, reverse=True)
+
+        if self.platform == "hp_procurve":
+            if digits := [s for s in results if s.isdigit()]:
+                names = [f"interface 1/{s}" for s in digits]
+                results_.extend(names)
         return results_
 
     def last_idx(self) -> int:

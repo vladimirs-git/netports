@@ -103,7 +103,7 @@ def short_to_long(platform: str = "", key_lower: bool = False, value_lower: bool
             short_to_long(key_lower=True) -> {"fa": "FastEthernet", ...}
             short_to_long(value_lower=True) -> {"Fa": "fastethernet", ...}
     """
-    if not platform:
+    if platform in ["", "hp_procurve"]:
         data: DStr = MAP_HP_COMWARE.copy()
         data.update(MAP_CISCO_ASR)
         data.update(MAP_CISCO_NXOS)
