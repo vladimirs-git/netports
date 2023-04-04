@@ -4,6 +4,10 @@
 CHANGELOG
 =========
 
+0.8.2 (2023-04-04)
+------------------
+Intf(platform="hp_procurve").all_names() -> ["interface Trk1", ...]
+
 0.8.1 (2023-04-04)
 ------------------
 * [change] Intf(platform="hp_procurve").all_names() -> ["interface 1", "1", "interface 1/1"]

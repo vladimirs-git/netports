@@ -48,6 +48,9 @@ MAP_HP_COMWARE = {  # h3c
     "BAGG": "Bridge-Aggregation",
     "Vlan": "Vlan-interface",  # overlapped: cisco
 }
+MAP_HP_PROCURVE = {  # hpc
+    "Trk": "Trk",
+}
 
 
 def long_to_short(platform: str = "", key_lower: bool = False, value_lower: bool = False) -> DStr:
@@ -103,13 +106,7 @@ def short_to_long(platform: str = "", key_lower: bool = False, value_lower: bool
             short_to_long(key_lower=True) -> {"fa": "FastEthernet", ...}
             short_to_long(value_lower=True) -> {"Fa": "fastethernet", ...}
     """
-    if platform in ["", "hp_procurve"]:
-        data: DStr = MAP_HP_COMWARE.copy()
-        data.update(MAP_CISCO_ASR)
-        data.update(MAP_CISCO_NXOS)
-        data.update(MAP_CISCO_IOS)
-        data.update(MAP_OTHER)
-    elif platform == "cisco_asr":
+    if platform == "cisco_asr":
         data = MAP_OTHER.copy()
         data.update(MAP_CISCO_IOS)
         data.update(MAP_CISCO_ASR)
@@ -124,9 +121,17 @@ def short_to_long(platform: str = "", key_lower: bool = False, value_lower: bool
         data = MAP_OTHER.copy()
         data.update(MAP_CISCO_IOS)
         data.update(MAP_HP_COMWARE)
+    elif platform == "hp_procurve":  # h3c
+        data = MAP_OTHER.copy()
+        data.update(MAP_CISCO_IOS)
+        data.update(MAP_HP_PROCURVE)
     else:
-        expected = PLATFORMS
-        raise ValueError(f"{platform=} {expected=}")
+        data: DStr = MAP_HP_COMWARE.copy()
+        data.update(MAP_HP_PROCURVE)
+        data.update(MAP_CISCO_ASR)
+        data.update(MAP_CISCO_NXOS)
+        data.update(MAP_CISCO_IOS)
+        data.update(MAP_OTHER)
     data = _lower(data, key_lower, value_lower)
     return data
 

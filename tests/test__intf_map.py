@@ -22,6 +22,7 @@ class Test(unittest.TestCase):
             (dict(platform="cisco_ios"), hm.SHORT_TO_LONG_IOS),
             (dict(platform="cisco_nxos"), hm.SHORT_TO_LONG_NXOS),
             (dict(platform="hp_comware"), hm.SHORT_TO_LONG_H3C),
+            (dict(platform="hp_procurve"), hm.SHORT_TO_LONG_HPC),
         ]:
             actual = intf_map.short_to_long(**kwargs)
             diff = list(dictdiffer.diff(actual, expected))
@@ -37,6 +38,7 @@ class Test(unittest.TestCase):
             (dict(platform="cisco_ios"), hm.SHORT_TO_SHORT_IOS),
             (dict(platform="cisco_nxos"), hm.SHORT_TO_SHORT_NXOS),
             (dict(platform="hp_comware"), hm.SHORT_TO_SHORT_H3C),
+            (dict(platform="hp_procurve"), hm.SHORT_TO_SHORT_HPC),
         ]:
             actual = intf_map.short_to_short(**kwargs)
             diff = list(dictdiffer.diff(actual, expected))
@@ -52,6 +54,7 @@ class Test(unittest.TestCase):
             (dict(platform="cisco_ios"), hm.LONG_TO_SHORT_IOS),
             (dict(platform="cisco_nxos"), hm.LONG_TO_SHORT_NXOS),
             (dict(platform="hp_comware"), hm.LONG_TO_SHORT_H3C),
+            (dict(platform="hp_procurve"), hm.LONG_TO_SHORT_HPC),
         ]:
             actual = intf_map.long_to_short(**kwargs)
             diff = list(dictdiffer.diff(actual, expected))
@@ -67,6 +70,7 @@ class Test(unittest.TestCase):
             (dict(platform="cisco_ios"), hm.LONG_TO_LONG_IOS),
             (dict(platform="cisco_nxos"), hm.LONG_TO_LONG_NXOS),
             (dict(platform="hp_comware"), hm.LONG_TO_LONG_H3C),
+            (dict(platform="hp_procurve"), hm.LONG_TO_LONG_HPC),
         ]:
             actual = intf_map.long_to_long(**kwargs)
             diff = list(dictdiffer.diff(actual, expected))
