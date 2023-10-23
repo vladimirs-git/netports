@@ -34,13 +34,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.8.2.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.9.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.8.2
+    pip install git+https://github.com/vladimirs-git/netports@0.9.0
 
 
 
@@ -389,13 +389,13 @@ Return
 
 long_to_short()
 ...............
-**long_to_short(platform, key_lower, value_lower)**
-Returns Interfaces map long-to-short, platform specific
+**long_to_short(device_type, key_lower, value_lower)**
+Returns Interfaces map long-to-short, device_type specific
 
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -406,13 +406,13 @@ Return
 
 long_to_long()
 ..............
-**long_to_long(platform, key_lower, value_lower)**
-Returns Interfaces map long-to-long, platform specific
+**long_to_long(device_type, key_lower, value_lower)**
+Returns Interfaces map long-to-long, device_type specific
 
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -423,13 +423,13 @@ Return
 
 short_to_long()
 ...............
-**short_to_long(platform, key_lower, value_lower)**
-Returns Interfaces map short-to-long, platform specific
+**short_to_long(device_type, key_lower, value_lower)**
+Returns Interfaces map short-to-long, device_type specific
 
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -440,13 +440,13 @@ Return
 
 short_to_short()
 ................
-**short_to_short(platform, key_lower, value_lower)**
-Returns Interfaces map short-to-short, platform specific
+**short_to_short(device_type, key_lower, value_lower)**
+Returns Interfaces map short-to-short, device_type specific
 
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-platform        *str*                       Platform, increase priority of platform specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -457,7 +457,7 @@ Return
 
 Intf()
 ......
-**Intf(line, platform, splitter)**
+**Intf(line, device_type, splitter)**
 An object of interface name, that can contain up to 4 indexes.
 Sorts the interfaces by indexes (not by alphabetic).
 
@@ -465,7 +465,7 @@ Sorts the interfaces by indexes (not by alphabetic).
 Parameter       Type    Description
 =============== ======= ============================================================================
 line            *str*   Interface name that can contain up to 4 indexes
-platform        *str*   Platform like in Netmiko (default "")
+device_type     *str*   Netmiko device_type (default "")
 splitter        *str*   Separator of characters between indexes (default ",./:")
 =============== ======= ============================================================================
 
@@ -486,7 +486,7 @@ ids                          Interface all IDs
 line            *str*        Interface line
 name            *str*        Interface name with IDs
 splitter        *str*        Separator of characters between indexes
-platform        *str*        Platform
+device_type     *str*        Netmiko device_type
 =============== ============ =======================================================================
 
 
@@ -499,7 +499,7 @@ Index of last ID in interface line
 all_names()
 ...........
 **all_names()**
-All variants of names: long, short, upper-case, lover-case. Platform specific
+All variants of names: long, short, upper-case, lover-case. Device type specific
 
 
 name_full()
@@ -516,8 +516,18 @@ Interface long name with IDs and without interface keyword
 
 name_short()
 ............
-**name_short()**
-Interface short name with IDs, platform specific
+**name_short(replace)**
+Interface short name with IDs, Device type specific
+
+=========== =========================== ============================================================
+Parameter   Type                        Description
+=========== =========================== ============================================================
+replace     *List[Tuple[str, str]]*     Replace the default short name with the first one
+                                        that matches in the list of the 'replace' argument.
+=========== =========================== ============================================================
+
+Return
+    *str* Interface short name.
 
 
 part_after()

@@ -133,4 +133,4 @@ dmypy.json
 # Temp
 tmp/
 temp/
-notes/
+_notes/

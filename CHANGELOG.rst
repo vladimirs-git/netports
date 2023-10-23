@@ -4,9 +4,16 @@
 CHANGELOG
 =========
 
+0.9.0 (2023-10-23)
+------------------
+* [new] intf_map.py ALL_SHORT
+* [change] platform > device_type
+* [change] Intf._init_device_type() ValueError > NetportsValueError
+* [new] Intf.name_short(replace=[("Fa", "Eth")])
+
 0.8.2 (2023-04-04)
 ------------------
-Intf(platform="hp_procurve").all_names() -> ["interface Trk1", ...]
+* [change] Intf(platform="hp_procurve").all_names() -> ["interface Trk1", ...]
 
 0.8.1 (2023-04-04)
 ------------------

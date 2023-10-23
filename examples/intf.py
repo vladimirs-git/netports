@@ -19,6 +19,7 @@ assert intf.id4 == 4
 # Methods
 print("last_idx", intf.last_idx())
 print("name_short", intf.name_short())
+print("name_short", intf.name_short(replace=[("Eth", "Fa")]))
 print("name_long", intf.name_long())
 print("name_full", intf.name_full())
 print("part before id", intf.part_before(idx=3))
@@ -29,6 +30,7 @@ print("part after id", intf.part_before(idx=3, splitter=False))
 print()
 # last_idx 4
 # name_short Eth1/2/3.4
+# name_short Fa1/2/3.4
 # name_long Ethernet1/2/3.4
 # name_full interface Ethernet1/2/3.4
 # part before id interface Ethernet1/2/

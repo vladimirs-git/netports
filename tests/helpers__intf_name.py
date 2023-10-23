@@ -29,7 +29,6 @@ SHOW_INTERFACES_SUMMARY__IOS = """
   Port-channel1                 0         0         0         0         0         0         0    
 """
 
-
 # ============================ CISCO NXOS ============================
 # show run | include interface
 SHOW_RUN__NXOS = """
@@ -67,7 +66,6 @@ ixr                  Eth2/44         120        R           TenGigE0/0/0/1
 ixr                  Eth8/1          120        R           HundredGigE0/0/0/1
 pan                  Eth1/37         120        OR          ethernet1/1
 """
-
 
 # ========================== CISCO ASR 9000 ==========================
 
@@ -107,7 +105,6 @@ SHOW_INTERFACES_BRIEF__ASR = """
           Te0/0/0/1          up          up               ARPA  1514   10000000
       Te0/0/0/1.100          up          up             802.1Q  1518   10000000
 """
-
 
 # ============================ HP COMWARE ============================
 

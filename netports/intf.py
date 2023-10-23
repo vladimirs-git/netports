@@ -6,8 +6,9 @@ from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
 from netports import intf_map, helpers as h
-from netports.static import PLATFORMS
-from netports.types_ import T3Str, T5Str, LStr, SStr, DStr
+from netports.exceptions import NetportsValueError
+from netports.static import DEVICE_TYPES
+from netports.types_ import T3Str, T5Str, LStr, SStr, DStr, LT2Str
 
 SPLITTER = ",./:"
 
@@ -23,12 +24,12 @@ class Intf:
         ::
             :param line: Interface name that can contain up to 4 indexes
             :type line: str
-            :param platform: Platform like in Netmiko (default "")
-            :type platform: str
+            :param device_type: Netmiko device type (default "")
+            :type device_type: str
             :param splitter: Separator of characters between indexes (default ",./:")
             :type splitter: str
         """
-        self._platform = self._init_platform(**kwargs)
+        self._device_type = self._init_device_type(**kwargs)
         self._splitter = str(kwargs.get("splitter") or SPLITTER)
         self._line = self._init_line(line)
 
@@ -85,13 +86,17 @@ class Intf:
         return "".join(items)
 
     @staticmethod
-    def _init_platform(**kwargs) -> str:
-        """Init platform"""
-        platform = str(kwargs.get("platform") or "")
-        expected = ["", *PLATFORMS]
-        if platform not in expected:
-            raise ValueError(f"{platform=} {expected=}")
-        return platform
+    def _init_device_type(**kwargs) -> str:
+        """Init Netmiko device type
+        ::
+            :return: Netmiko device type
+            :raise: NetportsValueError if the device type is unknown
+        """
+        device_type = str(kwargs.get("device_type") or "")
+        expected = ["", *DEVICE_TYPES]
+        if device_type not in expected:
+            raise NetportsValueError(f"{device_type=} {expected=}")
+        return device_type
 
     # =========================== property ===========================
 
@@ -181,9 +186,9 @@ class Intf:
         return re.sub(r"^interface\s+", "", self.line)
 
     @property
-    def platform(self) -> str:
-        """Platform"""
-        return self._platform
+    def device_type(self) -> str:
+        """Netmiko device type"""
+        return self._device_type
 
     @property
     def splitter(self) -> str:
@@ -216,12 +221,12 @@ class Intf:
                 name_ = f"interface {name_}"
                 results.add(name_)
 
-        intf_map_upper: DStr = intf_map.short_to_long(self._platform)
-        intf_map_lower: DStr = intf_map.short_to_long(self._platform, key_lower=True)
+        intf_map_upper: DStr = intf_map.short_to_long(self._device_type)
+        intf_map_lower: DStr = intf_map.short_to_long(self._device_type, key_lower=True)
         names: LStr = [self.name, self.name_short()]
         names = h.no_dupl(names)
         for name in names:
-            intf_o = Intf(line=name, platform=self.platform)
+            intf_o = Intf(line=name, device_type=self.device_type)
             for id0_short, intf_map_d in [
                 (intf_o.id0, intf_map_upper),
                 (intf_o.id0.lower(), intf_map_lower),
@@ -236,7 +241,7 @@ class Intf:
         results_: LStr = sorted(results)
         results_.sort(key=len, reverse=True)
 
-        if self.platform == "hp_procurve":
+        if self.device_type == "hp_procurve":
             if digits := [s for s in results if s.isdigit()]:
                 names = [f"interface 1/{s}" for s in digits]
                 results_.extend(names)
@@ -262,7 +267,6 @@ class Intf:
         name = self.name_long()
         return f"interface {name}"
 
-    # noinspection DuplicatedCode
     def name_long(self) -> str:
         """Interface long name with IDs and without interface keyword
         ::
@@ -274,13 +278,13 @@ class Intf:
         if id0.startswith("interface "):
             id0 = id0.replace("interface ", "", 1)
 
-        intf_map_short: DStr = intf_map.short_to_long(self._platform, key_lower=True)
+        intf_map_short: DStr = intf_map.short_to_long(self._device_type, key_lower=True)
         for short_lower, long_upper in intf_map_short.items():
             if id0 == short_lower:
                 id0 = long_upper
                 break
         else:
-            intf_map_long: DStr = intf_map.long_to_long(self._platform, key_lower=True)
+            intf_map_long: DStr = intf_map.long_to_long(self._device_type, key_lower=True)
             for long_lower, long_upper in intf_map_long.items():
                 if id0 == long_lower:
                     id0 = long_upper
@@ -290,28 +294,37 @@ class Intf:
         name = f"{id0}{id1}"
         return name
 
-    # noinspection DuplicatedCode
-    def name_short(self) -> str:
+    def name_short(self, replace: LT2Str = None) -> str:
         """Interface short name with IDs
         ::
+            :param replace: Replace the default short name with the first one
+                            that matches in the list of the 'replace' argument.
+            :return: Interface short name.
             :example:
                 intf = Intf("interface FastEthernet1/2")
                 intf.name_short() -> "Fa1/2"
+                intf.name_short(replace=[("Fa", "Eth")]) -> "Eth1/2"
         """
         id0 = self.id0.lower()
         if id0.startswith("interface "):
             id0 = id0.replace("interface ", "", 1)
 
-        intf_map_l2s: DStr = intf_map.long_to_short(self._platform, key_lower=True)
+        intf_map_l2s: DStr = intf_map.long_to_short(self._device_type, key_lower=True)
         for long_lower, short_upper in intf_map_l2s.items():
             if id0 == long_lower:
                 id0 = short_upper
                 break
         else:
-            intf_map_s2s: DStr = intf_map.short_to_short(self._platform, key_lower=True)
+            intf_map_s2s: DStr = intf_map.short_to_short(self._device_type, key_lower=True)
             for short_lower, short_upper in intf_map_s2s.items():
                 if id0 == short_lower:
                     id0 = short_upper
+                    break
+
+        if replace:
+            for before, after in replace:
+                if id0 == before:
+                    id0 = after
                     break
 
         id1 = self.part_after(idx=0)

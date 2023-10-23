@@ -135,9 +135,13 @@ class Test(Helpers):
             (dict(line=f"{id0}1,2,3,4"), exp_b6),
             (dict(line=f"{id0}1:2:3:4"), exp_b7),
             (dict(line=f"{id0}1-2-3-4", splitter="-"), exp_b8),
-            # platform
-            (dict(line="interface Ethernet1/1", platform=""), exp_c1),
-            (dict(line="interface Ethernet1/1", platform="cisco_asr"), exp_c1),
+            # device_type
+            (dict(line="interface Ethernet1/1", device_type=""), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="cisco_asr"), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="cisco_ios"), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="cisco_nxos"), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="hp_comware"), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="hp_procurve"), exp_c1),
         ]:
             intf_o = Intf(**kwargs)
             self._test_attrs(obj=intf_o, exp_d=exp_d, msg=f"{kwargs=}")
@@ -145,7 +149,7 @@ class Test(Helpers):
     def test_invalid__init__(self):
         """Intf.__init__()"""
         for kwargs, error in [
-            (dict(line="Ethernet1/1", platform="typo"), ValueError),
+            (dict(line="Ethernet1/1", device_type="typo"), ValueError),
         ]:
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 Intf(**kwargs)
@@ -185,7 +189,7 @@ class Test(Helpers):
             self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_valid__all_names__cisco_asr(self):
-        """Intf.all_names() platform="cisco_asr" """
+        """Intf.all_names() device_type="cisco_asr" """
         for line, expected in [
             # upper
             ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP_UPPER),
@@ -197,17 +201,17 @@ class Test(Helpers):
             ("tu1", th.ALL_NAMES_TUN_IP_LOWER),
             ("ti1", th.ALL_NAMES_TUN_IP),
         ]:
-            obj = Intf(line=line, platform="cisco_asr")
+            obj = Intf(line=line, device_type="cisco_asr")
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_valid__all_names__hp_procurve(self):
-        """Intf.all_names() platform="hp_procurve" """
+        """Intf.all_names() device_type="hp_procurve" """
         for line, expected in [
             ("interface 1", th.ALL_NAMES_HPC),
             ("1", th.ALL_NAMES_HPC),
         ]:
-            obj = Intf(line=line, platform="hp_procurve")
+            obj = Intf(line=line, device_type="hp_procurve")
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
@@ -273,8 +277,8 @@ class Test(Helpers):
             self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_valid__name_full__cisco_asr(self):
-        """Intf.name_full() platform="cisco_asr" """
-        platform = "cisco_asr"
+        """Intf.name_full() device_type="cisco_asr" """
+        device_type = "cisco_asr"
         for line, expected in [
             ("interface tunnel-ip1", "interface tunnel-ip1"),
             ("tunnel-ip1", "interface tunnel-ip1"),
@@ -282,9 +286,9 @@ class Test(Helpers):
             ("tu1", "interface tunnel-ip1"),
             ("ti1", "interface tunnel-ip1"),
         ]:
-            obj = Intf(line=line, platform=platform)
+            obj = Intf(line=line, device_type=device_type)
             actual = obj.name_full()
-            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
+            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
 
     def test_valid__name_long(self):
         """Intf.name_long()"""
@@ -333,8 +337,8 @@ class Test(Helpers):
             self.assertEqual(expected, actual, msg=f"{line=}")
 
     def test_valid__name_long__cisco_asr(self):
-        """Intf.name_long() platform="cisco_asr" """
-        platform = "cisco_asr"
+        """Intf.name_long() device_type="cisco_asr" """
+        device_type = "cisco_asr"
         for line, expected in [
             ("interface tunnel-ip1", "tunnel-ip1"),
             ("tunnel-ip1", "tunnel-ip1"),
@@ -342,9 +346,9 @@ class Test(Helpers):
             ("tu1", "tunnel-ip1"),
             ("ti1", "tunnel-ip1"),
         ]:
-            obj = Intf(line=line, platform=platform)
+            obj = Intf(line=line, device_type=device_type)
             actual = obj.name_long()
-            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
+            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
 
     def test_valid__name_short(self):
         """Intf.name_short()"""
@@ -392,9 +396,45 @@ class Test(Helpers):
             actual = obj.name_short()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
+    def test_valid__name_short__device_type(self):
+        """Intf.name_short()"""
+        for line, device_type, expected in [
+            ("interface Vlan1", "", "V1"),
+            ("interface Vlan1", "cisco_asr", "Vlan1"),
+            ("interface Vlan1", "cisco_ios", "Vlan1"),
+            ("interface Vlan1", "cisco_nxos", "Vlan1"),
+            ("interface Vlan1", "hp_comware", "V1"),
+            ("interface Vlan1", "hp_procurve", "Vlan1"),
+
+            ("interface GigabitEthernet1", "", "Gi1"),
+            ("interface GigabitEthernet1", "cisco_asr", "Gi1"),
+            ("interface GigabitEthernet1", "cisco_ios", "Gi1"),
+            ("interface GigabitEthernet1", "cisco_nxos", "Gi1"),
+            ("interface GigabitEthernet1", "hp_comware", "GE1"),
+            ("interface GigabitEthernet1", "hp_procurve", "Gi1"),
+        ]:
+            obj = Intf(line=line, device_type=device_type)
+            actual = obj.name_short()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
+    def test_valid__name_short__replace(self):
+        """Intf.name_short(replace)"""
+        for line, replace, expected in [
+            ("interface Ethernet1", None, "Eth1"),
+            ("interface Ethernet1", [], "Eth1"),
+            ("interface Ethernet1", [("Eth", "Fa")], "Fa1"),
+            ("interface Ethernet1", [("typo", "Fa")], "Eth1"),
+            ("interface Ethernet1", [("Eth", "Fa"), ("typo", "Fa")], "Fa1"),
+            ("interface Ethernet1", [("typo", "Fa"), ("Eth", "Fa")], "Fa1"),
+            ("interface Ethernet1", [("Eth", "FA"), ("Eth", "Fa")], "FA1"),
+        ]:
+            obj = Intf(line)
+            actual = obj.name_short(replace=replace)
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
     def test_valid__name_short__cisco_asr(self):
-        """Intf.name_short() platform="cisco_asr" """
-        platform = "cisco_asr"
+        """Intf.name_short() device_type="cisco_asr" """
+        device_type = "cisco_asr"
         for line, expected in [
             ("interface tunnel-ip1", "ti1"),
             ("tunnel-ip1", "ti1"),
@@ -402,9 +442,9 @@ class Test(Helpers):
             ("tu1", "ti1"),
             ("ti1", "ti1"),
         ]:
-            obj = Intf(line=line, platform=platform)
+            obj = Intf(line=line, device_type=device_type)
             actual = obj.name_short()
-            self.assertEqual(expected, actual, msg=f"{line=} {platform=}")
+            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
 
     def test_valid__part_after(self):
         """Intf.part_after()"""
