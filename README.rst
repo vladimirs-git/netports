@@ -11,9 +11,6 @@ netports
 Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces
 Recommended for scripting in telecommunications networks.
 
-.. contents:: **Contents**
-    :local:
-
 
 Requirements
 ------------
@@ -34,14 +31,17 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.9.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.10.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.9.0
+    pip install git+https://github.com/vladimirs-git/netports@0.10.0
 
+
+.. contents:: **Contents**
+    :local:
 
 
 TCP/UDP ports
@@ -571,6 +571,31 @@ Return
 
 `./examples/intfs.py`_
 
+
+SwVersion()
+...........
+**SwVersion(text)**
+Parse the given version string and return *SwVersion* object who can
+compare (>, >=, <, <=) software versions of network devices: Cisco, FortiGate, HP, etc.
+
+
+.. code:: python
+
+    import re
+    from netports import SwVersion
+
+    text = "Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(4)E10, ..."
+    text = re.search(r"Version (\S+),", text)[1]
+
+    version1 = SwVersion(text)  # 15.2(4)E10
+    version2 = SwVersion("15.2(4)E11")
+
+    assert version1 < version2
+    assert version1 <= version2
+    assert not version1 > version2
+    assert not version1 >= version2
+    print(version1)  # 15.2(4)e10
+    print(version2)  # 15.2(4)e11
 
 
 .. _`./examples/tcp_udp.py` : ./examples/tcp_udp.py

@@ -4,6 +4,9 @@ import unittest
 
 from netports import helpers as h
 
+APOSTROPHE = "'"
+SPEECH = "\""
+
 
 class Test(unittest.TestCase):
     """unittest helpers.py"""
@@ -63,6 +66,30 @@ class Test(unittest.TestCase):
         ]:
             actual = h.findall3(pattern=pattern, string=string)
             self.assertEqual(expected, actual, msg=f"{pattern=}")
+
+    def test_valid__findall4(self):
+        """findall4()"""
+        for pattern, string, req in [
+            ("", "abcdef", ("", "", "", "")),
+            ("typo", "abcdef", ("", "", "", "")),
+            ("(b)", "abcdef", ("", "", "", "")),
+            ("(b)(c)(d)(e)", "abcdef", ("b", "c", "d", "e")),
+            ("(b)(c)(d)(e)(f)", "abcdef", ("b", "c", "d", "e")),
+        ]:
+            result = h.findall4(pattern=pattern, string=string)
+            self.assertEqual(result, req, msg=f"{pattern=}")
+
+    def test_valid__repr_params(self):
+        """init.repr_params()"""
+        for args, kwargs, req in [
+            ([], {}, ""),
+            (["a"], {}, "\"a\""),
+            ([], dict(a="a"), "a=\"a\""),
+            (["a", "b"], dict(c="c", d="d"), "\"a\", \"b\", c=\"c\", d=\"d\""),
+        ]:
+            result = h.repr_params(*args, **kwargs)
+            result = result.replace(APOSTROPHE, SPEECH)
+            self.assertEqual(result, req, msg=f"{kwargs=}")
 
     # =============================== bool ===============================
 

@@ -4,7 +4,7 @@ import time
 from typing import Any, Iterable
 
 from netports.static import BRIEF_ALL_I, BRIEF_ALL_S, SPLITTER
-from netports.types_ import LAny, LStr, StrInt, IStrInt, LInt, T2Str, T3Str
+from netports.types_ import LAny, LStr, StrInt, IStrInt, LInt, T2Str, T3Str, T4Str
 
 
 # =============================== str ================================
@@ -58,6 +58,32 @@ def findall3(pattern: str, string: str, flags=0) -> T3Str:
     if isinstance(result, tuple) and len(result) >= 3:
         return result[0], result[1], result[2]
     return "", "", ""
+
+
+def findall4(pattern: str, string: str, flags=0) -> T4Str:
+    """Parses 4 items of re.findall(). If nothing is found, returns 4 empty strings
+    ::
+        :param pattern: Regex pattern, where 4 groups with parentheses in pattern are required
+        :param string: String where need to find pattern
+        :param flags: findall flags
+        :return: Three interested substrings
+        :example:
+            pattern = "a(b)(c)(d)(e)f"
+            string = "abcdef"
+            return: "b", "c", "d", "e"
+    """
+    result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "", "", "")])[0]
+    if isinstance(result, tuple) and len(result) >= 4:
+        return result[0], result[1], result[2], result[3]
+    return "", "", "", ""
+
+
+def repr_params(*args, **kwargs) -> str:
+    """Makes params for __repr__() method"""
+    args_ = ", ".join([f"{v!r}" for v in args if v])
+    kwargs_ = ", ".join([f"{k}={v!r}" for k, v in kwargs.items() if v])
+    params = [s for s in (args_, kwargs_) if s]
+    return ", ".join(params)
 
 
 def join(items: LAny) -> str:
