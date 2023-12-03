@@ -46,7 +46,7 @@ def itcp(items: Any = "", **kwargs) -> LInt:
             return [BRIEF_ALL_I]
 
     ports: LInt = inumbers(items)
-    check_tcp_ports(ports)
+    check_ports(ports=ports, strict=True)
 
     if h.is_brief(**kwargs):
         if ports == ALL_PORTS_L:
@@ -82,27 +82,51 @@ def stcp(items: Any = "", **kwargs) -> str:
         if h.is_brief_in_items(items):
             items_ = ",".join(h.lstr(h.remove_brief_items(items)))
             range_o: Range = parse_range(items_)
-            check_tcp_ports(range_o.numbers())
+            check_ports(ports=range_o.numbers(), strict=True)
             return ALL_PORTS_S
 
     range_o = parse_range(items)
-    check_tcp_ports(range_o.numbers())
+    check_ports(ports=range_o.numbers(), strict=True)
     return str(range_o)
 
 
-# ============================= helpers ==============================
+def check_port(port: int, strict: bool = False) -> bool:
+    """Check TCP/UDP port in the range 1 to 65535.
 
-def check_tcp_ports(items: LInt) -> bool:
-    """Checks TCP/UDP ports
-    ::
-        :param items: TCP/UDP ports
-        :type items: List[int]
+    :param int port: The TCP/UDP port that needs to be checked.
+    :param bool strict: True - raise NetportsValueError if the port is invalid,
+        False - return False if the port is invalid. Default is `False`.
 
-        :return: True if all items are in the valid TCP/UDP range 1...65535
-        :rtype: bool
+    :return: True - If the port is in the valid range of 1 to 65535, False - otherwise.
+    :rtype: bool
 
-        :raises NetportsValueError: If on of item is outside valid range
+    :raises TypeError: If the port is not integer.
+    :raises NetportsValueError: If strict=True and the port is outside the valid range.
     """
-    if invalid_port := [i for i in items if i < MIN_PORT or i > MAX_PORT]:
-        raise NetportsValueError(f"{invalid_port=}, expected in range 1...65535")
+    if not isinstance(port, int):
+        raise TypeError(f"{port=} {int} expected.")
+    if MIN_PORT <= port <= MAX_PORT:
+        return True
+    if strict:
+        raise NetportsValueError(f"{port=}, expected in the range {MIN_PORT} to {MAX_PORT}")
+    return False
+
+
+def check_ports(ports: LInt, strict: bool = False) -> bool:
+    """Check TCP/UDP ports in the range 1 to 65535.
+
+    :param List[int] ports: The TCP/UDP ports that needs to be checked.
+
+    :param bool strict: True - raise NetportsValueError if any in the ports is invalid,
+        False - return False if the port is invalid. Default is `False`.
+
+    :return: True - if all ports is in the valid range of 1 to 65535, False - otherwise.
+    :rtype: bool
+
+    :raises TypeError: If any in the ports is not integer.
+    :raises NetportsValueError: If strict=True and any in the ports is outside the valid range.
+    """
+    for port in ports:
+        if not check_port(port=port, strict=strict):
+            return False
     return True

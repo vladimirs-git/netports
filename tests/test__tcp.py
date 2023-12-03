@@ -71,6 +71,60 @@ class Test(unittest.TestCase):
             with self.assertRaises(error, msg=f"{kwargs=}"):
                 tcp.stcp(**kwargs)
 
+    def test__check_port(self):
+        """check_port()"""
+        for kwargs, req in [
+            ({"port": "", "strict": True}, TypeError),
+            ({"port": "", "strict": False}, TypeError),
+            ({"port": {}, "strict": True}, TypeError),
+            ({"port": {}, "strict": False}, TypeError),
+            ({"port": "-1", "strict": True}, TypeError),
+            ({"port": "-1", "strict": False}, TypeError),
+            ({"port": -1, "strict": True}, NetportsValueError),
+            ({"port": -1, "strict": False}, False),
+            ({"port": "0", "strict": True}, TypeError),
+            ({"port": "0", "strict": False}, TypeError),
+            ({"port": 0, "strict": True}, NetportsValueError),
+            ({"port": 0, "strict": False}, False),
+            ({"port": "1", "strict": True}, TypeError),
+            ({"port": "1", "strict": False}, TypeError),
+            ({"port": 1, "strict": True}, True),
+            ({"port": 1, "strict": False}, True),
+            ({"port": "65535", "strict": True}, TypeError),
+            ({"port": "65535", "strict": False}, TypeError),
+            ({"port": 65535, "strict": True}, True),
+            ({"port": 65535, "strict": False}, True),
+            ({"port": "65536", "strict": True}, TypeError),
+            ({"port": "65536", "strict": False}, TypeError),
+            ({"port": 65536, "strict": True}, NetportsValueError),
+            ({"port": 65536, "strict": False}, False),
+        ]:
+            if isinstance(req, bool):
+                result = tcp.check_port(**kwargs)
+                self.assertEqual(result, req, msg=f"{kwargs=}")
+            else:
+                with self.assertRaises(req, msg=f"{kwargs=}"):
+                    tcp.check_port(**kwargs)
+
+    def test__check_ports(self):
+        """check_ports()"""
+        for kwargs, req in [
+            ({"ports": [], "strict": True}, True),
+            ({"ports": [], "strict": False}, True),
+            ({"ports": ["1"], "strict": True}, TypeError),
+            ({"ports": ["1"], "strict": False}, TypeError),
+            ({"ports": [1, 65535], "strict": True}, True),
+            ({"ports": [1, 65535], "strict": False}, True),
+            ({"ports": ["0"], "strict": True}, TypeError),
+            ({"ports": ["0"], "strict": False}, TypeError),
+        ]:
+            if isinstance(req, bool):
+                result = tcp.check_ports(**kwargs)
+                self.assertEqual(result, req, msg=f"{kwargs=}")
+            else:
+                with self.assertRaises(req, msg=f"{kwargs=}"):
+                    tcp.check_ports(**kwargs)
+
 
 if __name__ == "__main__":
     unittest.main()

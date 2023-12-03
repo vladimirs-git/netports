@@ -4,7 +4,8 @@ import unittest
 
 import dictdiffer  # type: ignore
 
-from netports import vlan, NetportsValueError
+from netports import vlan
+from netports.exceptions import NetportsValueError
 
 ALL = list(range(1, 4095))
 

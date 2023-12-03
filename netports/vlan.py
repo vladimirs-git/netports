@@ -2,8 +2,9 @@
 
 from typing import Any
 
-from netports import Range, NetportsValueError
+from netports import Range
 from netports import helpers as h
+from netports.exceptions import NetportsValueError
 from netports.ports import inumbers, parse_range
 from netports.static import BRIEF_ALL_I, RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
 from netports.types_ import LInt

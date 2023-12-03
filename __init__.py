@@ -9,5 +9,5 @@ from netports.item import Item
 from netports.ports import inumbers, parse_range, snumbers
 from netports.range import Range
 from netports.swversion import SwVersion
-from netports.tcp import stcp, itcp
+from netports.tcp import stcp, itcp, check_port, check_ports
 from netports.vlan import ivlan, svlan

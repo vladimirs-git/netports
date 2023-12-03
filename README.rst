@@ -31,13 +31,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.10.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.11.1.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.10.0
+    pip install git+https://github.com/vladimirs-git/netports@0.11.1
 
 
 .. contents:: **Contents**
@@ -46,6 +46,43 @@ or install the package from github.com repository
 
 TCP/UDP ports
 -------------
+
+check_port()
+............
+**check_port(port, strict)**
+Check TCP/UDP port in the range 1 to 65535.
+
+=============== =========================== ============================================================================
+Parameter       Type                        Description
+=============== =========================== ============================================================================
+port            *int*                       The TCP/UDP port that needs to be checked.
+strict          *bool*                      True - raise NetportsValueError if the port is invalid, False - return False if the port is invalid. Default is `False`.
+=============== =========================== ============================================================================
+
+Return
+    *bool* True - If the port is in the valid range of 1 to 65535, False - otherwise.
+Raises
+    *TypeError* If the port is not integer.
+    *NetportsValueError* If strict=True and the port is outside the valid range.
+
+
+check_port()
+............
+**check_ports(ports, strict)**
+heck TCP/UDP ports in the range 1 to 65535.
+
+=============== =========================== ============================================================================
+Parameter       Type                        Description
+=============== =========================== ============================================================================
+ports           *List[int]*                 The TCP/UDP ports that needs to be checked
+strict          *bool*                      True - raise NetportsValueError if any in the ports is invalid, False - return False if the port is invalid. Default is `False`.
+=============== =========================== ============================================================================
+
+Return
+    *bool* True - if all ports is in the valid range of 1 to 65535, False - otherwise.
+Raises
+    *TypeError* If any in the ports is not integer.
+    *NetportsValueError* If strict=True and any in the ports is outside the valid range.
 
 
 itcp()
