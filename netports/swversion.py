@@ -4,6 +4,7 @@ from typing import Tuple
 from packaging.version import Version
 
 from netports import helpers as h
+from netports.types_ import TStrInt
 
 
 class SwVersion(Version):
@@ -64,10 +65,12 @@ class SwVersion(Version):
         name = kwargs.get("name")
         if name is None:
             name = ""
+        if not name:
+            name = "0"
         return str(name).lower()
 
     @staticmethod
-    def _parse_version(text: str) -> Tuple[str, int]:
+    def _parse_version(text: str) -> TStrInt:
         """Init SwVersion. Split `text` to *Version* and `nano` (4th digit)"""
         nano = 0
         items = list(h.findall4(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)", text))
@@ -83,4 +86,6 @@ class SwVersion(Version):
                 else:
                     items = []
         version = ".".join(items)
+        if not version:
+            version = "0"
         return version, nano

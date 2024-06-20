@@ -144,6 +144,7 @@ class Test(unittest.TestCase):
         cisco2 = dict(public="11.22(33)se44", base_version="11.22.33.44", release=(11, 22, 33, 44),
                       major=11, minor=22, micro=33, nano=44)
         for text, req, req_d in [
+            ("", "0", v0),
             ("0", "0", v0),
             (0, "0", v0),
             ("1", "1", v1),
@@ -155,21 +156,12 @@ class Test(unittest.TestCase):
             # cisco
             ("11.22(33)SE", "11.22(33)se", cisco1),
             ("11.22(33)SE44", "11.22(33)se44", cisco2),
-
         ]:
             obj = SwVersion(text)
 
             result = str(obj)
             self.assertEqual(result, req, msg=f"{text=}")
             self._test_attrs(obj=obj, req_d=req_d, msg=f"{text=}")
-
-    def test_invalid__init__(self):
-        """SwVersion.__init__()"""
-        for text, error in [
-            ("", InvalidVersion),
-        ]:
-            with self.assertRaises(error, msg=f"{text=}"):
-                SwVersion(text)
 
 
 if __name__ == "__main__":
