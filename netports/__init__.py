@@ -3,7 +3,14 @@
 from netports.exceptions import NetportsValueError
 from netports.intf import Intf
 from netports.intf_gm import IntfGM, intfrange
-from netports.intf_map import short_to_long, short_to_short, long_to_short, long_to_long
+from netports.intf_map import (
+    long_to_long,
+    long_to_short,
+    longs,
+    short_to_long,
+    short_to_short,
+    shorts,
+)
 from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
 from netports.item import Item
 from netports.ports import inumbers, parse_range, snumbers
@@ -31,9 +38,11 @@ __all__ = [
     "ivlan",
     "long_to_long",
     "long_to_short",
+    "longs",
     "parse_range",
     "short_to_long",
     "short_to_short",
+    "shorts",
     "sip",
     "snumbers",
     "stcp",
