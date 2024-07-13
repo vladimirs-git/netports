@@ -59,10 +59,6 @@ ALL_NAMES_MGMT = [
     "interface mgmt0",
     "mgmt0",
 ]
-ALL_NAMES_1 = [
-    "interface 1",
-    "1",
-]
 ALL_NAMES_HPC = [
     "interface 1",
     "1",
@@ -92,4 +88,4 @@ class Helpers(unittest.TestCase):
                 actual = getattr(obj, attr)
             if hasattr(actual, "line"):
                 actual = str(actual)
-            self.assertEqual(expected, actual, msg=f"{msg} {attr=}")
+            self.assertEqual(actual, expected, msg=f"{msg} {attr=}")

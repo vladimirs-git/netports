@@ -19,7 +19,7 @@ class Test(Helpers):
         intf_o = Intf(intf1)
         actual = intf_o.__hash__()
         expected = hash(("interface Ethernet", 1, 2, 3, 4))
-        self.assertEqual(expected, actual, msg=f"{intf1=}")
+        self.assertEqual(actual, expected, msg=f"{intf1=}")
 
     def test_valid__eq__(self):
         """Intf.__eq__() __ne__()"""
@@ -31,9 +31,9 @@ class Test(Helpers):
             (Intf("interface Ethernet1/1"), False),
         ]:
             actual = intf_o.__eq__(other_o)
-            self.assertEqual(expected, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(actual, expected, msg=f"{intf_o=} {other_o=}")
             actual = intf_o.__ne__(other_o)
-            self.assertEqual(not expected, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(not actual, expected, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__(self):
         """Intf.__lt__() __le__() __gt__() __ge__()"""
@@ -51,13 +51,13 @@ class Test(Helpers):
             (Intf(intf1), Intf("interface Eth1.2.3.4"), False, True, False, True),
         ]:
             actual = intf_o.__lt__(other_o)
-            self.assertEqual(exp_lt, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(actual, exp_lt, msg=f"{intf_o=} {other_o=}")
             actual = intf_o.__le__(other_o)
-            self.assertEqual(exp_le, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(actual, exp_le, msg=f"{intf_o=} {other_o=}")
             actual = intf_o.__gt__(other_o)
-            self.assertEqual(exp_gt, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(actual, exp_gt, msg=f"{intf_o=} {other_o=}")
             actual = intf_o.__ge__(other_o)
-            self.assertEqual(exp_ge, actual, msg=f"{intf_o=} {other_o=}")
+            self.assertEqual(actual, exp_ge, msg=f"{intf_o=} {other_o=}")
 
     def test_valid__lt__sort(self):
         """Intf.__lt__(), Intf.__le__()"""
@@ -85,10 +85,10 @@ class Test(Helpers):
         ]:
             expected = items.copy()
             actual = sorted(items)
-            self.assertEqual(expected, actual, msg=f"{items=}")
+            self.assertEqual(actual, expected, msg=f"{items=}")
             items[0], items[1] = items[1], items[0]
             actual = sorted(items)
-            self.assertEqual(expected, actual, msg=f"{items=}")
+            self.assertEqual(actual, expected, msg=f"{items=}")
 
     # =========================== property ===========================
 
@@ -101,6 +101,8 @@ class Test(Helpers):
         exp_a4 = dict(line="port1.2", name="port1.2", id0="port", id1=1, id2=2, id3=0, id4=0)
         exp_a5 = dict(line="text", name="text", id0="text", id1=0, id2=0, id3=0, id4=0)
         exp_a6 = dict(line=id0, name="Ethernet", id0=id0, id1=0, id2=0, id3=0, id4=0)
+        exp_a7 = dict(line="lag 1", name="lag 1", id0="lag ", _splitter=",./:",
+                      id1=1, id2=0, id3=0, id4=0)
 
         exp_b1 = dict(line=f"{id0}1", name="Ethernet1", id0=id0, id1=1, id2=0, id3=0, id4=0)
         exp_b2 = dict(line=f"{id0}1/2", name="Ethernet1/2", id0=id0, id1=1, id2=2, id3=0, id4=0)
@@ -118,12 +120,14 @@ class Test(Helpers):
 
         exp_c1 = dict(line=f"{id0}1/1", name="Ethernet1/1", id0=id0, id1=1, id2=1, id3=0, id4=0)
         for kwargs, exp_d in [
+            # name
             (dict(line="1"), exp_a1),
             (dict(line="1/2"), exp_a2),
             (dict(line="port1"), exp_a3),
             (dict(line="port1.2"), exp_a4),
             (dict(line="text"), exp_a5),
             (dict(line=id0), exp_a6),
+            (dict(line="lag 1"), exp_a7),
             # splitter
             (dict(line=f"{id0}1"), exp_b1),
             (dict(line=f"{id0}1/2"), exp_b2),
@@ -159,7 +163,7 @@ class Test(Helpers):
     def test_valid__all_names(self):
         """Intf.all_names()"""
         for line, expected in [
-            # upper
+            # # upper
             ("interface Ethernet1/2", th.ALL_NAMES_ETH),
             ("Ethernet1/2", th.ALL_NAMES_ETH),
             ("Eth1/2", th.ALL_NAMES_ETH),
@@ -170,7 +174,6 @@ class Test(Helpers):
             ("Tu1", th.ALL_NAMES_TUN),
             ("interface mgmt0", th.ALL_NAMES_MGMT),
             ("mgmt0", th.ALL_NAMES_MGMT),
-            ("1", th.ALL_NAMES_1),
             # lower
             ("interface ethernet1/2", th.ALL_NAMES_ETH),
             ("ethernet1/2", th.ALL_NAMES_ETH),
@@ -182,11 +185,14 @@ class Test(Helpers):
             ("tu1", th.ALL_NAMES_TUN),
             ("interface mgmt0", th.ALL_NAMES_MGMT),
             ("mgmt0", th.ALL_NAMES_MGMT),
-            ("1", th.ALL_NAMES_1),
+            # only lower
+            ("interface 1", ["interface 1", "1"]),  # hpc
+            ("lag 1", ["interface lag 1", "lag 1"]),  # aruba_os
+            ("1", ["interface 1", "1"]),
         ]:
             obj = Intf(line)
             actual = obj.all_names()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__all_names__cisco_xr(self):
         """Intf.all_names() device_type="cisco_xr" """
@@ -203,7 +209,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type="cisco_xr")
             actual = obj.all_names()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__all_names__hp_procurve(self):
         """Intf.all_names() device_type="hp_procurve" """
@@ -213,7 +219,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type="hp_procurve")
             actual = obj.all_names()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__last_idx(self):
         """Intf.last_idx()"""
@@ -225,10 +231,12 @@ class Test(Helpers):
             ("Ethernet1/2/3", 3),
             ("Ethernet1/2/3.4", 4),
             ("Ethernet1/2/3.4-5", 4),
+            ("interface 1", 1),  # hpc
+            ("lag 1", 1),  # aruba_os
         ]:
             obj = Intf(line)
             actual = obj.last_idx()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_base(self):
         """Intf.name_base()"""
@@ -239,10 +247,16 @@ class Test(Helpers):
             ("Ethernet1/2/3.4", "Ethernet"),
             ("Ethernet", "Ethernet"),
             ("Eth1/1", "Eth"),
+            # hpc
+            ("interface 1", ""),
+            ("1", ""),
+            # aruba_os
+            ("lag 1", "lag "),
+            ("interface lag 1", "lag "),
         ]:
             obj = Intf(line)
             actual = obj.name_base()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_full(self):
         """Intf.name_full()"""
@@ -257,6 +271,7 @@ class Test(Helpers):
             ("interface Tunnel1", "interface Tunnel1"),
             ("interface Vlan1", "interface Vlan1"),
             ("interface mgmt0", "interface mgmt0"),  # nxos
+            ("interface lag 1", "interface lag 1"),  # aruba_os
             # long to full
             ("Ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
             ("FastEthernet1/2", "interface FastEthernet1/2"),
@@ -267,6 +282,7 @@ class Test(Helpers):
             ("Tunnel1", "interface Tunnel1"),
             ("Vlan1", "interface Vlan1"),
             ("mgmt0", "interface mgmt0"),  # nxos
+            ("lag 1", "interface lag 1"),  # aruba_os
             # short to full
             ("Eth1/2/3.4", "interface Ethernet1/2/3.4"),
             ("Fa1/2", "interface FastEthernet1/2"),
@@ -277,6 +293,7 @@ class Test(Helpers):
             ("Tu1", "interface Tunnel1"),
             ("V1", "interface Vlan1"),
             ("mgmt0", "interface mgmt0"),  # nxos
+            ("lag 1", "interface lag 1"),  # aruba_os
             # lower
             ("interface ethernet1/2/3.4", "interface Ethernet1/2/3.4"),
             ("interface fastethernet1/2", "interface FastEthernet1/2"),
@@ -288,7 +305,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.name_full()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_full__cisco_xr(self):
         """Intf.name_full() device_type="cisco_xr" """
@@ -302,7 +319,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type=device_type)
             actual = obj.name_full()
-            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
+            self.assertEqual(actual, expected, msg=f"{line=} {device_type=}")
 
     def test_valid__name_long(self):
         """Intf.name_long()"""
@@ -317,6 +334,7 @@ class Test(Helpers):
             ("interface Tunnel1", "Tunnel1"),
             ("interface Vlan1", "Vlan1"),
             ("interface mgmt0", "mgmt0"),  # nxos
+            ("interface lag 1", "lag 1"),  # aruba_os
             # long to long
             ("Ethernet1/2/3.4", "Ethernet1/2/3.4"),
             ("FastEthernet1/2", "FastEthernet1/2"),
@@ -327,6 +345,7 @@ class Test(Helpers):
             ("Tunnel1", "Tunnel1"),
             ("Vlan1", "Vlan1"),
             ("mgmt0", "mgmt0"),  # nxos
+            ("lag 1", "lag 1"),  # aruba_os
             # short to long
             ("Eth1/2/3.4", "Ethernet1/2/3.4"),
             ("Fa1/2", "FastEthernet1/2"),
@@ -337,6 +356,7 @@ class Test(Helpers):
             ("Tu1", "Tunnel1"),
             ("V1", "Vlan1"),
             ("mgmt0", "mgmt0"),  # nxos
+            ("lag 1", "lag 1"),  # aruba_os
             # lower
             ("interface ethernet1/2/3.4", "Ethernet1/2/3.4"),
             ("interface fastethernet1/2", "FastEthernet1/2"),
@@ -348,7 +368,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.name_long()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_long__cisco_xr(self):
         """Intf.name_long() device_type="cisco_xr" """
@@ -362,7 +382,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type=device_type)
             actual = obj.name_long()
-            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
+            self.assertEqual(actual, expected, msg=f"{line=} {device_type=}")
 
     def test_valid__name_short(self):
         """Intf.name_short()"""
@@ -377,6 +397,7 @@ class Test(Helpers):
             ("interface Tunnel1", "Tu1"),
             ("interface Vlan1", "V1"),
             ("interface mgmt0", "mgmt0"),  # nxos
+            ("interface lag 1", "lag 1"),  # aruba_os
             # long to short
             ("Ethernet1/2/3.4", "Eth1/2/3.4"),
             ("FastEthernet1/2", "Fa1/2"),
@@ -387,6 +408,7 @@ class Test(Helpers):
             ("Tunnel1", "Tu1"),
             ("Vlan1", "V1"),
             ("mgmt0", "mgmt0"),  # nxos
+            ("lag 1", "lag 1"),  # aruba_os
             # short to short
             ("Eth1/2/3.4", "Eth1/2/3.4"),
             ("Fa1/2", "Fa1/2"),
@@ -397,6 +419,7 @@ class Test(Helpers):
             ("Tu1", "Tu1"),
             ("V1", "V1"),
             ("mgmt0", "mgmt0"),  # nxos
+            ("lag 1", "lag 1"),  # aruba_os
             # lower
             ("interface ethernet1/2/3.4", "Eth1/2/3.4"),
             ("interface fastethernet1/2", "Fa1/2"),
@@ -408,7 +431,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.name_short()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_short__device_type(self):
         """Intf.name_short()"""
@@ -429,7 +452,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type=device_type)
             actual = obj.name_short()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_short__replace(self):
         """Intf.name_short(replace)"""
@@ -444,7 +467,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.name_short(replace=replace)
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
     def test_valid__name_short__cisco_xr(self):
         """Intf.name_short() device_type="cisco_xr" """
@@ -458,7 +481,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line=line, device_type=device_type)
             actual = obj.name_short()
-            self.assertEqual(expected, actual, msg=f"{line=} {device_type=}")
+            self.assertEqual(actual, expected, msg=f"{line=} {device_type=}")
 
     def test_valid__part_after(self):
         """Intf.part_after()"""
@@ -476,6 +499,11 @@ class Test(Helpers):
             ("1/2", dict(idx=1, splitter=True), "/2"),
             ("1/2", dict(idx=2, splitter=True), ""),
             ("1/2", dict(idx=3, splitter=True), ""),
+            # lag 1
+            ("lag 1", dict(idx=-1, splitter=True), "lag 1"),
+            ("lag 1", dict(idx=0, splitter=True), "1"),
+            ("lag 1", dict(idx=1, splitter=True), ""),
+            ("lag 1", dict(idx=2, splitter=True), ""),
             # port1
             ("port1", dict(idx=-1, splitter=True), "port1"),
             ("port1", dict(idx=0, splitter=True), "1"),
@@ -517,6 +545,11 @@ class Test(Helpers):
             ("1/2", dict(idx=1, splitter=False), "2"),
             ("1/2", dict(idx=2, splitter=False), ""),
             ("1/2", dict(idx=3, splitter=False), ""),
+            # lag 1
+            ("lag 1", dict(idx=-1, splitter=False), "lag 1"),
+            ("lag 1", dict(idx=0, splitter=False), "1"),
+            ("lag 1", dict(idx=1, splitter=False), ""),
+            ("lag 1", dict(idx=2, splitter=False), ""),
             # port1
             ("port1", dict(idx=-1, splitter=False), "port1"),
             ("port1", dict(idx=0, splitter=False), "1"),
@@ -548,7 +581,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.part_after(**kwargs)
-            self.assertEqual(expected, actual, msg=f"{line=} {kwargs=}")
+            self.assertEqual(actual, expected, msg=f"{line=} {kwargs=}")
 
     def test_valid__part_before(self):
         """Intf.part_before()"""
@@ -566,6 +599,11 @@ class Test(Helpers):
             ("1/2", dict(idx=1, splitter=True), ""),
             ("1/2", dict(idx=2, splitter=True), "1/"),
             ("1/2", dict(idx=3, splitter=True), "1/2"),
+            # lag 1
+            ("lag 1", dict(idx=-1, splitter=True), ""),
+            ("lag 1", dict(idx=0, splitter=True), ""),
+            ("lag 1", dict(idx=1, splitter=True), "lag "),
+            ("lag 1", dict(idx=2, splitter=True), "lag 1"),
             # port1
             ("port1", dict(idx=-1, splitter=True), ""),
             ("port1", dict(idx=0, splitter=True), ""),
@@ -606,6 +644,11 @@ class Test(Helpers):
             ("1/2", dict(idx=1, splitter=False), ""),
             ("1/2", dict(idx=2, splitter=False), "1"),
             ("1/2", dict(idx=3, splitter=False), "1/2"),
+            # lag 1
+            ("lag 1", dict(idx=-1, splitter=False), ""),
+            ("lag 1", dict(idx=0, splitter=False), ""),
+            ("lag 1", dict(idx=1, splitter=False), "lag "),
+            ("lag 1", dict(idx=2, splitter=False), "lag 1"),
             # port1
             ("port1", dict(idx=-1, splitter=False), ""),
             ("port1", dict(idx=0, splitter=False), ""),
@@ -635,7 +678,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj.part_before(**kwargs)
-            self.assertEqual(expected, actual, msg=f"{line=} {kwargs=}")
+            self.assertEqual(actual, expected, msg=f"{line=} {kwargs=}")
 
     # =========================== helpers ============================
 
@@ -644,6 +687,7 @@ class Test(Helpers):
         for line, expected in [
             ("1", ("", "1", "", "", "")),
             ("1/2", ("", "1", "2", "", "")),
+            ("lag 1", ("lag ", "1", "", "", "")),
             ("port1", ("port", "1", "", "", "")),
             ("port1.2", ("port", "1", "2", "", "")),
             ("interface", ("interface", "", "", "", "")),
@@ -658,7 +702,7 @@ class Test(Helpers):
         ]:
             obj = Intf(line)
             actual = obj._get_ids()
-            self.assertEqual(expected, actual, msg=f"{line=}")
+            self.assertEqual(actual, expected, msg=f"{line=}")
 
 
 if __name__ == "__main__":
