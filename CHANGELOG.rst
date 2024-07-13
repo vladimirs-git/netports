@@ -4,6 +4,11 @@
 CHANGELOG
 =========
 
+0.13.0 (2024-07-13)
+-------------------
+* [new] intf_map.shorts() intf_map.longs()
+
+
 0.12.2 (2024-06-20)
 -------------------
 * [fix] version="" > version="0"

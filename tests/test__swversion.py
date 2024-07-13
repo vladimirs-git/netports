@@ -2,8 +2,6 @@
 
 import unittest
 
-from packaging.version import InvalidVersion
-
 from netports.swversion import SwVersion
 
 

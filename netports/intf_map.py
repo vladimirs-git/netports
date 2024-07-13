@@ -1,5 +1,5 @@
 """Interface name mapping"""
-from netports.types_ import DStr
+from netports.types_ import DStr, LStr, SStr, OBool
 
 MAP_OTHER = {  # parent of ios
     "Fo": "FortyGigabitEthernet",
@@ -103,6 +103,27 @@ def long_to_long(device_type: str = "", key_lower: bool = False, value_lower: bo
     return data
 
 
+def longs(device_type: str = "", value_lower: OBool = None) -> LStr:
+    """Returns long names of all interfaces
+    ::
+        :param device_type: Netmiko device type
+        :param value_lower: True - values lower-case, False - values upper-case.
+            Default is None, lower-case and upper-case.
+        :return: Long names of all interfaces
+        :example:
+            longs() -> ['ATM', 'Bridge-Aggregation', 'Bundle-Ether', ...]
+            longs(device_type="cisco_ios") ->['ATM', 'Ethernet', 'FastEthernet', ...]
+            longs(device_type="cisco_ios", value_lower=True) -> ['atm', 'ethernet', ...]
+    """
+    if value_lower is None:
+        upper: SStr = set(long_to_long(device_type=device_type, key_lower=False))
+        lower: SStr = set(long_to_long(device_type=device_type, key_lower=True))
+        return sorted(upper.union(lower))
+    if value_lower:
+        return sorted(long_to_long(device_type=device_type, key_lower=True))
+    return sorted(long_to_long(device_type=device_type, key_lower=False))
+
+
 def short_to_long(device_type: str = "",
                   key_lower: bool = False,
                   value_lower: bool = False) -> DStr:
@@ -169,6 +190,27 @@ def short_to_short(device_type: str = "",
             data[short_upper] = value
     data = _lower(data, key_lower, value_lower)
     return data
+
+
+def shorts(device_type: str = "", value_lower: OBool = None) -> LStr:
+    """Returns short names of all interfaces
+    ::
+        :param device_type: Netmiko device type
+        :param value_lower: True - values lower-case, False - values upper-case.
+            Default is None, lower-case and upper-case.
+        :return: Short names of all interfaces
+        :example:
+            shorts() -> ["At", "BAGG", "BE", ...]
+            shorts(device_type="cisco_ios") -> ["At", "Eth", "Fa", ...]
+            shorts(device_type="cisco_ios", value_lower=True) -> ["at", "eth", "fa", ...]
+    """
+    if value_lower is None:
+        upper: SStr = set(short_to_short(device_type=device_type, key_lower=False))
+        lower: SStr = set(short_to_short(device_type=device_type, key_lower=True))
+        return sorted(upper.union(lower))
+    if value_lower:
+        return sorted(short_to_short(device_type=device_type, key_lower=True))
+    return sorted(short_to_short(device_type=device_type, key_lower=False))
 
 
 # ============================== helper ==============================

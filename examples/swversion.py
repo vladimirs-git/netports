@@ -1,6 +1,7 @@
 """Example SwVersion."""
 
 import re
+
 from netports import SwVersion
 
 text = "Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(4)E10, ..."

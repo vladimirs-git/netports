@@ -1,5 +1,4 @@
 """Software Version"""
-from typing import Tuple
 
 from packaging.version import Version
 

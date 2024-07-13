@@ -12,7 +12,34 @@ from tests import helpers__intf_map as hm
 class Test(unittest.TestCase):
     """unittest intf_map.py"""
 
-    # ============================= str ==============================
+    def test_valid__longs(self):
+        """intf_map.longs()"""
+        for kwargs, expected in [
+            # value_lower=None
+            (dict(), 'ABBEEFFFGHLMMMMPSTTTTTTVVVabbeefffghlmmmmmpstttttttvvv'),
+            (dict(device_type="cisco_asr"), 'ABEEFFFGHLMMMMPSTTTVVVabeefffghlmmmmpsttttvvv'),
+            (dict(device_type="cisco_ios"), 'AEEFFFGHLMMMPSTTTTVVVaeefffghlmmmpsttttvvv'),
+            (dict(device_type="cisco_nxos"), 'AEEFFFGHMMMSTTTTVVVaeefffghlmmmmpsttttvvv'),
+            (dict(device_type="hp_comware"), 'ABEEFFFGHLMMMPSTTTTVVVVabeefffghlmmmpsttttvvvv'),
+            (dict(device_type="hp_procurve"), 'AEEFFFGHLMMMPSTTTTTVVVaeefffghlmmmpstttttvvv'),
+            # value_lower=True
+            (dict(value_lower=True), 'abbeefffghlmmmmmpstttttttvvv'),
+            (dict(device_type="cisco_asr", value_lower=True), 'abeefffghlmmmmpsttttvvv'),
+            (dict(device_type="cisco_ios", value_lower=True), 'aeefffghlmmmpsttttvvv'),
+            (dict(device_type="cisco_nxos", value_lower=True), 'aeefffghlmmmmpsttttvvv'),
+            (dict(device_type="hp_comware", value_lower=True), 'abeefffghlmmmpsttttvvvv'),
+            (dict(device_type="hp_procurve", value_lower=True), 'aeefffghlmmmpstttttvvv'),
+            # value_lower=False
+            (dict(value_lower=False), 'ABBEEFFFGHLMMMMPSTTTTTTVVVmt'),
+            (dict(device_type="cisco_asr", value_lower=False), 'ABEEFFFGHLMMMMPSTTTVVVt'),
+            (dict(device_type="cisco_ios", value_lower=False), 'AEEFFFGHLMMMPSTTTTVVV'),
+            (dict(device_type="cisco_nxos", value_lower=False), 'AEEFFFGHMMMSTTTTVVVlmp'),
+            (dict(device_type="hp_comware", value_lower=False), 'ABEEFFFGHLMMMPSTTTTVVVV'),
+            (dict(device_type="hp_procurve", value_lower=False), 'AEEFFFGHLMMMPSTTTTTVVV'),
+        ]:
+            results = intf_map.longs(**kwargs)
+            actual = "".join([s[0] for s in results])
+            assert actual == expected
 
     def test_valid__short_to_long(self):
         """intf_map.short_to_long()"""
@@ -77,6 +104,35 @@ class Test(unittest.TestCase):
             actual = intf_map.long_to_long(**kwargs)
             diff = list(dictdiffer.diff(actual, expected))
             self.assertEqual(diff, [], msg=f"{kwargs=}")
+
+    def test_valid__shorts(self):
+        """intf_map.shorts()"""
+        for kwargs, expected in [
+            # value_lower=None
+            (dict(), 'ABBEEFFFGGHLMMMMPSTTTTTVVVVXabbeefffgghlmmmmmpsttttttvvvvx'),
+            (dict(device_type="cisco_asr"), 'ABEEFFFGHLMMMMPSTTTTVVVVabeefffghlmmmmpstttttvvvv'),
+            (dict(device_type="cisco_ios"), 'AEEFFFGHLMMMPSTTTTVVVVaeefffghlmmmpsttttvvvv'),
+            (dict(device_type="cisco_nxos"), 'AEEFFFGHLMMMPSTTTTVVVVaeefffghlmmmmpsttttvvvv'),
+            (dict(device_type="hp_comware"), 'ABEEFFFGGHLMMMPSTTTTVVVVXabeefffgghlmmmpsttttvvvvx'),
+            (dict(device_type="hp_procurve"), 'AEEFFFGHLMMMPSTTTTTVVVVaeefffghlmmmpstttttvvvv'),
+            # value_lower=True
+            (dict(value_lower=True), 'abbeefffgghlmmmmmpsttttttvvvvx'),
+            (dict(device_type="cisco_asr", value_lower=True), 'abeefffghlmmmmpstttttvvvv'),
+            (dict(device_type="cisco_ios", value_lower=True), 'aeefffghlmmmpsttttvvvv'),
+            (dict(device_type="cisco_nxos", value_lower=True), 'aeefffghlmmmmpsttttvvvv'),
+            (dict(device_type="hp_comware", value_lower=True), 'abeefffgghlmmmpsttttvvvvx'),
+            (dict(device_type="hp_procurve", value_lower=True), 'aeefffghlmmmpstttttvvvv'),
+            # value_lower=False
+            (dict(value_lower=False), 'ABBEEFFFGGHLMMMMPSTTTTTVVVVXmt'),
+            (dict(device_type="cisco_asr", value_lower=False), 'ABEEFFFGHLMMMMPSTTTTVVVVt'),
+            (dict(device_type="cisco_ios", value_lower=False), 'AEEFFFGHLMMMPSTTTTVVVV'),
+            (dict(device_type="cisco_nxos", value_lower=False), 'AEEFFFGHLMMMPSTTTTVVVVm'),
+            (dict(device_type="hp_comware", value_lower=False), 'ABEEFFFGGHLMMMPSTTTTVVVVX'),
+            (dict(device_type="hp_procurve", value_lower=False), 'AEEFFFGHLMMMPSTTTTTVVVV'),
+        ]:
+            results = intf_map.shorts(**kwargs)
+            actual = "".join([s[0] for s in results])
+            assert actual == expected
 
 
 if __name__ == "__main__":

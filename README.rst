@@ -31,13 +31,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.12.2.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.13.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.12.2
+    pip install git+https://github.com/vladimirs-git/netports@0.13.0
 
 
 .. contents:: **Contents**
@@ -458,6 +458,22 @@ Return
     *Dict[str, str]* Interfaces map
 
 
+longs()
+.......
+**longs(device_type, value_lower)**
+Returns long names of all interfaces
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+device_type     *str*                       Netmiko device type
+value_lower     *bool*                      True - values lower-case, False - values upper-case. Default is None, lower-case and upper-case.
+=============== =========================== ============================================================================
+
+Return
+    *List[str]* Long names of all interfaces
+
+
 short_to_long()
 ...............
 **short_to_long(device_type, key_lower, value_lower)**
@@ -490,6 +506,22 @@ value_lower     *bool*                      True - values lower-case, False - va
 
 Return
     *Dict[str, str]* Interfaces map
+
+
+shorts()
+........
+**shorts(device_type, value_lower)**
+Returns short names of all interfaces
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+device_type     *str*                       Netmiko device type
+value_lower     *bool*                      True - values lower-case, False - values upper-case. Default is None, lower-case and upper-case.
+=============== =========================== ============================================================================
+
+Return
+    *List[str]* Short names of all interfaces
 
 
 Intf()
