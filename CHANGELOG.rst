@@ -7,6 +7,9 @@ CHANGELOG
 0.13.0 (2024-07-13)
 -------------------
 * [new] intf_map.shorts() intf_map.longs()
+* [new] Intf.name_base()
+* [add] intf_map HundredGigE
+* [delete] intf_map FortyGigabitEthernet
 
 
 0.12.2 (2024-06-20)

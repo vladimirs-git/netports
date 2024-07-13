@@ -257,6 +257,15 @@ class Intf:
         ids = self._ids[1:]
         return len([s for s in ids if s])
 
+    def name_base(self) -> str:
+        """Interface base name without IDs
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2")
+                intf.name_base() -> "Ethernet"
+        """
+        return self.id0.replace("interface ", "", 1)
+
     def name_full(self) -> str:
         """Interface long name with IDs and with interface keyword
         ::

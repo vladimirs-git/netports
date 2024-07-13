@@ -230,6 +230,20 @@ class Test(Helpers):
             actual = obj.last_idx()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
+    def test_valid__name_base(self):
+        """Intf.name_base()"""
+        for line, expected in [
+            ("interface Ethernet1/2/3.4", "Ethernet"),
+            ("interface Ethernet", "Ethernet"),
+            ("interface Eth1/1", "Eth"),
+            ("Ethernet1/2/3.4", "Ethernet"),
+            ("Ethernet", "Ethernet"),
+            ("Eth1/1", "Eth"),
+        ]:
+            obj = Intf(line)
+            actual = obj.name_base()
+            self.assertEqual(expected, actual, msg=f"{line=}")
+
     def test_valid__name_full(self):
         """Intf.name_full()"""
         for line, expected in [
