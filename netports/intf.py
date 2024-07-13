@@ -298,7 +298,7 @@ class Intf:
         """Interface short name with IDs
         ::
             :param replace: Replace the default short name with the first one
-                            that matches in the list of the 'replace' argument.
+                            that matches in the list of the `replace` argument.
             :return: Interface short name.
             :example:
                 intf = Intf("interface FastEthernet1/2")

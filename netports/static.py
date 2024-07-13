@@ -1,9 +1,9 @@
 """Static settings"""
 
 DEVICE_TYPES = [
-    "cisco_asr",
     "cisco_ios",
     "cisco_nxos",
+    "cisco_xr",
     "hp_comware",
     "hp_procurve",
 ]

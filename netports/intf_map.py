@@ -1,51 +1,46 @@
 """Interface name mapping"""
 from netports.types_ import DStr, LStr, SStr, OBool
 
-MAP_OTHER = {  # parent of ios
-    "Fo": "FortyGigabitEthernet",
-    "Hu": "HundredGigabitEthernet",
-    "Two": "TwoGigabitEthernet",
+MAP_OTHER = {  # parent of all
     "V": "Vlan",
     "At": "ATM",
-    "EO": "EOBC",
     "FD": "Fddi",
-    "MFR": "MFR",
     "Ma": "Management",
     "Mu": "Multilink",
     "Se": "Serial",
-    "Twe": "TwentyFiveGigE",
     "Vi": "Virtual-Access",
     "Vt": "Virtual-Template",
 }
-MAP_CISCO_ASR = {
-    "Te": "TenGigE",  # overlapped: ios
+MAP_CISCO_IOS = {  # parent of nxos, xr
+    "Eth": "Ethernet",
+    "Fa": "FastEthernet",
+    "Gi": "GigabitEthernet",
     "Hu": "HundredGigE",
+    "Lo": "Loopback",  # overlapped: nxos
+    "Po": "Port-channel",  # overlapped: nxos
+    "Te": "TenGigabitEthernet",  # overlapped: xr
+    "Tu": "Tunnel",  # overlapped: xr
+    "Twe": "TwentyFiveGigE",
+    "Vlan": "Vlan",  # overlapped: h3c
+}
+MAP_CISCO_NXOS = {
+    "Po": "port-channel",  # overlapped: ios
+    "Lo": "loopback",  # overlapped: ios, xr
+    "mgmt": "mgmt",
+}
+MAP_CISCO_XR = {
+    "Te": "TenGigE",  # overlapped: ios
     "BE": "Bundle-Ether",
     "Tu": "tunnel-ip",  # low-priority, overlapped: ios, nxos
     "ti": "tunnel-ip",
     "Mg": "MgmtEth",
 }
-MAP_CISCO_IOS = {  # parent of nxos, asr
-    "Eth": "Ethernet",
-    "Fa": "FastEthernet",
-    "Gi": "GigabitEthernet",
-    "Te": "TenGigabitEthernet",  # overlapped: asr
-    "Po": "Port-channel",  # overlapped: nxos
-    "Lo": "Loopback",  # overlapped: nxos
-    "Tu": "Tunnel",  # overlapped: asr
-    "Vlan": "Vlan",  # overlapped: h3c
-}
-MAP_CISCO_NXOS = {
-    "Po": "port-channel",  # overlapped: cisco
-    "Lo": "loopback",  # overlapped: cisco, asr
-    "mgmt": "mgmt",
-}
 MAP_HP_COMWARE = {  # h3c
     "GE": "GigabitEthernet",
-    "Te": "Ten-GigabitEthernet",  # low-priority, overlapped: cisco
+    "Te": "Ten-GigabitEthernet",  # low-priority, overlapped: ios
     "XGE": "Ten-GigabitEthernet",
     "BAGG": "Bridge-Aggregation",
-    "Vlan": "Vlan-interface",  # overlapped: cisco
+    "Vlan": "Vlan-interface",  # overlapped: ios
 }
 MAP_HP_PROCURVE = {  # hpc
     "Trk": "Trk",
@@ -54,7 +49,7 @@ ALL_SHORT = sorted({
     *MAP_OTHER,
     *MAP_CISCO_IOS,
     *MAP_CISCO_NXOS,
-    *MAP_CISCO_ASR,
+    *MAP_CISCO_XR,
     *MAP_HP_COMWARE,
     *MAP_HP_PROCURVE,
 })
@@ -65,7 +60,7 @@ def long_to_short(device_type: str = "",
                   value_lower: bool = False) -> DStr:
     """Returns Interfaces map long-to-short, device_type specific
     ::
-        :param device_type: Netmiko device type, increase priority of device_type specific keys
+        :param device_type: Netmiko device type
         :param key_lower: True - keys lower-case, False - keys upper-case
         :param value_lower: True - values lower-case, False - values upper-case
         :return: Interfaces map
@@ -79,9 +74,9 @@ def long_to_short(device_type: str = "",
     data_ = _overlapped(data)
     data.update(data_)
 
-    if device_type == "cisco_asr":
+    if device_type == "cisco_xr":
         data["Tunnel"] = "ti"
-    if device_type == "hp_comware":
+    elif device_type == "hp_comware":
         data["TenGigabitEthernet"] = "XGE"
 
     data = _lower(data, key_lower, value_lower)
@@ -91,7 +86,7 @@ def long_to_short(device_type: str = "",
 def long_to_long(device_type: str = "", key_lower: bool = False, value_lower: bool = False) -> DStr:
     """Returns Interfaces map long-to-long, device_type specific
     ::
-        :param device_type: Netmiko device type, increase priority of device_type specific keys
+        :param device_type: Netmiko device type
         :param key_lower: True - keys lower-case, False - keys upper-case
         :param value_lower: True - values lower-case, False - values upper-case
         :return: Interfaces map
@@ -111,9 +106,9 @@ def longs(device_type: str = "", value_lower: OBool = None) -> LStr:
             Default is None, lower-case and upper-case.
         :return: Long names of all interfaces
         :example:
-            longs() -> ['ATM', 'Bridge-Aggregation', 'Bundle-Ether', ...]
-            longs(device_type="cisco_ios") ->['ATM', 'Ethernet', 'FastEthernet', ...]
-            longs(device_type="cisco_ios", value_lower=True) -> ['atm', 'ethernet', ...]
+            longs() -> ["ATM", "Bridge-Aggregation", "Bundle-Ether", ...]
+            longs(device_type="cisco_ios") ->["ATM", "Ethernet", "FastEthernet", ...]
+            longs(device_type="cisco_ios", value_lower=True) -> ["atm", "ethernet", ...]
     """
     if value_lower is None:
         upper: SStr = set(long_to_long(device_type=device_type, key_lower=False))
@@ -129,7 +124,7 @@ def short_to_long(device_type: str = "",
                   value_lower: bool = False) -> DStr:
     """Returns Interfaces map short-to-long, device_type specific
     ::
-        :param device_type: Netmiko device type, increase priority of device_type specific keys
+        :param device_type: Netmiko device type
         :param key_lower: True - keys lower-case, False - keys upper-case
         :param value_lower: True - values lower-case, False - values upper-case
         :return: Interfaces map
@@ -138,10 +133,10 @@ def short_to_long(device_type: str = "",
             short_to_long(key_lower=True) -> {"fa": "FastEthernet", ...}
             short_to_long(value_lower=True) -> {"Fa": "fastethernet", ...}
     """
-    if device_type == "cisco_asr":
+    if device_type == "cisco_xr":
         data = MAP_OTHER.copy()
         data.update(MAP_CISCO_IOS)
-        data.update(MAP_CISCO_ASR)
+        data.update(MAP_CISCO_XR)
     elif device_type == "cisco_ios":
         data = MAP_OTHER.copy()
         data.update(MAP_CISCO_IOS)
@@ -160,7 +155,7 @@ def short_to_long(device_type: str = "",
     else:
         data = MAP_HP_COMWARE.copy()
         data.update(MAP_HP_PROCURVE)
-        data.update(MAP_CISCO_ASR)
+        data.update(MAP_CISCO_XR)
         data.update(MAP_CISCO_NXOS)
         data.update(MAP_CISCO_IOS)
         data.update(MAP_OTHER)
@@ -173,7 +168,7 @@ def short_to_short(device_type: str = "",
                    value_lower: bool = False) -> DStr:
     """Returns Interfaces map short-to-short, device_type specific
     ::
-        :param device_type: Netmiko device type, increase priority of device_type specific keys
+        :param device_type: Netmiko device type
         :param key_lower: True - keys lower-case, False - keys upper-case
         :param value_lower: True - values lower-case, False - values upper-case
         :return: Interfaces map

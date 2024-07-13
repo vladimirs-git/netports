@@ -137,9 +137,9 @@ class Test(Helpers):
             (dict(line=f"{id0}1-2-3-4", splitter="-"), exp_b8),
             # device_type
             (dict(line="interface Ethernet1/1", device_type=""), exp_c1),
-            (dict(line="interface Ethernet1/1", device_type="cisco_asr"), exp_c1),
             (dict(line="interface Ethernet1/1", device_type="cisco_ios"), exp_c1),
             (dict(line="interface Ethernet1/1", device_type="cisco_nxos"), exp_c1),
+            (dict(line="interface Ethernet1/1", device_type="cisco_xr"), exp_c1),
             (dict(line="interface Ethernet1/1", device_type="hp_comware"), exp_c1),
             (dict(line="interface Ethernet1/1", device_type="hp_procurve"), exp_c1),
         ]:
@@ -188,8 +188,8 @@ class Test(Helpers):
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__all_names__cisco_asr(self):
-        """Intf.all_names() device_type="cisco_asr" """
+    def test_valid__all_names__cisco_xr(self):
+        """Intf.all_names() device_type="cisco_xr" """
         for line, expected in [
             # upper
             ("interface Tunnel-ip1", th.ALL_NAMES_TUN_IP_UPPER),
@@ -201,7 +201,7 @@ class Test(Helpers):
             ("tu1", th.ALL_NAMES_TUN_IP_LOWER),
             ("ti1", th.ALL_NAMES_TUN_IP),
         ]:
-            obj = Intf(line=line, device_type="cisco_asr")
+            obj = Intf(line=line, device_type="cisco_xr")
             actual = obj.all_names()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
@@ -276,9 +276,9 @@ class Test(Helpers):
             actual = obj.name_full()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__name_full__cisco_asr(self):
-        """Intf.name_full() device_type="cisco_asr" """
-        device_type = "cisco_asr"
+    def test_valid__name_full__cisco_xr(self):
+        """Intf.name_full() device_type="cisco_xr" """
+        device_type = "cisco_xr"
         for line, expected in [
             ("interface tunnel-ip1", "interface tunnel-ip1"),
             ("tunnel-ip1", "interface tunnel-ip1"),
@@ -336,9 +336,9 @@ class Test(Helpers):
             actual = obj.name_long()
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__name_long__cisco_asr(self):
-        """Intf.name_long() device_type="cisco_asr" """
-        device_type = "cisco_asr"
+    def test_valid__name_long__cisco_xr(self):
+        """Intf.name_long() device_type="cisco_xr" """
+        device_type = "cisco_xr"
         for line, expected in [
             ("interface tunnel-ip1", "tunnel-ip1"),
             ("tunnel-ip1", "tunnel-ip1"),
@@ -400,16 +400,16 @@ class Test(Helpers):
         """Intf.name_short()"""
         for line, device_type, expected in [
             ("interface Vlan1", "", "V1"),
-            ("interface Vlan1", "cisco_asr", "Vlan1"),
             ("interface Vlan1", "cisco_ios", "Vlan1"),
             ("interface Vlan1", "cisco_nxos", "Vlan1"),
+            ("interface Vlan1", "cisco_xr", "Vlan1"),
             ("interface Vlan1", "hp_comware", "V1"),
             ("interface Vlan1", "hp_procurve", "Vlan1"),
 
             ("interface GigabitEthernet1", "", "Gi1"),
-            ("interface GigabitEthernet1", "cisco_asr", "Gi1"),
             ("interface GigabitEthernet1", "cisco_ios", "Gi1"),
             ("interface GigabitEthernet1", "cisco_nxos", "Gi1"),
+            ("interface GigabitEthernet1", "cisco_xr", "Gi1"),
             ("interface GigabitEthernet1", "hp_comware", "GE1"),
             ("interface GigabitEthernet1", "hp_procurve", "Gi1"),
         ]:
@@ -432,9 +432,9 @@ class Test(Helpers):
             actual = obj.name_short(replace=replace)
             self.assertEqual(expected, actual, msg=f"{line=}")
 
-    def test_valid__name_short__cisco_asr(self):
-        """Intf.name_short() device_type="cisco_asr" """
-        device_type = "cisco_asr"
+    def test_valid__name_short__cisco_xr(self):
+        """Intf.name_short() device_type="cisco_xr" """
+        device_type = "cisco_xr"
         for line, expected in [
             ("interface tunnel-ip1", "ti1"),
             ("tunnel-ip1", "ti1"),

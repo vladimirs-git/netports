@@ -432,7 +432,7 @@ Returns Interfaces map long-to-short, device_type specific
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -449,7 +449,7 @@ Returns Interfaces map long-to-long, device_type specific
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -482,7 +482,7 @@ Returns Interfaces map short-to-long, device_type specific
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -499,7 +499,7 @@ Returns Interfaces map short-to-short, device_type specific
 =============== =========================== ============================================================================
 Parameter        Type                        Description
 =============== =========================== ============================================================================
-device_type     *str*                       Netmiko device type, increase priority of device_type specific keys. "", "cisco_asr", "cisco_ios", "cisco_nxos", "hp_comware"
+device_type     *str*                       Netmiko device type
 key_lower       *bool*                      True - keys lower-case, False - keys upper-case
 value_lower     *bool*                      True - values lower-case, False - values upper-case
 =============== =========================== ============================================================================
@@ -592,7 +592,7 @@ Interface short name with IDs, Device type specific
 Parameter   Type                        Description
 =========== =========================== ============================================================
 replace     *List[Tuple[str, str]]*     Replace the default short name with the first one
-                                        that matches in the list of the 'replace' argument.
+                                        that matches in the list of the `replace` argument.
 =========== =========================== ============================================================
 
 Return

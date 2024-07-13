@@ -50,8 +50,8 @@ except NetportsValueError as ex:
 pairs, invalid = netports.ip_pairs("1,tcp,255,256,typo")
 print("pairs", pairs)
 print("invalid", invalid)
-# pairs [(1, 'icmp'), (6, 'tcp'), (255, '')]
-# invalid ['256', 'typo']
+# pairs [(1, "icmp"), (6, "tcp"), (255, "")]
+# invalid ["256", "typo"]
 
 
 # sip(items, all)
