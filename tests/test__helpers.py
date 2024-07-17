@@ -1,4 +1,4 @@
-"""unittest helpers.py"""
+"""Tests helpers.py"""
 
 import unittest
 
@@ -9,7 +9,7 @@ SPEECH = "\""
 
 
 class Test(unittest.TestCase):
-    """unittest helpers.py"""
+    """Tests helpers.py"""
 
     # ============================= str ==============================
 

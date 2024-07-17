@@ -1,4 +1,4 @@
-"""unittest tcp.py"""
+"""Tests tcp.py"""
 
 import unittest
 
@@ -9,7 +9,7 @@ ALL = list(range(1, 65536))
 
 # noinspection DuplicatedCode
 class Test(unittest.TestCase):
-    """unittest tcp.py"""
+    """Tests tcp.py"""
 
     def test_valid__itcp__stcp(self):
         """itcp() stcp()"""

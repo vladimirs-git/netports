@@ -1,14 +1,17 @@
-"""unittest helpers"""
+"""Params helpers"""
 # ============================== longs ===============================
 LONGS = [
     "ATM",
+    "AppGigabitEthernet",
     "Bridge-Aggregation",
     "Bundle-Ether",
+    "BundleEthernet",
+    "Embedded-Service-Engine",
     "Ethernet",
     "FastEthernet",
     "Fddi",
     "GigabitEthernet",
-    "HundredGigE",
+    "HundredGigabitEthernet",
     "Loopback",
     "Management",
     "MgmtEth",
@@ -23,14 +26,17 @@ LONGS = [
     "Virtual-Access",
     "Virtual-Template",
     "Vlan",
+    "appgigabitethernet",
     "atm",
     "bridge-aggregation",
     "bundle-ether",
+    "bundleethernet",
+    "embedded-service-engine",
     "ethernet",
     "fastethernet",
     "fddi",
     "gigabitethernet",
-    "hundredgige",
+    "hundredgigabitethernet",
     "loopback",
     "management",
     "mgmt",
@@ -50,6 +56,9 @@ LONGS = [
 ]
 LONGS_IOS = [
     "ATM",
+    "AppGigabitEthernet",
+    "BundleEthernet",
+    "Embedded-Service-Engine",
     "Ethernet",
     "FastEthernet",
     "Fddi",
@@ -66,7 +75,10 @@ LONGS_IOS = [
     "Virtual-Access",
     "Virtual-Template",
     "Vlan",
+    "appgigabitethernet",
     "atm",
+    "bundleethernet",
+    "embedded-service-engine",
     "ethernet",
     "fastethernet",
     "fddi",
@@ -85,7 +97,10 @@ LONGS_IOS = [
     "vlan",
 ]
 LONGS_IOS_LOWER_TRUE = [
+    "appgigabitethernet",
     "atm",
+    "bundleethernet",
+    "embedded-service-engine",
     "ethernet",
     "fastethernet",
     "fddi",
@@ -105,6 +120,9 @@ LONGS_IOS_LOWER_TRUE = [
 ]
 LONGS_IOS_LOWER_FALE = [
     "ATM",
+    "AppGigabitEthernet",
+    "BundleEthernet",
+    "Embedded-Service-Engine",
     "Ethernet",
     "FastEthernet",
     "Fddi",
@@ -124,9 +142,12 @@ LONGS_IOS_LOWER_FALE = [
 ]
 # ============================== shorts ==============================
 SHORTS = [
+    "Ap",
     "At",
     "BAGG",
     "BE",
+    "Bu",
+    "Em",
     "Eth",
     "FD",
     "Fa",
@@ -148,10 +169,12 @@ SHORTS = [
     "Vlan",
     "Vt",
     "XGE",
+    "ap",
     "at",
     "bagg",
     "be",
-    "eo",
+    "bu",
+    "em",
     "eth",
     "fa",
     "fd",
@@ -177,7 +200,10 @@ SHORTS = [
     "xge",
 ]
 SHORTS_IOS = [
+    "Ap",
     "At",
+    "Bu",
+    "Em",
     "Eth",
     "FD",
     "Fa",
@@ -195,8 +221,10 @@ SHORTS_IOS = [
     "Vi",
     "Vlan",
     "Vt",
+    "ap",
     "at",
-    "eo",
+    "bu",
+    "em",
     "eth",
     "fa",
     "fd",
@@ -216,8 +244,10 @@ SHORTS_IOS = [
     "vt",
 ]
 SHORTS_IOS_LOWER_TRUE = [
+    "ap",
     "at",
-    "eo",
+    "bu",
+    "em",
     "eth",
     "fa",
     "fd",
@@ -237,7 +267,10 @@ SHORTS_IOS_LOWER_TRUE = [
     "vt",
 ]
 SHORTS_IOS_LOWER_FALE = [
+    "Ap",
     "At",
+    "Bu",
+    "Em",
     "Eth",
     "FD",
     "Fa",
@@ -258,15 +291,18 @@ SHORTS_IOS_LOWER_FALE = [
 ]
 # ========================== short_to_long ===========================
 SHORT_TO_LONG = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
     "BAGG": "Bridge-Aggregation",
     "BE": "Bundle-Ether",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
     "GE": "GigabitEthernet",
     "Gi": "GigabitEthernet",
-    "Hu": "HundredGigE",
+    "Hu": "HundredGigabitEthernet",
     "Lo": "Loopback",
     "Ma": "Management",
     "Mg": "MgmtEth",
@@ -288,8 +324,11 @@ SHORT_TO_LONG = {
 SHORT_TO_LONG_VALUE_LOW = {k: v.lower() for k, v in SHORT_TO_LONG.items()}
 SHORT_TO_LONG_KEY_LOW = {k.lower(): v for k, v in SHORT_TO_LONG.items()}
 SHORT_TO_LONG_ASR = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
     "BE": "Bundle-Ether",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
@@ -311,7 +350,10 @@ SHORT_TO_LONG_ASR = {
     "ti": "tunnel-ip",
 }
 SHORT_TO_LONG_IOS = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
@@ -331,7 +373,10 @@ SHORT_TO_LONG_IOS = {
     "Vt": "Virtual-Template",
 }
 SHORT_TO_LONG_NXOS = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
@@ -352,8 +397,11 @@ SHORT_TO_LONG_NXOS = {
     "mgmt": "mgmt",
 }
 SHORT_TO_LONG_H3C = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
     "BAGG": "Bridge-Aggregation",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
@@ -375,7 +423,10 @@ SHORT_TO_LONG_H3C = {
     "XGE": "Ten-GigabitEthernet",
 }
 SHORT_TO_LONG_HPC = {
+    "Ap": "AppGigabitEthernet",
     "At": "ATM",
+    "Bu": "BundleEthernet",
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "FD": "Fddi",
     "Fa": "FastEthernet",
@@ -397,9 +448,12 @@ SHORT_TO_LONG_HPC = {
 }
 # ========================== short_to_short ==========================
 SHORT_TO_SHORT = {
+    "Ap": "Ap",
     "At": "At",
     "BAGG": "BAGG",
     "BE": "BE",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -427,8 +481,11 @@ SHORT_TO_SHORT = {
 SHORT_TO_SHORT_VALUE_LOW = {k: v.lower() for k, v in SHORT_TO_SHORT.items()}
 SHORT_TO_SHORT_KEY_LOW = {k.lower(): v for k, v in SHORT_TO_SHORT.items()}
 SHORT_TO_SHORT_ASR = {
+    "Ap": "Ap",
     "At": "At",
     "BE": "BE",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -450,7 +507,10 @@ SHORT_TO_SHORT_ASR = {
     "ti": "ti",
 }
 SHORT_TO_SHORT_IOS = {
+    "Ap": "Ap",
     "At": "At",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -470,7 +530,10 @@ SHORT_TO_SHORT_IOS = {
     "Vt": "Vt",
 }
 SHORT_TO_SHORT_NXOS = {
+    "Ap": "Ap",
     "At": "At",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -491,8 +554,11 @@ SHORT_TO_SHORT_NXOS = {
     "mgmt": "mgmt",
 }
 SHORT_TO_SHORT_H3C = {
+    "Ap": "Ap",
     "At": "At",
     "BAGG": "BAGG",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -514,7 +580,10 @@ SHORT_TO_SHORT_H3C = {
     "XGE": "XGE",
 }
 SHORT_TO_SHORT_HPC = {
+    "Ap": "Ap",
     "At": "At",
+    "Bu": "Bu",
+    "Em": "Em",
     "Eth": "Eth",
     "FD": "FD",
     "Fa": "Fa",
@@ -538,13 +607,17 @@ SHORT_TO_SHORT_HPC = {
 # ========================== long_to_short ===========================
 LONG_TO_SHORT = {
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
     "Bridge-Aggregation": "BAGG",
     "Bundle-Ether": "BE",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
     "Ethernet": "Eth",
     "FastEthernet": "Fa",
     "Fddi": "FD",
     "GigabitEthernet": "Gi",
     "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
     "Loopback": "Lo",
     "Management": "Ma",
     "MgmtEth": "Mg",
@@ -566,12 +639,16 @@ LONG_TO_SHORT_VALUE_LOW = {k: v.lower() for k, v in LONG_TO_SHORT.items()}
 LONG_TO_SHORT_KEY_LOW = {k.lower(): v for k, v in LONG_TO_SHORT.items()}
 LONG_TO_SHORT_ASR = {
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
     "Bundle-Ether": "BE",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
     "Ethernet": "Eth",
     "FastEthernet": "Fa",
     "Fddi": "FD",
     "GigabitEthernet": "Gi",
     "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
     "Loopback": "Lo",
     "Management": "Ma",
     "MgmtEth": "Mg",
@@ -579,21 +656,25 @@ LONG_TO_SHORT_ASR = {
     "Port-channel": "Po",
     "Serial": "Se",
     "TenGigE": "Te",
+    "TenGigabitEthernet": "Te",
     "Tunnel": "ti",
     "TwentyFiveGigE": "Twe",
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
     "Vlan": "Vlan",
     "tunnel-ip": "ti",
-    "TenGigabitEthernet": "Te",
 }
 LONG_TO_SHORT_IOS = {
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
     "Ethernet": "Eth",
     "FastEthernet": "Fa",
     "Fddi": "FD",
     "GigabitEthernet": "Gi",
     "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
     "Loopback": "Lo",
     "Management": "Ma",
     "Multilink": "Mu",
@@ -608,11 +689,15 @@ LONG_TO_SHORT_IOS = {
 }
 LONG_TO_SHORT_NXOS = {
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
     "Ethernet": "Eth",
     "FastEthernet": "Fa",
     "Fddi": "FD",
     "GigabitEthernet": "Gi",
     "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
     "Loopback": "Lo",
     "Management": "Ma",
     "Multilink": "Mu",
@@ -630,12 +715,16 @@ LONG_TO_SHORT_NXOS = {
 }
 LONG_TO_SHORT_H3C = {
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
     "Bridge-Aggregation": "BAGG",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
     "Ethernet": "Eth",
     "FastEthernet": "Fa",
     "Fddi": "FD",
     "GigabitEthernet": "GE",
     "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
     "Loopback": "Lo",
     "Management": "Ma",
     "Multilink": "Mu",
@@ -651,36 +740,43 @@ LONG_TO_SHORT_H3C = {
     "Vlan-interface": "Vlan",
 }
 LONG_TO_SHORT_HPC = {
-    "HundredGigE": "Hu",
-    "Vlan": "Vlan",
     "ATM": "At",
+    "AppGigabitEthernet": "Ap",
+    "BundleEthernet": "Bu",
+    "Embedded-Service-Engine": "Em",
+    "Ethernet": "Eth",
+    "FastEthernet": "Fa",
     "Fddi": "FD",
+    "GigabitEthernet": "Gi",
+    "HundredGigE": "Hu",
+    "HundredGigabitEthernet": "Hu",
+    "Loopback": "Lo",
     "Management": "Ma",
     "Multilink": "Mu",
+    "Port-channel": "Po",
     "Serial": "Se",
+    "TenGigabitEthernet": "Te",
+    "Trk": "Trk",
+    "Tunnel": "Tu",
     "TwentyFiveGigE": "Twe",
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
-    "Ethernet": "Eth",
-    "FastEthernet": "Fa",
-    "GigabitEthernet": "Gi",
-    "TenGigabitEthernet": "Te",
-    "Port-channel": "Po",
-    "Loopback": "Lo",
-    "Tunnel": "Tu",
-    "Trk": "Trk",
+    "Vlan": "Vlan",
 }
 
 # long_to_long
 LONG_TO_LONG = {
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
     "Bridge-Aggregation": "Bridge-Aggregation",
     "Bundle-Ether": "Bundle-Ether",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
     "Ethernet": "Ethernet",
     "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
     "GigabitEthernet": "GigabitEthernet",
-    "HundredGigE": "HundredGigE",
+    "HundredGigabitEthernet": "HundredGigabitEthernet",
     "Loopback": "Loopback",
     "Management": "Management",
     "MgmtEth": "MgmtEth",
@@ -702,7 +798,10 @@ LONG_TO_LONG_VALUE_LOW = {k: v.lower() for k, v in LONG_TO_LONG.items()}
 LONG_TO_LONG_KEY_LOW = {k.lower(): v for k, v in LONG_TO_LONG.items()}
 LONG_TO_LONG_ASR = {
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
     "Bundle-Ether": "Bundle-Ether",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
     "Ethernet": "Ethernet",
     "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
@@ -723,6 +822,9 @@ LONG_TO_LONG_ASR = {
 }
 LONG_TO_LONG_IOS = {
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
     "Ethernet": "Ethernet",
     "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
@@ -742,6 +844,9 @@ LONG_TO_LONG_IOS = {
 }
 LONG_TO_LONG_NXOS = {
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
     "Ethernet": "Ethernet",
     "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
@@ -762,7 +867,10 @@ LONG_TO_LONG_NXOS = {
 }
 LONG_TO_LONG_H3C = {
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
     "Bridge-Aggregation": "Bridge-Aggregation",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
     "Ethernet": "Ethernet",
     "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
@@ -782,22 +890,25 @@ LONG_TO_LONG_H3C = {
     "Vlan-interface": "Vlan-interface",
 }
 LONG_TO_LONG_HPC = {
-    "HundredGigE": "HundredGigE",
-    "Vlan": "Vlan",
     "ATM": "ATM",
+    "AppGigabitEthernet": "AppGigabitEthernet",
+    "BundleEthernet": "BundleEthernet",
+    "Embedded-Service-Engine": "Embedded-Service-Engine",
+    "Ethernet": "Ethernet",
+    "FastEthernet": "FastEthernet",
     "Fddi": "Fddi",
+    "GigabitEthernet": "GigabitEthernet",
+    "HundredGigE": "HundredGigE",
+    "Loopback": "Loopback",
     "Management": "Management",
     "Multilink": "Multilink",
+    "Port-channel": "Port-channel",
     "Serial": "Serial",
+    "TenGigabitEthernet": "TenGigabitEthernet",
+    "Trk": "Trk",
+    "Tunnel": "Tunnel",
     "TwentyFiveGigE": "TwentyFiveGigE",
     "Virtual-Access": "Virtual-Access",
     "Virtual-Template": "Virtual-Template",
-    "Ethernet": "Ethernet",
-    "FastEthernet": "FastEthernet",
-    "GigabitEthernet": "GigabitEthernet",
-    "TenGigabitEthernet": "TenGigabitEthernet",
-    "Port-channel": "Port-channel",
-    "Loopback": "Loopback",
-    "Tunnel": "Tunnel",
-    "Trk": "Trk",
+    "Vlan": "Vlan",
 }

@@ -1,4 +1,4 @@
-"""unittest helpers"""
+"""Tests helpers"""
 
 import unittest
 from typing import Callable

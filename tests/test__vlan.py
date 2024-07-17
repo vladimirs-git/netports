@@ -1,8 +1,8 @@
-"""unittest vlan.py"""
+"""Tests vlan.py"""
 
 import unittest
 
-import dictdiffer  # type: ignore
+import dictdiffer
 
 from netports import vlan
 from netports.exceptions import NetportsValueError
@@ -11,7 +11,7 @@ ALL = list(range(1, 4095))
 
 
 class Test(unittest.TestCase):
-    """unittest vlan.py"""
+    """Tests vlan.py"""
 
     def test_valid__ivlan__svlan(self):
         """ivlan() svlan()"""

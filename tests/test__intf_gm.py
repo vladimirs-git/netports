@@ -1,4 +1,4 @@
-"""unittest intf_gm.py"""
+"""Tests intf_gm.py"""
 
 import random
 import unittest

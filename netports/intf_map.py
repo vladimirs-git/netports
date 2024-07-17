@@ -2,20 +2,24 @@
 from netports.types_ import DStr, LStr, SStr, OBool
 
 MAP_OTHER = {  # parent of all
-    "V": "Vlan",
     "At": "ATM",
+    "Bu": "BundleEthernet",
     "FD": "Fddi",
+    "Hu": "HundredGigabitEthernet",  # overlapped ios
     "Ma": "Management",
     "Mu": "Multilink",
     "Se": "Serial",
+    "V": "Vlan",
     "Vi": "Virtual-Access",
     "Vt": "Virtual-Template",
 }
 MAP_CISCO_IOS = {  # parent of nxos, xr
+    "Ap": "AppGigabitEthernet",  # Application Hosting
+    "Em": "Embedded-Service-Engine",
     "Eth": "Ethernet",
     "Fa": "FastEthernet",
     "Gi": "GigabitEthernet",
-    "Hu": "HundredGigE",
+    "Hu": "HundredGigE",  # overlapped: other
     "Lo": "Loopback",  # overlapped: nxos
     "Po": "Port-channel",  # overlapped: nxos
     "Te": "TenGigabitEthernet",  # overlapped: xr

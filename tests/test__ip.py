@@ -1,4 +1,4 @@
-"""unittest ip.py"""
+"""Tests ip.py"""
 
 import unittest
 
@@ -8,7 +8,7 @@ ALL = list(range(0, 256))
 
 
 class Test(unittest.TestCase):
-    """unittest ip.py"""
+    """Tests ip.py"""
 
     def test_valid__iip(self):
         """iip()"""

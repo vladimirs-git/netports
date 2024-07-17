@@ -1,4 +1,4 @@
-"""unittest ports.py"""
+"""Tests ports.py"""
 
 import unittest
 
@@ -6,7 +6,7 @@ from netports import ports, NetportsValueError
 
 
 class Test(unittest.TestCase):
-    """unittest ports.py"""
+    """Tests ports.py"""
 
     def test_valid__inumbers(self):
         """inumbers()"""
