@@ -1,4 +1,4 @@
-"""Testss package"""
+"""Tests package"""
 import re
 from pathlib import Path
 

@@ -1,5 +1,4 @@
-"""**Range** - An object that converts items to *object*
-that represents range as *str* and as *List[int]*."""
+"""Range, object that represents ports range as str and as List[int]."""
 
 from __future__ import annotations
 
@@ -14,23 +13,23 @@ from netports.types_ import LStr, LInt, OInt, IInt, T2SInt, StrInt, StrIInt, ISt
 
 @total_ordering
 class Range:
-    """An object that represents ports range as *str* and as *List[int]*"""
+    """Range, object that represents ports range as str and as List[int]."""
 
     def __init__(self, items: StrIInt = "", **kwargs):
-        """Range
-        ::
-            :param items: Range of numbers. Numbers can be unsorted and duplicated
-            :type items: str, List[int]
+        """Init Range.
 
-            :param splitter: Separator character between numbers (default ",")
-            :type splitter: str
+        :param items: Range of numbers. Numbers can be unsorted and duplicated.
+        :type items: str or List[int]
 
-            :param range_splitter: Separator between min and max digits in range (default "-")
-            :type range_splitter: str
+        :param splitter: Separator character between numbers (default ",").
+        :type splitter: str
 
-            :param strict: True - Raise ValueError, if in line is invalid item (default)
-                           False - Make Range without invalid items
-            :type strict: bool
+        :param range_splitter: Separator between min and max digits in range (default "-").
+        :type range_splitter: str
+
+        :param strict: True - Raise ValueError, if in line is invalid item (default),
+            False - Make Range without invalid items.
+        :type strict: bool
         """
         self.splitter = kwargs.get("splitter") or SPLITTER
         self.range_splitter = kwargs.get("range_splitter") or RANGE_SPLITTER
@@ -67,14 +66,14 @@ class Range:
         return tuple(self.items).__hash__()
 
     def __eq__(self, other) -> bool:
-        """== Equality"""
+        """== Equality."""
         if self.__class__ == other.__class__:
             if self.__hash__() == other.__hash__():
                 return True
         return False
 
     def __lt__(self, other: Range) -> bool:
-        """< Less than"""
+        """< Less than."""
         if self.__class__ == other.__class__:
             self_len = len(self.items)
             other_len = len(other.items)
@@ -93,31 +92,31 @@ class Range:
         return False
 
     def __add__(self, other: Range) -> Range:
-        """+ Add"""
+        """+ Add."""
         self_numbers, other_numbers = self._numbers_sets(other)
         self_numbers.update(other_numbers)
         return Range(self_numbers)
 
     def __sub__(self, other: Range) -> Range:
-        """- Subtract"""
+        """- Subtract."""
         self_numbers, other_numbers = self._numbers_sets(other)
         self_numbers.difference_update(other_numbers)
         return Range(self_numbers)
 
     def __contains__(self, number: int) -> bool:
-        """Returns key in self"""
+        """Return key in self."""
         if not isinstance(number, int):
             raise TypeError
         return number in self.numbers()
 
     def __delitem__(self, idx: int) -> None:
-        """Deletes self.numbers[idx]"""
+        """Delete self.numbers[idx]."""
         numbers = self.numbers()
         numbers.__delitem__(idx)
         self.items = self._create_items(numbers)
 
     def __getitem__(self, idx: int):
-        """Returns number by index"""
+        """Return number by index."""
         return self.numbers()[idx]
 
     def __iter__(self):
@@ -125,11 +124,11 @@ class Range:
         return self
 
     def __len__(self) -> int:
-        """Returns length of numbers"""
+        """Return length of numbers."""
         return len(self.numbers())
 
     def __next__(self) -> int:
-        """Returns next number"""
+        """Return next number."""
         try:
             number = self.numbers()[self._idx]
         except IndexError:
@@ -140,93 +139,95 @@ class Range:
     # ======================= list/set methods =======================
 
     def add(self, other: Range) -> None:
-        """Adds other *Range* object to self"""
+        """Add other Range object to self."""
         self_numbers, other_numbers = self._numbers_sets(other)
         self_numbers.update(other_numbers)
         self.items = self._create_items(self_numbers)
 
     def append(self, number: StrInt) -> None:
-        """Appends number to self"""
+        """Append number to self."""
         number_ = h.to_int(number)
         other = Range(number_)
         self.add(other)
 
     def clear(self) -> None:
-        """Removes all numbers from self"""
+        """Remove all numbers from self."""
         self.items = []
 
     def copy(self):
-        """Returns a copy of self *Range* object"""
-        return Range(items=self.line,
-                     splitter=self.splitter,
-                     range_splitter=self.range_splitter,
-                     strict=self._strict)
+        """Return a copy of self Range object."""
+        return Range(
+            items=self.line,
+            splitter=self.splitter,
+            range_splitter=self.range_splitter,
+            strict=self._strict,
+        )
 
     def difference(self, other: Range) -> Range:
-        """Returns the *Range* object of the difference between self and other *Range*"""
+        """Return the Range object of the difference between self and other Range."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.difference(other_numbers)
         return Range(numbers)
 
     def difference_update(self, other: Range) -> None:
-        """Removes other *Range* from self"""
+        """Remove other Range from self."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.difference(other_numbers)
         self.items = self._create_items(numbers)
 
     def discard(self, number: StrInt) -> None:
-        """Removes the specified number from self *Range*"""
+        """Remove the specified number from self Range."""
         number_ = h.to_int(number)
         numbers = set(self.numbers()).difference({number_})
         self.items = self._create_items(numbers)
 
     def extend(self, numbers: IInt) -> None:
-        """Adds *List[int]* numbers to self"""
+        """Add List[int] numbers to self."""
         if not isinstance(numbers, (list, set, tuple)):
             raise TypeError(f"{numbers=} {list} expected")
         other = Range(numbers)
         self.add(other)
 
     def index(self, number: StrInt) -> int:
-        """Index of number
-        ::
-            :return: Returns index of number
-            :raises ValueError: if the number is not present in range
+        """Index of number.
+
+        :return: Returns index of number.
+        :raises ValueError: if the number is not present in range.
         """
         number_ = h.to_int(number)
         return self.numbers().index(number_)
 
     def intersection(self, other: Range) -> Range:
-        """Returns *Range* which is the intersection of self and other *Range*"""
+        """Return Range which is the intersection of self and other Range."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.intersection(other_numbers)
         return Range(numbers)
 
     def intersection_update(self, other: Range) -> None:
-        """Removes numbers of other *Range* in self, that are not present in other"""
+        """Remove numbers of other Range in self, that are not present in other."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.intersection(other_numbers)
         self.items = self._create_items(numbers)
 
     def isdisjoint(self, other: Range) -> bool:
-        """Returns whether self numbers and other *Range* numbers have intersection or not"""
+        """Return whether self numbers and other Range numbers have intersection or not."""
         self_numbers, other_numbers = self._numbers_sets(other)
         return self_numbers.isdisjoint(other_numbers)
 
     def issubset(self, other: Range) -> bool:
-        """Returns whether other *Range* numbers contains self numbers or not"""
+        """Return whether other Range numbers contains self numbers or not."""
         self_numbers, other_numbers = self._numbers_sets(other)
         return self_numbers.issubset(other_numbers)
 
     def issuperset(self, other: Range) -> bool:
-        """Returns whether self *Range* numbers contains other *Range* numbers set or not"""
+        """Return whether self Range numbers contains other Range numbers set or not."""
         self_numbers, other_numbers = self._numbers_sets(other)
         return self_numbers.issuperset(other_numbers)
 
     def pop(self) -> int:
-        """Removes and returns last number in *Range*
-        ::
-            :raises IndexError: If list is empty or index is out of range
+        """Remove and returns last number in Range.
+
+        :raises IndexError: If list is empty or index is out of range.
         """
         numbers = self.numbers()
         number = numbers.pop()
@@ -234,9 +235,9 @@ class Range:
         return number
 
     def remove(self, number: StrInt) -> None:
-        """Removes the specified number from self *Range*
-        ::
-            :raises ValueError: If the numbers is not present
+        """Remove the specified number from self Range.
+
+        :raises ValueError: If the numbers is not present.
         """
         number_ = h.to_int(number)
         numbers = self.numbers()
@@ -244,25 +245,25 @@ class Range:
         self.items = self._create_items(numbers)
 
     def symmetric_difference(self, other: Range) -> Range:
-        """Returns *Range* object with the symmetric differences of self and other *Range*"""
+        """Return Range object with the symmetric differences of self and other Range."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.symmetric_difference(other_numbers)
         return Range(numbers)
 
     def symmetric_difference_update(self, other: Range) -> None:
-        """Inserts the symmetric differences from self *Range* and other *Range*"""
+        """Insert the symmetric differences from self Range and other Range."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.symmetric_difference(other_numbers)
         self.items = self._create_items(numbers)
 
     def union(self, other: Range) -> Range:
-        """Returns Range of the union of self and other numbers"""
+        """Return Range of the union of self and other numbers."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.union(other_numbers)
         return Range(numbers)
 
     def update(self, other: Range) -> None:
-        """Returns *Range* of the union of self *Range* and other *Range*"""
+        """Return Range of the union of self Range and other Range."""
         self_numbers, other_numbers = self._numbers_sets(other)
         numbers = self_numbers.union(other_numbers)
         self.items = self._create_items(numbers)
@@ -271,7 +272,7 @@ class Range:
 
     @staticmethod
     def _init_strict(**kwargs) -> bool:
-        """Init strict"""
+        """Init strict."""
         strict = kwargs.get("strict")
         if strict is None:
             return True
@@ -283,7 +284,7 @@ class Range:
 
     @property
     def line(self) -> str:
-        """Range in *str* format"""
+        """Range in str format."""
         return self._items_to_line(self.items)
 
     @line.setter
@@ -300,16 +301,16 @@ class Range:
     # =========================== methods ============================
 
     def numbers(self) -> LInt:
-        """Returns list of numbers"""
+        """Return list of numbers."""
         return [i for o in self.items for i in o.range]
 
     # =========================== helpers ============================
 
     def _items_to_line(self, items: LItem) -> str:
-        """Converts  items *List[Item]* to line *str*
-        ::
-            :param items: [Item("1"), Item("3-5")]
-            :return: "1,3-5"
+        """Convert  items *List[Item]* to line str.
+
+        :param items: [Item("1"), Item("3-5")].
+        :return: "1,3-5".
         """
         lines = [o.line.replace("-", self.range_splitter) for o in items]
         line = self.splitter.join(lines)
@@ -317,10 +318,10 @@ class Range:
 
     @staticmethod
     def _items_wo_duplicates(items: LItem) -> LItem:
-        """Removes duplicates digits in items
-        ::
-            :param items: [Item(1), Item(4-5), Item(3-4), Item(1)]
-            :return: [Item(1), Item(3-5)]
+        """Remove duplicates digits in items.
+
+        :param items: [Item(1), Item(4-5), Item(3-4), Item(1)].
+        :return: [Item(1), Item(3-5)].
         """
         items_: LStr = []  # result
         numbers: LInt = sorted({i for o in items for i in o.range})
@@ -346,10 +347,10 @@ class Range:
         return [Item(s) for s in items_]
 
     def _numbers_sets(self, other: Range) -> T2SInt:
-        """Converts self and other *List[int]* numbers to *Set[int]*
-        ::
-            :param other: Other *Range* object
-            :return: Sets of numbers
+        """Convert self and other List[int] numbers to Set[int]
+
+        :param other: Other Range object.
+        :return: Sets of numbers.
         """
         if not isinstance(other, Range):
             raise TypeError(f"{other=} {Range} expected")
@@ -358,11 +359,11 @@ class Range:
         return set(self_numbers), set(other_numbers)
 
     def _create_items(self, items: IStrInt) -> LItem:
-        """Converts items *List[str]* to items *List[Items]*, removes duplicates
-        ::
-            :param items: List of *str* items
-            :return: List of *Item* objects
-            :raises ValueError: If self._strict==True and item is invalid
+        """Convert items List[str] to items List[Items], removes duplicates.
+
+        :param items: List of str items.
+        :return: List of *Item* objects.
+        :raises ValueError: If self._strict==True and item is invalid.
         """
         items_: LItem = []
         items_wo_duplicates = sorted({str(i) for i in items})
@@ -379,7 +380,7 @@ class Range:
         return items_
 
     def _valid_line(self, line: str) -> str:
-        """Checks valid chars in line. Splits line to items by splitter"""
+        """Check valid chars in line. Splits line to items by splitter."""
         lines: LStr = []
         splitter = self.splitter
         range_splitter = self.range_splitter

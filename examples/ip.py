@@ -1,4 +1,4 @@
-"""Examples IP protocols"""
+"""Examples IP protocols."""
 
 from pprint import pprint
 

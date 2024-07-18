@@ -1,4 +1,4 @@
-"""Examples Range"""
+"""Examples Range."""
 
 from netports import Range, NetportsValueError
 

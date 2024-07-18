@@ -1,7 +1,7 @@
 """Typing"""
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
-# one-level
+# 1 level
 DAny = Dict[str, Any]
 DStr = Dict[str, str]
 DiAny = Dict[int, Any]
@@ -24,7 +24,7 @@ T7Str = Tuple[str, str, str, str, str, str, str]
 TIntStr = Tuple[int, str]
 TStrInt = Tuple[str, int]
 
-# two-level
+# 2 level
 DLStr = Dict[str, LStr]
 DSStr = Dict[str, SStr]
 IStrInt = Union[IStr, IInt]

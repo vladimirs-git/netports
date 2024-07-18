@@ -1,4 +1,4 @@
-"""Software Version"""
+"""Software Version."""
 
 from packaging.version import Version
 
@@ -7,11 +7,11 @@ from netports.types_ import TStrInt
 
 
 class SwVersion(Version):
-    """SwVersion"""
+    """Software Version."""
 
     def __init__(self, text: str):
-        """SwVersion
-        :param text: Cisco version text: "12.2(55)SE12"
+        """Init SwVersion.
+        :param text: Cisco version text: "12.2(55)SE12".
         :type text: str
         """
         self._text = self._init_name(name=text)
@@ -44,12 +44,13 @@ class SwVersion(Version):
 
     @property
     def public(self) -> str:
-        """Public version text"""
+        """Public version text."""
         return self._text
 
     @property
     def nano(self) -> int:
-        """4th part of version
+        """4th part of version.
+
         :example:
             version = SwVersion("12.2(55)SE14")
             version.nano -> 14
@@ -60,7 +61,7 @@ class SwVersion(Version):
 
     @staticmethod
     def _init_name(**kwargs) -> str:
-        """Init name"""
+        """Init name."""
         name = kwargs.get("name")
         if name is None:
             name = ""
@@ -70,7 +71,7 @@ class SwVersion(Version):
 
     @staticmethod
     def _parse_version(text: str) -> TStrInt:
-        """Init SwVersion. Split `text` to *Version* and `nano` (4th digit)"""
+        """Init SwVersion. Split `text` to *Version* and `nano` (4th digit)."""
         nano = 0
         items = list(h.findall4(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)", text))
         if items[3]:

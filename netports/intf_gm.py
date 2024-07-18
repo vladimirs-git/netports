@@ -1,17 +1,17 @@
-"""IntfGM - Interfaces Group Manager"""
+"""IntfGM - Interfaces Group Manager."""
 from netports.intf import ULIntf, LIntf, Intf, LStr
 from netports.range import Range
 from netports.types_ import DSStr
 
 
 class IntfGM:
-    """IntfGM - Interfaces Group Manager"""
+    """IntfGM - Interfaces Group Manager."""
 
     def __init__(self, items):
-        """IntfGM
-        ::
-            :param items: List of Interfaces
-            :type items: str, List[str], Intf, List[Intf]
+        """Init IntfGM
+
+        :param items: List of Interfaces.
+        :type items: str or List[str] or Intf or List[Intf]
         """
         self.items = items
 
@@ -24,7 +24,7 @@ class IntfGM:
 
     @property
     def items(self) -> LIntf:
-        """Interface line"""
+        """Interface lin."""
         return self._items
 
     @items.setter
@@ -51,16 +51,16 @@ class IntfGM:
     # =========================== methods ===========================
 
     def ranges(self, fmt: str = "long") -> LStr:
-        """Convert interfaces names to shorted range notation
-        ::
-            :param fmt: Format option
-                "cisco" - Cisco compatible format  # todo
-                "long"  - Long names: ["interface Ethernet1/1-3"]
-                "short" - Short names: ["Eth1/1/1-3"]
-            :type: str
+        """Convert interfaces names to shorted range notation.
 
-            :return: Interfaces range notation
-            :rtype: List[str]
+        :param fmt: Format option:
+            "cisco" - Cisco compatible format
+            "long"  - Long names: ["interface Ethernet1/1-3"]
+            "short" - Short names: ["Eth1/1/1-3"]
+        :type fmt: str
+
+        :return: Interfaces range notation.
+        :rtype: List[str]
         """
         if fmt == "long":
             return self._ranges__long()
@@ -72,12 +72,12 @@ class IntfGM:
     # =========================== helpers ============================
 
     def _ranges__long(self) -> LStr:
-        """Convert interfaces names to long lines
-        ::
-            :example:
-                intfs = ["interface Ethernet1/1", "interface Ethernet1/2", "interface Ethernet1/3"]
-                intf_gm = IntfGM(intfs)
-                intf_gm.ranges() -> ["interface Ethernet1/1-3"]
+        """Convert interfaces names to long lines.
+
+        :example:
+            intfs = ["interface Ethernet1/1", "interface Ethernet1/2", "interface Ethernet1/3"]
+            intf_gm = IntfGM(intfs)
+            intf_gm.ranges() -> ["interface Ethernet1/1-3"]
         """
         items = sorted(self.items)
 
@@ -102,12 +102,12 @@ class IntfGM:
         return ranges
 
     def _ranges__short(self) -> LStr:
-        """Convert interfaces names to short lines
-        ::
-            :example:
-                intfs = ["interface Ethernet1/1", "interface Ethernet1/2", "interface Ethernet1/3"]
-                intf_gm = IntfGM(intfs)
-                intf_gm.ranges() -> ["Eth1/1-3"]
+        """Convert interfaces names to short lines.
+
+        :example:
+            intfs = ["interface Ethernet1/1", "interface Ethernet1/2", "interface Ethernet1/3"]
+            intf_gm = IntfGM(intfs)
+            intf_gm.ranges() -> ["Eth1/1-3"]
         """
         long_intfs: LStr = self._ranges__long()
         short_intfs: LStr = []
@@ -123,22 +123,23 @@ class IntfGM:
 
 # ============================ functions =============================
 
+
 def intfrange(items: LStr, fmt: str = "long") -> LStr:
-    """Convert interfaces names to shorted range notation
-    ::
-        :param items: List of interfaces
-        :type items: List[str]
+    """Convert interfaces names to shorted range notation.
 
-        :param fmt: Format option:
-            "long"  - Long names: ["interface Ethernet1/1-3"]
-            "short" - Short names: ["Eth1/1/1-3"]
-        :type: str
+    :param items: List of interfaces.
+    :type items: List[str]
 
-        :return: Interface ranges
-        :rtype: List[str]
+    :param fmt: Format option:
+        "long"  - Long names: ["interface Ethernet1/1-3"]
+        "short" - Short names: ["Eth1/1/1-3"]
+    :type fmt: str
 
-        :example:
-            ranges(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"]) -> ["Ethernet1/1-3"]
+    :return: Interface ranges.
+    :rtype: List[str]
+
+    :example:
+        ranges(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"]) -> ["Ethernet1/1-3"]
     """
     intf_gm = IntfGM(items)
     ranges_ = intf_gm.ranges(fmt=fmt)

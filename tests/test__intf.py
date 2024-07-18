@@ -1,7 +1,9 @@
 """Tests intfs.py"""
 
-import pytest
 import difflib
+
+import pytest
+
 from netports.intf import Intf
 from tests import params__intf as p
 

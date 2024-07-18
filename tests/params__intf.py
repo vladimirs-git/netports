@@ -30,4 +30,3 @@ ALL_NAMES_MGMT = [
     "interface mgmt0",
     "mgmt0",
 ]
-

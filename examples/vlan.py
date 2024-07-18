@@ -1,4 +1,4 @@
-"""Examples VLAN"""
+"""Examples VLAN."""
 
 import re
 

@@ -1,4 +1,4 @@
-"""Examples Intf"""
+"""Examples Intf."""
 from pprint import pprint
 
 import netports

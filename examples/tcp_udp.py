@@ -1,4 +1,4 @@
-"""Examples TCP/UDP"""
+"""Examples TCP/UDP."""
 
 import netports
 from netports import NetportsValueError

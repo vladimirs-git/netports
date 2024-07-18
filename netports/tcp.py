@@ -1,4 +1,4 @@
-"""TCP/UDP ports"""
+"""TCP/UDP ports."""
 
 from typing import Any
 
@@ -17,25 +17,25 @@ ALL_PORTS_S = f"{MIN_PORT}-{MAX_PORT}"
 
 # noinspection PyIncorrectDocstring
 def itcp(items: Any = "", **kwargs) -> LInt:
-    """Integer TCP/UDP Ports. Sorting TCP/UDP ports and removing duplicates
-    ::
-        :param items: Range of TCP/UDP ports, can be unsorted and with duplicates
-        :type items: str, List[int], List[str]
+    """Integer TCP/UDP Ports. Sorting TCP/UDP ports and removing duplicates.
 
-        :param verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
-                        False - all ports in brief mode: [-1], to save RAM (default)
-        :type verbose: bool
+    :param items: Range of TCP/UDP ports, can be unsorted and with duplicates.
+    :type items: str or List[int] or List[str]
 
-        :param all: True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False
-        :type all: bool
+    :param verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
+        False - all ports in brief mode: [-1], to save RAM (default).
+    :type verbose: bool
 
-        :return: *List[int]* of unique sorted TCP/UDP ports
-        :rtype: List[int]
+    :param all: True - Returns all TCP/UDP ports: [1, 2, ..., 65535], or [-1] for verbose=False.
+    :type all: bool
 
-        :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535
+    :return: List[int] of unique sorted TCP/UDP ports.
+    :rtype: List[int]
 
-        :example:
-            itcp("1,3-5") -> [1, 3, 4, 5]
+    :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535.
+
+    :example:
+        itcp("1,3-5") -> [1, 3, 4, 5]
     """
     if h.is_all(**kwargs):
         if h.is_brief(**kwargs):
@@ -56,25 +56,25 @@ def itcp(items: Any = "", **kwargs) -> LInt:
 
 # noinspection PyIncorrectDocstring
 def stcp(items: Any = "", **kwargs) -> str:
-    """String TCP/UDP ports. Sorting TCP/UDP ports and removing duplicates
-    ::
-        :param items: Range of TCP/UDP ports, can be unsorted and with duplicates
-        :type items: str, List[int], List[str]
+    """String TCP/UDP ports. Sorting TCP/UDP ports and removing duplicates.
 
-        :param verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
-                        False - all ports in brief mode: [-1], to save RAM (default)
-        :type verbose: bool
+    :param items: Range of TCP/UDP ports, can be unsorted and with duplicates.
+    :type items: str or List[int] or List[str]
 
-        :param all: True - Returns all TCP/UDP ports: "1-65535"
-        :type all: bool
+    :param verbose: True - all ports in verbose mode: [1, 2, ..., 65535],
+        False - all ports in brief mode: [-1], to save RAM (default).
+    :type verbose: bool
 
-        :return: *str* of unique sorted TCP/UDP ports
-        :rtype: str
+    :param all: True - Returns all TCP/UDP ports: "1-65535".
+    :type all: bool
 
-        :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535
+    :return: str of unique sorted TCP/UDP ports.
+    :rtype: str
 
-        :example:
-            stcp([1, 3, 4, 5]) -> "1,3-5"
+    :raises NetportsValueError: If TCP/UDP ports are outside valid range 1...65535.
+
+    :example:
+        stcp([1, 3, 4, 5]) -> "1,3-5"
     """
     if h.is_all(**kwargs):
         return ALL_PORTS_S

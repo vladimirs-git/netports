@@ -1,9 +1,10 @@
 """Tests intf_map.py"""
 
+import difflib
 import unittest
 
 import dictdiffer
-import difflib
+
 from netports import intf_map
 from tests import params__intf_map as p
 

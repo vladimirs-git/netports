@@ -1,4 +1,4 @@
-"""Helper functions"""
+"""Helper functions."""
 import re
 import time
 from typing import Any, Iterable
@@ -11,14 +11,16 @@ from netports.types_ import LAny, LStr, StrInt, IStrInt, LInt, T2Str, T3Str, T4S
 
 
 def findall1(pattern: str, string: str, flags=0) -> str:
-    """Parses 1st item of re.findall(). If nothing is found, returns an empty string.
-    Group with parentheses in pattern is required
-    ::
-        :return: Interested substring
-        :example:
-            pattern: "a(b)cde"
-            string: "abcde"
-            return: "b"
+    """Parse 1st item of re.findall(). If nothing is found, returns an empty string.
+
+    Group with parentheses in pattern is required.
+
+    :return: Interested substring.
+
+    :example:
+        pattern: "a(b)cde"
+        string: "abcde"
+        return: "b"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [""])[0]
     if isinstance(result, str):
@@ -29,14 +31,16 @@ def findall1(pattern: str, string: str, flags=0) -> str:
 
 
 def findall2(pattern: str, string: str, flags=0) -> T2Str:
-    """Parses 2 items of re.findall(). If nothing is found, returns 2 empty strings.
-    Group with parentheses in pattern is required
-    ::
-        :return: Two interested substrings
-        :example:
-            pattern: "a(b)(c)de"
-            string: "abcde"
-            return: "b", "c"
+    """Parse 2 items of re.findall(). If nothing is found, returns 2 empty strings.
+
+    Group with parentheses in pattern is required.
+
+    :return: Two interested substrings.
+
+    :example:
+        pattern: "a(b)(c)de"
+        string: "abcde"
+        return: "b", "c"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "")])[0]
     if isinstance(result, tuple) and len(result) >= 2:
@@ -45,14 +49,16 @@ def findall2(pattern: str, string: str, flags=0) -> T2Str:
 
 
 def findall3(pattern: str, string: str, flags=0) -> T3Str:
-    """Parses 3 items of re.findall(). If nothing is found, returns 3 empty strings.
-    Group with parentheses in pattern is required
-    ::
-        :return: Three interested substrings
-        :example:
-            pattern: "a(b)(c)(d)e"
-            string: "abcde"
-            return: "b", "c", "d"
+    """Parse 3 items of re.findall(). If nothing is found, returns 3 empty strings.
+
+    Group with parentheses in pattern is required.
+
+    :return: Three interested substrings.
+
+    :example:
+        pattern: "a(b)(c)(d)e"
+        string: "abcde"
+        return: "b", "c", "d"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "", "")])[0]
     if isinstance(result, tuple) and len(result) >= 3:
@@ -61,16 +67,17 @@ def findall3(pattern: str, string: str, flags=0) -> T3Str:
 
 
 def findall4(pattern: str, string: str, flags=0) -> T4Str:
-    """Parses 4 items of re.findall(). If nothing is found, returns 4 empty strings
-    ::
-        :param pattern: Regex pattern, where 4 groups with parentheses in pattern are required
-        :param string: String where need to find pattern
-        :param flags: findall flags
-        :return: Three interested substrings
-        :example:
-            pattern = "a(b)(c)(d)(e)f"
-            string = "abcdef"
-            return: "b", "c", "d", "e"
+    """Parse 4 items of re.findall(). If nothing is found, returns 4 empty strings.
+
+    :param pattern: Regex pattern, where 4 groups with parentheses in pattern are required.
+    :param string: String where need to find pattern.
+    :param flags: findall flags.
+    :return: Three interested substrings.
+
+    :example:
+        pattern = "a(b)(c)(d)(e)f"
+        string = "abcdef"
+        return: "b", "c", "d", "e"
     """
     result = (re.findall(pattern=pattern, string=string, flags=flags) or [("", "", "", "")])[0]
     if isinstance(result, tuple) and len(result) >= 4:
@@ -79,7 +86,7 @@ def findall4(pattern: str, string: str, flags=0) -> T4Str:
 
 
 def repr_params(*args, **kwargs) -> str:
-    """Makes params for __repr__() method"""
+    """Make params for __repr__() method."""
     args_ = ", ".join([f"{v!r}" for v in args if v])
     kwargs_ = ", ".join([f"{k}={v!r}" for k, v in kwargs.items() if v])
     params = [s for s in (args_, kwargs_) if s]
@@ -87,27 +94,28 @@ def repr_params(*args, **kwargs) -> str:
 
 
 def join(items: LAny) -> str:
-    """Joins items by "," """
+    """Join items by ","."""
     return SPLITTER.join([str(i) for i in items])
 
 
 # =============================== bool ===============================
 
+
 def is_all(**kwargs) -> bool:
-    """Get param `all` from `kwargs`"""
+    """Get param `all` from `kwargs`."""
     return bool(kwargs.get("all"))
 
 
 def is_brief(**kwargs) -> bool:
-    """Get param `verbose` from `kwargs` and reverse the result"""
+    """Get param `verbose` from `kwargs` and reverse the result."""
     return not is_verbose(**kwargs)
 
 
 def is_brief_in_items(items: Any) -> bool:
-    """Checks is "-1" or -1 in `items`, used for verbose=False
-    ::
-        :param items: *str, int, List[str], List[int]*
-        :return: True - if "-1" or -1 present in `items`
+    """Check is "-1" or -1 in `items`, used for verbose=False.
+
+    :param items: str, int, List[str], List[int].
+    :return: True - if "-1" or -1 present in `items`.
     """
     if isinstance(items, (str, int)):
         items = [items]
@@ -127,7 +135,7 @@ def is_brief_in_items(items: Any) -> bool:
 
 
 def is_verbose(**kwargs) -> bool:
-    """Get param `verbose` from `kwargs`"""
+    """Get param `verbose` from `kwargs`."""
     verbose = kwargs.get("verbose")
     if verbose is None:
         return False
@@ -135,7 +143,7 @@ def is_verbose(**kwargs) -> bool:
 
 
 def is_strict(**kwargs) -> bool:
-    """Get param `strict` from `kwargs`"""
+    """Get param `strict` from `kwargs`."""
     strict = kwargs.get("strict")
     if strict is None:
         return True
@@ -144,12 +152,14 @@ def is_strict(**kwargs) -> bool:
 
 # =============================== int ================================
 
+
 def to_int(number: StrInt) -> int:
-    """Converts *str* to *int*
-    ::
-        :param number: *int* or digit as *str*
-        :return: *int*
-        :raises TypeError: If number is not digit
+    """Convert str to int.
+
+    :param number: int or digit as str/
+    :return: int.
+
+    :raises TypeError: If number is not digit.
     """
     if isinstance(number, int):
         return number
@@ -159,11 +169,11 @@ def to_int(number: StrInt) -> int:
 
 
 def to_lint(numbers: IStrInt) -> LInt:
-    """Converts *List[str]* to *List[int]*
-    ::
-        :param numbers: *List[str]*
-        :return: *List[int]*
-        :raises TypeError: If number is not digit
+    """Convert List[str] to List[int].
+
+    :param numbers: List[str].
+    :return: List[int].
+    :raises TypeError: If number is not digit.
     """
     if not isinstance(numbers, (list, set, tuple)):
         raise TypeError(f"{numbers=} {list} expected")
@@ -172,8 +182,9 @@ def to_lint(numbers: IStrInt) -> LInt:
 
 # =============================== list ===============================
 
+
 def lstr(items: Any) -> LStr:
-    """Converts any types of items to *List[str]*"""
+    """Convert any types of items to List[str]."""
     if not isinstance(items, (bytes, dict, float, int, list, set, str, tuple)):
         raise TypeError(f"{items=} {list} expected")
     if isinstance(items, (bytes, float, int, str)):
@@ -190,7 +201,7 @@ def lstr(items: Any) -> LStr:
 
 
 def no_dupl(items: Iterable) -> list:
-    """Remove duplicate items from list"""
+    """Remove duplicate items from list."""
     items_ = []
     for item in items:
         if item not in items_:
@@ -199,10 +210,10 @@ def no_dupl(items: Iterable) -> list:
 
 
 def remove_brief_items(items: Any) -> list:
-    """Remove "-1", -1 from items
-    ::
-        :param items: *str, int, List[str], List[int]*
-        :return: Items without "-1", -1
+    """Remove "-1", -1 from items.
+
+    :param items: str, int, List[str], List[int].
+    :return: Items without "-1", -1.
     """
     if isinstance(items, (str, int)):
         items = [items]
@@ -210,7 +221,7 @@ def remove_brief_items(items: Any) -> list:
 
 
 def split(items: Any) -> LStr:
-    """Splits items *str*, *List[str]* by "," " " """
+    """Split items str, List[str] by "," " "."""
     results: LStr = []
     for items_s in lstr(items):
         for item_s in items_s.split():
@@ -220,11 +231,12 @@ def split(items: Any) -> LStr:
 
 # ============================= wrapper ==============================
 
+
 def time_spent(func):
-    """Wrapper measure function execution time"""
+    """Wrapper measure function execution time."""
 
     def wrap(*args, **kwargs):
-        """Wrap"""
+        """Wrap."""
         started = time.time()
         return_ = func(*args, **kwargs)
         elapsed = time.time() - started
