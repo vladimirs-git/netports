@@ -8,7 +8,7 @@ from typing import List, Optional, Set, Tuple, Union
 from netports import intf_map, helpers as h
 from netports.exceptions import NetportsValueError
 from netports.static import DEVICE_TYPES
-from netports.types_ import T3Str, T5Str, LStr, SStr, DStr, LT2Str
+from netports.types_ import T5Str, LStr, SStr, DStr, LT2Str, T7Str
 
 SPLITTER = ",./:"
 
@@ -40,7 +40,7 @@ class Intf:
         return f"{self.__class__.__name__}({self.line!r})"
 
     def __hash__(self) -> int:
-        return hash((self.id0, self.id1, self.id2, self.id3, self.id4))
+        return hash((self.id0, self.id1, self.id2, self.id3, self.id4, self.id5, self.id6))
 
     def __eq__(self, other) -> bool:
         """== equality"""
@@ -60,48 +60,17 @@ class Intf:
                 return self.id2 < other.id2
             if self.id3 != other.id3:
                 return self.id3 < other.id3
-            return self.id4 < other.id4
+            if self.id4 != other.id4:
+                return self.id4 < other.id4
+            if self.id5 != other.id5:
+                return self.id5 < other.id5
+            return self.id6 < other.id6
         return False
-
-    # ============================= init =============================
-
-    def _init_line(self, line: str) -> str:
-        """Init Interface line"""
-        if not isinstance(line, str):
-            raise TypeError(f"{line=} {str} expected")
-        self._line = line
-        self._ids: T5Str = self._get_ids()
-        self._dels = self._get_delimiters()
-
-        items = [
-            self._ids[0],
-            self._ids[1],
-            self._dels[0],
-            self._ids[2],
-            self._dels[1],
-            self._ids[3],
-            self._dels[2],
-            self._ids[4],
-        ]
-        return "".join(items)
-
-    @staticmethod
-    def _init_device_type(**kwargs) -> str:
-        """Init Netmiko device type
-        ::
-            :return: Netmiko device type
-            :raise: NetportsValueError if the device type is unknown
-        """
-        device_type = str(kwargs.get("device_type") or "")
-        expected = ["", *DEVICE_TYPES]
-        if device_type not in expected:
-            raise NetportsValueError(f"{device_type=} {expected=}")
-        return device_type
 
     # =========================== property ===========================
 
     @property
-    def delimiters(self) -> T3Str:
+    def delimiters(self) -> T5Str:
         """Interface all delimiters"""
         return self._dels
 
@@ -138,10 +107,9 @@ class Intf:
     @property
     def id3(self) -> int:
         """Interface 3rd ID
-        ::
+        ::  # TODO docstrings without ::
             :example:
-                intf = Intf("interface Ethernet1/2/3.4")
-                intf.id3 -> 3
+                Intf("interface Ethernet1/2/3.4") -> 3  # TODO example in one line
         """
         return int(self._ids[3]) if self._ids[3] else 0
 
@@ -156,7 +124,27 @@ class Intf:
         return int(self._ids[4]) if self._ids[4] else 0
 
     @property
-    def ids(self) -> T5Str:
+    def id5(self) -> int:
+        """Interface 5th ID
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3/4.5")
+                intf.id5 -> 5
+        """
+        return int(self._ids[5]) if self._ids[5] else 0
+
+    @property
+    def id6(self) -> int:
+        """Interface 6th ID
+        ::
+            :example:
+                intf = Intf("interface Ethernet1/2/3/4/5.6")
+                intf.id6 -> 6
+        """
+        return int(self._ids[6]) if self._ids[6] else 0
+
+    @property
+    def ids(self) -> T7Str:
         """Interface all IDs
         ::
             :example:
@@ -183,7 +171,7 @@ class Intf:
                 intf = Intf("interface Ethernet1/2/3.4")
                 intf.name -> "Ethernet1/2/3.4"
         """
-        return re.sub(r"^interface\s+", "", self.line)
+        return re.sub(r"^interface(\s+)?", "", self.line)
 
     @property
     def device_type(self) -> str:
@@ -213,6 +201,7 @@ class Intf:
                 ]
         """
         results: SStr = set()
+
         names_: LStr = [self.line, self.name, self.name_full(), self.name_long(), self.name_short()]
         names_ = h.no_dupl(names_)
         for name_ in names_:
@@ -238,6 +227,7 @@ class Intf:
                         results.add(f"interface {name_long}")
 
         results.update([s.lower() for s in results])
+
         results_: LStr = sorted(results)
         results_.sort(key=len, reverse=True)
 
@@ -264,7 +254,7 @@ class Intf:
                 intf = Intf("interface Ethernet1/2")
                 intf.name_base() -> "Ethernet"
         """
-        return self.id0.replace("interface ", "", 1)
+        return self.id0.replace("interface", "", 1).strip()
 
     def name_full(self) -> str:
         """Interface long name with IDs and with interface keyword
@@ -274,7 +264,9 @@ class Intf:
                 intf.name_full() -> "interface Ethernet1/2"
         """
         name = self.name_long()
-        return f"interface {name}"
+        if not name.startswith("interface"):
+            name = " ".join([s for s in ("interface", name) if s])
+        return name
 
     def name_long(self) -> str:
         """Interface long name with IDs and without interface keyword
@@ -284,8 +276,8 @@ class Intf:
                 intf.name_long() -> "Ethernet1/2"
         """
         id0 = self.id0.lower()
-        if id0.startswith("interface "):
-            id0 = id0.replace("interface ", "", 1)
+        if id0.startswith("interface"):
+            id0 = re.sub(r"^interface(\s+)?", "", id0, re.I)
 
         intf_map_short: DStr = intf_map.short_to_long(self._device_type, key_lower=True)
         for short_lower, long_upper in intf_map_short.items():
@@ -301,7 +293,7 @@ class Intf:
 
         id1 = self.part_after(idx=0)
         name = f"{id0}{id1}"
-        return name
+        return name.strip()
 
     def name_short(self, replace: LT2Str = None) -> str:
         """Interface short name with IDs
@@ -315,8 +307,8 @@ class Intf:
                 intf.name_short(replace=[("Fa", "Eth")]) -> "Eth1/2"
         """
         id0 = self.id0.lower()
-        if id0.startswith("interface "):
-            id0 = id0.replace("interface ", "", 1)
+        if id0.startswith("interface"):
+            id0 = re.sub(r"^interface(\s+)?", "", id0, re.I)
 
         intf_map_l2s: DStr = intf_map.long_to_short(self._device_type, key_lower=True)
         for long_lower, short_upper in intf_map_l2s.items():
@@ -338,7 +330,7 @@ class Intf:
 
         id1 = self.part_after(idx=0)
         name = f"{id0}{id1}"
-        return name
+        return name.strip()
 
     def part_after(self, idx: int, splitter=True) -> str:
         """Interface part after interested ID
@@ -348,14 +340,28 @@ class Intf:
             :return: Part of the interface name after specified interface index
             :example:
                 intf = Intf("Ethernet1/2/3.4")
+                intf.part_after(0) -> "1/2/3.4"
+                intf.part_after(1) -> "2/3.4"
                 intf.part_after(2) -> "/3.4"
                 intf.part_after(3) -> ".4"
                 intf.part_after(2, splitter=False) -> "3.4"
         """
-        if idx >= 4:
+        if idx >= 6:
             return ""
 
-        parts = self._ids[4]
+        parts = self._ids[6]
+        if idx == 5:
+            if splitter:
+                return self._dels[4] + parts
+            return parts
+
+        parts = self._ids[5] + self._dels[4] + parts
+        if idx == 4:
+            if splitter:
+                return self._dels[3] + parts
+            return parts
+
+        parts = self._ids[4] + self._dels[3] + parts
         if idx == 3:
             if splitter:
                 return self._dels[2] + parts
@@ -417,11 +423,23 @@ class Intf:
                 return parts + self._dels[2]
             return parts
 
+        parts += self._dels[2] + self._ids[4]
+        if idx == 5:
+            if splitter:
+                return parts + self._dels[3]
+            return parts
+
+        parts += self._dels[3] + self._ids[5]
+        if idx == 6:
+            if splitter:
+                return parts + self._dels[4]
+            return parts
+
         return self._line
 
     # =========================== helpers ============================
 
-    def _get_ids(self) -> T5Str:
+    def _get_ids(self) -> T7Str:
         """Splits interface line to name and IDs
         ::
             :example:
@@ -435,11 +453,11 @@ class Intf:
         name = r"([a-zA-Z\-\s]+)*"
         id1 = r"(\d+)*"
         id2 = r"(?:,)*(\d+)*"
-        pattern = f"{name}{id1}{id2}{id2}{id2}"
-        ids: T5Str = (re.findall(pattern, intf) or [("", "", "", "", "")])[0]
+        pattern = f"{name}{id1}{id2}{id2}{id2}{id2}{id2}"
+        ids: T7Str = (re.findall(pattern, intf) or [("", "", "", "", "", "", "")])[0]
         return ids
 
-    def _get_delimiters(self) -> T3Str:
+    def _get_delimiters(self) -> T5Str:
         """Splits interface line to splitters of IDs
         ::
             :example:
@@ -457,7 +475,52 @@ class Intf:
         part3 = part2 + delim2 + self._ids[3]
         len3 = len(part3)
         delim3 = self._line[len3:len3 + 1]
-        return delim1, delim2, delim3
+
+        part4 = part3 + delim3 + self._ids[4]
+        len4 = len(part4)
+        delim4 = self._line[len4:len4 + 1]
+
+        part5 = part4 + delim4 + self._ids[5]
+        len5 = len(part5)
+        delim5 = self._line[len5:len5 + 1]
+        return delim1, delim2, delim3, delim4, delim5
+
+    def _init_line(self, line: str) -> str:
+        """Init Interface line"""
+        if not isinstance(line, str):
+            raise TypeError(f"{line=} {str} expected")
+        self._line = line
+        self._ids: T7Str = self._get_ids()
+        self._dels = self._get_delimiters()
+
+        items = [
+            self._ids[0],
+            self._ids[1],
+            self._dels[0],
+            self._ids[2],
+            self._dels[1],
+            self._ids[3],
+            self._dels[2],
+            self._ids[4],
+            self._dels[3],
+            self._ids[5],
+            self._dels[4],
+            self._ids[6],
+        ]
+        return "".join(items)
+
+    @staticmethod
+    def _init_device_type(**kwargs) -> str:
+        """Init Netmiko device type
+        ::
+            :return: Netmiko device type
+            :raise: NetportsValueError if the device type is unknown
+        """
+        device_type = str(kwargs.get("device_type") or "")
+        expected = ["", *DEVICE_TYPES]
+        if device_type not in expected:
+            raise NetportsValueError(f"{device_type=} {expected=}")
+        return device_type
 
 
 LIntf = List[Intf]
