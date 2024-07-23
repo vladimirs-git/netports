@@ -4,7 +4,7 @@
 CHANGELOG
 =========
 
-0.13.1 (2024-07-18)
+0.13.2 (2024-07-18)
 -------------------
 * [change] intf_map.MAP_CISCO_IOS AppGigabitEthernet
 
