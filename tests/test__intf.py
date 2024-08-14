@@ -754,17 +754,17 @@ def test__part_before(line, idx, expected):
     assert actual == expected
 
 
-@pytest.mark.parametrize("port, required, ignore, expected", [
-    ("Eth1", ["Eth"], [], True),
-    ("Eth1/2.3", ["Eth"], [], True),
-    ("Tu1", ["Eth"], [], False),
-    ("Tu1", ["Eth", "Tu"], [], True),
+@pytest.mark.parametrize("params, expected", [
+    ({"port": "Eth1", "required": ["Eth"]}, True),
+    ({"port": "Eth1/2.3", "required": ["Eth"]}, True),
+    ({"port": "Tu1", "required": ["Eth"]}, False),
+    ({"port": "Tu1", "required": ["Eth", "Tu"]}, True),
     # ignore
-    ("Eth1", ["Eth"], ["Tu"], True),
-    ("Tun1", ["Eth"], ["Tu"], False),
+    ({"port": "Eth1", "required": ["Eth"], "ignore": ["Tu"]}, True),
+    ({"port": "Tun1", "required": ["Eth"], "ignore": ["Tu"]}, False),
 ])
-def test__is_port_base(port, required, ignore, expected):
+def test__is_port_base(params, expected):
     """intf.is_port_base()"""
-    actual = netport_intf.is_port_base(port=port, required=required, ignore=ignore)
+    actual = netport_intf.is_port_base(**params)
 
     assert actual == expected

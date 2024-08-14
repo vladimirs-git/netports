@@ -30,6 +30,7 @@ DSStr = Dict[str, SStr]
 IStrInt = Union[IStr, IInt]
 LT2Str = List[T2Str]
 LTIntStr = List[TIntStr]
+OLStr = Optional[LStr]
 StrIInt = Union[str, int, IInt]
 T2SInt = Tuple[SInt, SInt]
 

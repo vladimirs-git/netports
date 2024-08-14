@@ -6,7 +6,7 @@ from typing import List, Optional, Set, Tuple, Union
 from netports import intf_map, helpers as h
 from netports.exceptions import NetportsValueError
 from netports.static import DEVICE_TYPES
-from netports.types_ import T5Str, LStr, SStr, DStr, T7Str, OLT2Str
+from netports.types_ import T5Str, LStr, SStr, DStr, T7Str, OLT2Str, OLStr
 
 SPLITTER = ",./:"
 
@@ -521,7 +521,7 @@ ULIntf = Optional[Union[str, LStr, Intf, LIntf]]
 # ============================ functions =============================
 
 
-def is_port_base(port: str, required: LStr, ignore: LStr) -> bool:
+def is_port_base(port: str, required: OLStr = None, ignore: OLStr = None) -> bool:
     """Check if the port has one of the required base, skipping base that are in the ignore list.
 
     :param port: Port name that need to check.
@@ -531,8 +531,10 @@ def is_port_base(port: str, required: LStr, ignore: LStr) -> bool:
     :return: True if port base name matches with required, False otherwise.
     """
     base = Intf(port).id0
-    if base in ignore:
-        return True
-    if base in required:
-        return True
+    if ignore:
+        if base in ignore:
+            return True
+    if required:
+        if base in required:
+            return True
     return False
