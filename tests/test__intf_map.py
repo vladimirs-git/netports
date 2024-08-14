@@ -3,7 +3,7 @@
 import difflib
 import unittest
 
-import dictdiffer
+import dictdiffer  # type: ignore[import-untyped]
 
 from netports import intf_map
 from tests import params__intf_map as p

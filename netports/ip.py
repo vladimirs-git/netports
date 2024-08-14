@@ -350,7 +350,7 @@ def iip(items: Any = "", **kwargs) -> LInt:
             raise NetportsValueError(f"{invalid=}")
     if not pairs:
         return []
-    numbers, names = [list(t) for t in zip(*pairs)]
+    numbers, _ = [list(t) for t in zip(*pairs)]
 
     if h.is_brief(**kwargs):
         if numbers == ALL_NUMBERS_L:

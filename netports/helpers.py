@@ -240,7 +240,7 @@ def time_spent(func):
         started = time.time()
         return_ = func(*args, **kwargs)
         elapsed = time.time() - started
-        print("=== {:s}, spent {:.3f}s ===".format(func.__name__, elapsed))
+        print(f"=== {func.__name__}, spent {elapsed:.3f}s ===")
         return return_
 
     return wrap

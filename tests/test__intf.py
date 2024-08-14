@@ -5,6 +5,7 @@ import difflib
 import pytest
 
 from netports.intf import Intf
+from netports import intf as netport_intf
 from tests import params__intf as p
 
 
@@ -55,7 +56,7 @@ def test____hash__(line, expected):
     ("Eth1/2/3.4", "interface Eth1/2/3.4", False),
     ("Eth1/2/3.4", "Eth1.2.3.4", True),
 ])
-def test____eq__(line1, line2, expected):
+def test__eq__(line1, line2, expected):
     """Intf.__eq__()"""
     Intf(line1)
     actual = Intf(line1) == Intf(line2)
@@ -95,8 +96,8 @@ def test____eq__(line1, line2, expected):
     ("Eth1/2/3/4/5/6.8", "Eth1/2/3/4/5/6.7", False),
 
 ])
-def test____eq__(line1, line2, expected):
-    """Intf.__eq__()"""
+def test__lt__(line1, line2, expected):
+    """Intf.__lt__()"""
     Intf(line1)
     actual = Intf(line1) < Intf(line2)
     assert actual == expected
@@ -352,44 +353,6 @@ def test__splitter(line, splitter, expected, id0, id1, id2):
 
 
 # =========================== methods ============================
-
-@pytest.mark.parametrize("line, expected", [
-    # upper
-    ("interface Ethernet1/2", p.ALL_NAMES_ETH),
-    ("Ethernet1/2", p.ALL_NAMES_ETH),
-    ("Eth1/2", p.ALL_NAMES_ETH),
-    ("interface tunnel-ip1", p.ALL_NAMES_TUN_IP),
-    ("tunnel-ip1", p.ALL_NAMES_TUN_IP),
-    ("interface Tunnel1", p.ALL_NAMES_TUN),
-    ("Tunnel1", p.ALL_NAMES_TUN),
-    ("Tu1", p.ALL_NAMES_TUN),
-    ("interface mgmt0", p.ALL_NAMES_MGMT),
-    ("mgmt0", p.ALL_NAMES_MGMT),
-    # lower
-    ("interface ethernet1/2", p.ALL_NAMES_ETH),
-    ("ethernet1/2", p.ALL_NAMES_ETH),
-    ("eth1/2", p.ALL_NAMES_ETH),
-    ("interface tunnel-ip1", p.ALL_NAMES_TUN_IP),
-    ("tunnel-ip1", p.ALL_NAMES_TUN_IP),
-    ("interface tunnel1", p.ALL_NAMES_TUN),
-    ("tunnel1", p.ALL_NAMES_TUN),
-    ("tu1", p.ALL_NAMES_TUN),
-    ("interface mgmt0", p.ALL_NAMES_MGMT),
-    ("mgmt0", p.ALL_NAMES_MGMT),
-    # only lower
-    ("interface 1", ["interface 1", "1"]),  # hpc
-    ("lag 1", ["interface lag 1", "lag 1"]),  # aruba_os
-    ("1", ["interface 1", "1"]),
-])
-def test__all_names(line, expected):
-    """Intf.all_names()"""
-    intf = Intf(line=line)
-
-    actual = intf.all_names()
-
-    diff = list(difflib.unified_diff(actual, expected, lineterm=""))
-    diff = [s for s in diff if s.startswith("-") or s.startswith("+")]
-    assert not diff
 
 
 @pytest.mark.parametrize("line, expected", [
@@ -787,5 +750,21 @@ def test__part_before(line, idx, expected):
     intf = Intf(line=line)
 
     actual = intf.part_before(idx=idx)
+
+    assert actual == expected
+
+
+@pytest.mark.parametrize("port, required, ignore, expected", [
+    ("Eth1", ["Eth"], [], True),
+    ("Eth1/2.3", ["Eth"], [], True),
+    ("Tu1", ["Eth"], [], False),
+    ("Tu1", ["Eth", "Tu"], [], True),
+    # ignore
+    ("Eth1", ["Eth"], ["Tu"], True),
+    ("Tun1", ["Eth"], ["Tu"], False),
+])
+def test__is_port_base(port, required, ignore, expected):
+    """intf.is_port_base()"""
+    actual = netport_intf.is_port_base(port=port, required=required, ignore=ignore)
 
     assert actual == expected

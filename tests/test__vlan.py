@@ -2,7 +2,7 @@
 
 import unittest
 
-import dictdiffer
+import dictdiffer  # type: ignore[import-untyped]
 
 from netports import vlan
 from netports.exceptions import NetportsValueError

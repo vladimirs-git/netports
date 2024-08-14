@@ -131,8 +131,8 @@ class Range:
         """Return next number."""
         try:
             number = self.numbers()[self._idx]
-        except IndexError:
-            raise StopIteration()
+        except IndexError as ex:
+            raise StopIteration() from ex
         self._idx += 1
         return number
 

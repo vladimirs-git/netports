@@ -32,7 +32,7 @@ def parse_range(line: str, **kwargs) -> Range:
     """
     splitter = str(kwargs.get("splitter") or SPLITTER)
     range_splitter = str(kwargs.get("range_splitter") or RANGE_SPLITTER)
-    regex = r"(\s+)?{}(\s+)?".format(range_splitter)
+    regex = rf"(\s+)?{range_splitter}(\s+)?"
     items_: LStr = h.lstr(line)
     items_ = [re.sub(regex, range_splitter, s) for s in items_]
     items_ = [s.replace(range_splitter, "__range__") for s in items_]

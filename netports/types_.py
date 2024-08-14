@@ -32,3 +32,6 @@ LT2Str = List[T2Str]
 LTIntStr = List[TIntStr]
 StrIInt = Union[str, int, IInt]
 T2SInt = Tuple[SInt, SInt]
+
+# 3 level
+OLT2Str = Optional[LT2Str]

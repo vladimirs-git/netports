@@ -1,7 +1,7 @@
 """netports"""
 
 from netports.exceptions import NetportsValueError
-from netports.intf import Intf
+from netports.intf import Intf, is_port_base
 from netports.intf_gm import IntfGM, intfrange
 from netports.intf_map import (
     long_to_long,
@@ -34,6 +34,7 @@ __all__ = [
     "intfrange",
     "inumbers",
     "ip_pairs",
+    "is_port_base",
     "itcp",
     "ivlan",
     "long_to_long",

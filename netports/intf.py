@@ -6,7 +6,7 @@ from typing import List, Optional, Set, Tuple, Union
 from netports import intf_map, helpers as h
 from netports.exceptions import NetportsValueError
 from netports.static import DEVICE_TYPES
-from netports.types_ import T5Str, LStr, SStr, DStr, LT2Str, T7Str
+from netports.types_ import T5Str, LStr, SStr, DStr, T7Str, OLT2Str
 
 SPLITTER = ",./:"
 
@@ -282,7 +282,7 @@ class Intf:
         name = f"{id0}{id1}"
         return name.strip()
 
-    def name_short(self, replace: LT2Str = None) -> str:
+    def name_short(self, replace: OLT2Str = None) -> str:
         """Interface short name with IDs.
 
         :param replace: Replace the default short name with the first one
@@ -516,3 +516,23 @@ LIntf = List[Intf]
 SIntf = Set[Intf]
 TIntf = Tuple[Intf]
 ULIntf = Optional[Union[str, LStr, Intf, LIntf]]
+
+
+# ============================ functions =============================
+
+
+def is_port_base(port: str, required: LStr, ignore: LStr) -> bool:
+    """Check if the port has one of the required base, skipping base that are in the ignore list.
+
+    :param port: Port name that need to check.
+    :param required: Required base names (without ID),
+        one of which should match with port base name.
+    :param ignore: base names to ignore.
+    :return: True if port base name matches with required, False otherwise.
+    """
+    base = Intf(port).id0
+    if base in ignore:
+        return True
+    if base in required:
+        return True
+    return False

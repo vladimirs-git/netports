@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netports"
-version = "0.13.2"
+version = "0.14.0"
 description = "Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces"
 authors = ["Vladimirs Prusakovs <vladimir.prusakovs@gmail.com>"]
 readme = "README.rst"
@@ -23,7 +23,7 @@ packaging = "^23.2"
 
 [tool.poetry.group.dev.dependencies]
 dictdiffer = "^0.9.0"
-mypy = "^1.6.1"
+mypy = "^1.11.1"
 pygments = "^2.16.1"
 pylint = "^3.0.1"
 pytest = "^7.4.2"
@@ -43,14 +43,28 @@ test = ["pytest"]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/vladimirs-git/netports/issues"
-"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.13.2.tar.gz"
+"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.14.0.tar.gz"
 
 [tool.mypy]
 python_version = "3.8"
+
 [[tool.mypy.overrides]]
 module = [
     "dictdiffer.*",
 ]
+
+[tool.pylint]
+max-line-length = 100
+disable = [
+    "fixme",
+    "R0801",  # similar lines
+]
+
+[tool.pylint.message_control]
+max-returns = 13
+max-locals = 16
+max-public-methods = 22
+
 
 [tool.ruff]
 exclude = [
