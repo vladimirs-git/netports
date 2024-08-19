@@ -1,4 +1,5 @@
 """Typing"""
+
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 # 1 level

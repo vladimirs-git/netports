@@ -1,4 +1,5 @@
 """Interface name mapping"""
+
 from netports.types_ import DStr, LStr, SStr, OBool
 
 MAP_OTHER = {  # parent of all

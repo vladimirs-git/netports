@@ -1,4 +1,5 @@
 """Helper functions."""
+
 import re
 import time
 from typing import Any, Iterable

@@ -1,4 +1,5 @@
 """An object of interface name, that can contain up to 6 indexes."""
+
 import re
 from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
@@ -18,11 +19,11 @@ class Intf:
     def __init__(self, line: str = "", **kwargs):
         """Init Intf.
 
-        :param line: Interface name that can contain up to 4 indexes
+        :param line: Interface name that can contain up to 4 indexes.
         :type line: str
-        :param device_type: Netmiko device type (default "")
+        :param device_type: Netmiko device type (default "").
         :type device_type: str
-        :param splitter: Separator of characters between indexes (default ",./:")
+        :param splitter: Separator of characters between indexes (default ",./:").
         :type splitter: str
         """
         self._device_type = self._init_device_type(**kwargs)
@@ -35,7 +36,8 @@ class Intf:
 
     def __repr__(self):
         """__repr__."""
-        return f"{self.__class__.__name__}({self.line!r})"
+        name = self.__class__.__name__
+        return f"{name}({self.line!r})"
 
     def __hash__(self) -> int:
         """__hash__."""
@@ -475,9 +477,9 @@ class Intf:
         return delim1, delim2, delim3, delim4, delim5
 
     def _init_line(self, line: str) -> str:
-        """Init Interface line"""
+        """Parse Interface line."""
         if not isinstance(line, str):
-            raise TypeError(f"{line=} {str} expected")
+            raise TypeError(f"{line=} {str} expected.")
         self._line = line
         self._ids: T7Str = self._get_ids()
         self._dels = self._get_delimiters()

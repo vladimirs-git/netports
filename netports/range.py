@@ -60,7 +60,8 @@ class Range:
             f"{range_splitter=!r}" if range_splitter != RANGE_SPLITTER else "",
         ]
         params_ = ", ".join([s for s in params if s])
-        return f"{self.__class__.__name__}({params_})"
+        name = self.__class__.__name__
+        return f"{name}({params_})"
 
     def __hash__(self) -> int:
         return tuple(self.items).__hash__()

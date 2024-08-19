@@ -30,7 +30,8 @@ class Item:
         return self.line
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.line!r})"
+        name = self.__class__.__name__
+        return f"{name}({self.line!r})"
 
     def __hash__(self) -> int:
         return hash((self.min, self.max))

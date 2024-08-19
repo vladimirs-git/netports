@@ -13,6 +13,7 @@ from netports.intf_map import (
 )
 from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
 from netports.item import Item
+from netports.mac import Mac  # TODO README
 from netports.ports import inumbers, parse_range, snumbers
 from netports.range import Range
 from netports.swversion import SwVersion
@@ -25,6 +26,7 @@ __all__ = [
     "Intf",
     "IntfGM",
     "Item",
+    "Mac",
     "NetportsValueError",
     "Range",
     "SwVersion",

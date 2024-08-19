@@ -1,11 +1,11 @@
-"""Tests intfs.py"""
+"""Tests intf.py"""
 
 import difflib
 
 import pytest
 
-from netports.intf import Intf
 from netports import intf as netport_intf
+from netports.intf import Intf
 from tests import params__intf as p
 
 
@@ -19,7 +19,7 @@ from tests import params__intf as p
     ("interface Eth1/2", "interface Eth1/2", "interface Eth", 1, 2),
     (" interface Eth1/2 ", " interface Eth1/2 ", " interface Eth", 1, 2),
 ])
-def test____str__(line, expected, id0, id1, id2):
+def test__str__(line, expected, id0, id1, id2):
     """Intf.__str__()"""
     intf = Intf(line)
     actual = str(intf)
@@ -32,7 +32,7 @@ def test____str__(line, expected, id0, id1, id2):
 @pytest.mark.parametrize("line, expected", [
     ("Eth1/2", "Intf('Eth1/2')"),
 ])
-def test____repr__(line, expected):
+def test__repr__(line, expected):
     """Intf.__repr__()"""
     intf = Intf(line)
     actual = repr(intf)
@@ -43,7 +43,7 @@ def test____repr__(line, expected):
     ("", hash(("", 0, 0, 0, 0, 0, 0))),
     ("Eth1/2/3/4/5.6.7", hash(("Eth", 1, 2, 3, 4, 5, 6))),
 ])
-def test____hash__(line, expected):
+def test__hash__(line, expected):
     """Intf.__hash__()"""
     intf = Intf(line)
     actual = hash(intf)
@@ -58,8 +58,9 @@ def test____hash__(line, expected):
 ])
 def test__eq__(line1, line2, expected):
     """Intf.__eq__()"""
-    Intf(line1)
-    actual = Intf(line1) == Intf(line2)
+    intf1 = Intf(line1)
+    intf2 = Intf(line2)
+    actual = bool(intf1 == intf2)
     assert actual == expected
 
 
@@ -98,8 +99,9 @@ def test__eq__(line1, line2, expected):
 ])
 def test__lt__(line1, line2, expected):
     """Intf.__lt__()"""
-    Intf(line1)
-    actual = Intf(line1) < Intf(line2)
+    intf1 = Intf(line1)
+    intf2 = Intf(line2)
+    actual = bool(intf1 < intf2)
     assert actual == expected
 
 

@@ -16,7 +16,7 @@ class Test(Helpers):
         """Item.__hash__()"""
         line = "1-2"
         item_o = Item(line)
-        result = item_o.__hash__()
+        result = hash(item_o)
         req = hash((1, 2))
         self.assertEqual(result, req, msg=f"{line=}")
 
@@ -30,9 +30,9 @@ class Test(Helpers):
             (Item("1"), False),
             (Item("2"), False),
         ]:
-            result = item_o.__eq__(other_o)
+            result = item_o == other_o
             self.assertEqual(result, req, msg=f"{item_o=} {other_o=}")
-            result = item_o.__ne__(other_o)
+            result = item_o != other_o
             self.assertEqual(result, not req, msg=f"{item_o=} {other_o=}")
 
     def test_valid__lt__(self):
@@ -49,13 +49,13 @@ class Test(Helpers):
             (Item(item1), Item("1-1"), False, False, True, True),
             (Item(item1), Item("1-3"), True, True, False, False),
         ]:
-            result = item_o.__lt__(other_o)
+            result = item_o < other_o
             self.assertEqual(result, req_lt, msg=f"{item_o=} {other_o=}")
-            result = item_o.__le__(other_o)
+            result = item_o <= other_o
             self.assertEqual(result, req_le, msg=f"{item_o=} {other_o=}")
-            result = item_o.__gt__(other_o)
+            result = item_o > other_o
             self.assertEqual(result, req_gt, msg=f"{item_o=} {other_o=}")
-            result = item_o.__ge__(other_o)
+            result = item_o >= other_o
             self.assertEqual(result, req_ge, msg=f"{item_o=} {other_o=}")
 
     def test_valid__lt__sort(self):

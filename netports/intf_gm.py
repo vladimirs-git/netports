@@ -1,4 +1,5 @@
 """IntfGM - Interfaces Group Manager."""
+
 from netports.intf import ULIntf, LIntf, Intf, LStr
 from netports.range import Range
 from netports.types_ import DSStr

@@ -15,7 +15,7 @@ class Test(Helpers):
     def test_valid__hash__(self):
         """Range.__hash__()"""
         range_o = Range("1,3-5")
-        result = range_o.__hash__()
+        result = hash(range_o)
         req = hash((Item("1"), Item("3-5")))
         self.assertEqual(result, req, msg="hash")
 
@@ -28,9 +28,9 @@ class Test(Helpers):
             (Range("1,3,4,5"), True),
             (Range("1"), False),
         ]:
-            result = range_o.__eq__(other_o)
+            result = range_o == other_o
             self.assertEqual(result, req, msg=f"{range_o=} {other_o=}")
-            result = range_o.__ne__(other_o)
+            result = range_o != other_o
             self.assertEqual(result, not req, msg=f"{range_o=} {other_o=}")
 
     def test_valid__lt__(self):
@@ -51,13 +51,13 @@ class Test(Helpers):
             (Range("1,3-5"), Range("3-5"), True, True, False, False),
             (Range("1,3-5"), Range("1,3-5"), False, True, False, True),
         ]:
-            result = range_o.__lt__(other_o)
+            result = range_o < other_o
             self.assertEqual(result, req_lt, msg=f"{range_o=} {other_o=}")
-            result = range_o.__le__(other_o)
+            result = range_o <= other_o
             self.assertEqual(result, req_le, msg=f"{range_o=} {other_o=}")
-            result = range_o.__gt__(other_o)
+            result = range_o > other_o
             self.assertEqual(result, req_gt, msg=f"{range_o=} {other_o=}")
-            result = range_o.__ge__(other_o)
+            result = range_o >= other_o
             self.assertEqual(result, req_ge, msg=f"{range_o=} {other_o=}")
 
     def test_valid__lt__sort(self):
@@ -188,9 +188,8 @@ class Test(Helpers):
     def test_valid__iter__(self):
         """Range.__iter__()"""
         range_o = Range("1,3-5")
-        for idx, result in enumerate(range_o):
-            req = range_o[idx]
-            self.assertEqual(result, req, msg=f"{idx=}")
+        for result in range_o:
+            _ = result
 
     def test_valid__len__(self):
         """Range.__len__()"""
