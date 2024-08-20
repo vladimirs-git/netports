@@ -14,6 +14,8 @@ from tests import params__mac as p
 
 @pytest.mark.parametrize("line, expected", [
     (p.ZERO, p.ZERO_D),
+    (p.CISCO, p.CISCO_D),
+    (p.COLON, p.COLON_D),
     (f"\t{p.ZERO}", NetportsValueError),
     (0, NetportsValueError),
 ])
@@ -102,24 +104,27 @@ def test__le__(line1, line2, expected):
 
 # ============================== parse ===============================
 
+
 @pytest.mark.parametrize("line, expected", [
     (p.ZERO, p.ZERO),
-    (f"{p.ZERO}\n", NetportsValueError),
-    (p.ZERO[:-1], NetportsValueError),
+    (p.CISCO, p.ZERO),
+    (p.COLON, p.ZERO),
+    (p.ABCDEF, p.ABCDEF),
+    (p.ABCDEF.upper(), p.ABCDEF),
 ])
-def test__parse_line(line, expected: Any):
-    """Mac._parse_line()."""
+def test__parse_hex(line, expected: Any):
+    """Mac._parse_hex()."""
     obj = Mac(line=p.ZERO)
     obj.line = line
 
     if isinstance(expected, str):
-        obj._parse_line()
+        obj._parse_hex()
 
-        actual = obj.line
+        actual = obj.hex
         assert actual == expected
     else:
         with pytest.raises(expected):
-            obj._parse_line()
+            obj._parse_hex()
 
 
 @pytest.mark.parametrize("hex_, expected", [
@@ -152,25 +157,6 @@ def test__parse_colon(hex_, expected):
 
     actual = obj.colon
     assert actual == expected
-
-
-@pytest.mark.parametrize("line, expected", [
-    (p.ABCDEF, p.ABCDEF),
-    (p.ABCDEF.upper(), p.ABCDEF),
-])
-def test__parse_hex(line, expected: Any):
-    """Mac._parse_hex()."""
-    obj = Mac(line=p.ZERO)
-    obj.line = line
-
-    if isinstance(expected, str):
-        obj._parse_hex()
-
-        actual = obj.hex
-        assert actual == expected
-    else:
-        with pytest.raises(expected):
-            obj._parse_hex()
 
 
 @pytest.mark.parametrize("hex_, expected", [

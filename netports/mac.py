@@ -71,22 +71,10 @@ class Mac(BaseModel):
 
         :return: None. Update data in object.
         """
-        self._parse_line()
         self._parse_hex()
         self._parse_cisco()
         self._parse_colon()
         self._parse_integer()
-
-    def _parse_line(self) -> None:
-        """Convert MAC address to line.
-
-        :return: None. Update data in object.
-        :raises NetportsValueError: If the line does not match the MAC address pattern.
-        """
-        line = self.line
-        if len(line) != 12:
-            raise NetportsValueError("12 hexdigits expected.")
-        self.line = line
 
     def _parse_hex(self) -> None:
         """Convert MAC address to hex string.
@@ -94,8 +82,17 @@ class Mac(BaseModel):
         :return: None. Update data in object.
         :raises NetportsValueError: If the line does not match the MAC address pattern.
         """
-        line = self.line.lower()
-        hexdigits: LStr = [s for s in line if s in string.hexdigits]
+        # splitter
+        expected = ":."
+        splitter = set(self.line).difference(set(expected))
+        if splitter := splitter.difference(set(string.hexdigits)):
+            raise NetportsValueError(f"Invalid {splitter=!r}, {expected=}.")
+
+        # hex
+        hexdigits: LStr = [s for s in self.line.lower() if s in string.hexdigits]
+        line = "".join(hexdigits)
+        if len(line) != 12:
+            raise NetportsValueError("12 hexdigits expected.")
         self.hex = "".join(hexdigits)
 
     def _parse_cisco(self) -> None:
