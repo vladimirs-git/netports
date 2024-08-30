@@ -22,7 +22,7 @@ def ivlan(items: Any = "", **kwargs) -> LInt:
     :param items: Range of VLANs, can be unsorted and with duplicates.
     :type items: str or List[int] or List[str]
 
-    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 4094],
         False - all VLAN IDs in brief mode: [-1], to save RAM (default).
     :type verbose: bool
 
@@ -78,7 +78,7 @@ def svlan(items: Any = "", **kwargs) -> str:
     :param items: Range of VLANs, can be unsorted and with duplicates.
     :type items str or List[int] or List[str]
 
-    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 65535],
+    :param verbose: True - all VLAN IDs in verbose mode: [1, 2, ..., 4094],
         False - all VLAN IDs in brief mode: [-1], to save RAM (default).
     :type verbose: bool
 
