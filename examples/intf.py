@@ -94,18 +94,16 @@ print()
 
 
 # Interface ranges with long notation
-ranges = netports.intfrange(lines)
-pprint(ranges, width=50)
+range_ = netports.names_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"])
+pprint(range_, width=50)
 print()
-# ["interface Ethernet101/1/1-3",
-#  "interface Ethernet102/1/1-3"]
+# "Ethernet1/1-3"
 
 # Interface ranges with short notation
-ranges = netports.intfrange(lines, fmt="short")
-pprint(ranges, width=30)
+ranges = netports.names_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"], fmt="short")
+pprint(ranges, width=50)
 print()
-# ["Eth101/1/1-3",
-#  "Eth102/1/1-3"]
+# "Eth1/1-3"
 
 # Interface name mapping long-to-short
 long_to_short = netports.long_to_short()

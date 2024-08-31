@@ -756,6 +756,8 @@ def test__part_before(line, idx, expected):
     assert actual == expected
 
 
+# ============================ functions =============================
+
 @pytest.mark.parametrize("params, expected", [
     ({"port": "Eth1", "required": ["Eth"]}, True),
     ({"port": "Eth1/2.3", "required": ["Eth"]}, True),
@@ -768,5 +770,17 @@ def test__part_before(line, idx, expected):
 def test__is_port_base(params, expected):
     """intf.is_port_base()"""
     actual = netport_intf.is_port_base(**params)
+
+    assert actual == expected
+
+
+@pytest.mark.parametrize("names, reverse, expected", [
+    (["p1/1", "p1/10", "p1/2"], False, ["p1/1", "p1/2", "p1/10"]),
+    (["p1/1", "p1/10", "p1/2"], True, ["p1/10", "p1/2", "p1/1"]),
+    ([], False, []),
+])
+def test__sort_names(names, reverse, expected):
+    """intf.sort_names()"""
+    actual = netport_intf.sort_names(names=names, reverse=reverse)
 
     assert actual == expected

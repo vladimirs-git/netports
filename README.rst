@@ -31,13 +31,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.15.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.16.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.15.0
+    pip install git+https://github.com/vladimirs-git/netports@0.16.0
 
 
 .. contents:: **Contents**
@@ -408,20 +408,118 @@ Return
 Interfaces
 ----------
 
-intfrange()
-...........
-**intfrange(items, fmt)**
-Convert interfaces names to shorted range notation
+generate_intfs()
+................
+**generate_intfs(start, end, base)**
+Generate list of Intf objects from start to end.
 
 =========== ============ ===========================================================================
 Parameter   Type         Description
 =========== ============ ===========================================================================
-items       *List[str]*  List of interfaces
-fmt         *str*        Format option: "long"  - Long names: ["interface Ethernet1/1-3"], "short" - Short names: ["Eth1/1/1-3"]
+start       *str*        First interface name in the range.
+end         *str*        Last interface name in the range.
+base        *str*        Prefix of the interface name that needs to be added to each interface.
 =========== ============ ===========================================================================
 
 Return
-    *List[str]* Interface ranges
+    *List[Intf]* List of generated Intf objects.
+
+
+generate_names()
+................
+**generate_names(start, end, base)**
+Generate list of interface names from start to end.
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+start       *str*        First interface name in the range.
+end         *str*        Last interface name in the range.
+base        *str*        Prefix of the interface name that needs to be added to each interface.
+=========== ============ ===========================================================================
+
+Return
+    *List[str]* List of generated interface names.
+
+
+is_port_base()
+..............
+**is_port_base(port, required, ignore)**
+Check if the port has one of the required base, skipping base that are in the ignore list.
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+port        *str*        Port name that need to check.
+required    *List[str]*  Required base names (without ID), one of which should match with port base name.
+ignore      *List[str]*  Base names to ignore.
+=========== ============ ===========================================================================
+
+Return
+    *bool* True - if port base name matches with required, False - otherwise.
+
+
+names_to_range()
+................
+**names_to_range(names, fmt)**
+Join list of interface names to range.
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+names       *List[str]*  List of interface names.
+fmt         *str*        Format option: "long"  - Long names: ["interface Ethernet1/1-3"], "short" - Short names: ["Eth1/1/1-3"].
+=========== ============ ===========================================================================
+
+Return
+    *str* Interface range.
+
+
+range_to_intfs()
+................
+**range_to_intfs(line, base)**
+Split interface range to list of Intf objects.
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+line        *str*        Range of interfaces that need to be split.
+base        *str*        Prefix of the interface name that needs to be added to each interface.
+=========== ============ ===========================================================================
+
+Return
+    *List[Intf]* List of Intf objects.
+
+
+range_to_names()
+................
+**range_to_names(line)**
+Split interface range to list of interface names.
+
+=========== ============ ===========================================================================
+Parameter   Type         Description
+=========== ============ ===========================================================================
+line        *str*        Range of interfaces that need to be split.
+=========== ============ ===========================================================================
+
+Return
+    *List[str]* List of interface names.
+
+
+sort_names()
+............
+**sort_names(names, reverse)**
+Sort interface names.
+
+=============== =========================== ============================================================================
+Parameter        Type                        Description
+=============== =========================== ============================================================================
+names           *List[str]*                 Interface names that need to be sorted.
+reverse         *bool*                      True - descending, False - ascending, default is False.
+=============== =========================== ============================================================================
+
+Return
+    *List[str]* Sorted interface names.
 
 
 long_to_short()
@@ -536,6 +634,22 @@ Parameter       Type    Description
 line            *str*   Interface name that can contain up to 4 indexes
 device_type     *str*   Netmiko device_type (default "")
 splitter        *str*   Separator of characters between indexes (default ",./:")
+=============== ======= ============================================================================
+
+
+Mac()
+.....
+**Mac(line)**
+An object representing a MAC address in different formats.
+
+=============== ======= ============================================================================
+Parameter       Type    Description
+=============== ======= ============================================================================
+line            *str*   MAC address line
+hex             *str*   MAC address in hex format
+cisco           *str*   MAC address in Cisco format
+colon           *str*   MAC address in colon delimiter format
+integer         *int*   MAC address in integer format
 =============== ======= ============================================================================
 
 

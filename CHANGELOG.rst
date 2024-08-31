@@ -4,6 +4,14 @@
 CHANGELOG
 =========
 
+0.16.0 (2024-09-01)
+-------------------
+
+**Added:** generate_intfs(), generate_names(), names_to_range(), range_to_intfs(), range_to_names()
+
+**Changed:** intfrange() > intfs_to_range()
+
+
 0.15.0 (2024-08-20)
 -------------------
 

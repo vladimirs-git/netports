@@ -1,4 +1,4 @@
-"""An object of MAC address."""
+"""An object representing a MAC address in different formats."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from netports.types_ import LStr
 
 @total_ordering
 class Mac(BaseModel):
-    """An object of MAC address."""
+    """An object representing a MAC address in different formats."""
 
     line: str = Field(description="MAC address line")
     hex: str = Field(default="", description="MAC address in hex format")
