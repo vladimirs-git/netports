@@ -199,8 +199,8 @@ def names_to_range(names: LStr, fmt: str = "long") -> str:
     :rtype: str
 
     :example:
-        intfs_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"], "long") -> "Ethernet1/1-3"
-        intfs_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"], "short") -> "Eth1/1-3"
+        names_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"], "long") -> "Ethernet1/1-3"
+        names_to_range(["Ethernet1/1", "Ethernet1/2", "Ethernet1/3"], "short") -> "Eth1/1-3"
     """
     intf_gm = IntfGM(names)
     ranges = intf_gm.ranges(fmt=fmt)
@@ -271,8 +271,8 @@ def range_to_names(line: str, base: str = "") -> LStr:
     :rtype: List[str]
 
     :example:
-        range_to_intfs("1/1-3,1/5") -> ["1/1", "1/2", "1/3", "1/5"]
-        range_to_intfs("1/1-1/3,1/5") -> ["1/1", "1/2", "1/3", "1/5"]
+        range_to_names("1/1-3,1/5") -> ["1/1", "1/2", "1/3", "1/5"]
+        range_to_names("1/1-1/3,1/5") -> ["1/1", "1/2", "1/3", "1/5"]
     """
     intfs: LIntf = range_to_intfs(line=line, base=base)
     return [o.line for o in intfs]
