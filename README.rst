@@ -1,8 +1,8 @@
 
 .. image:: https://img.shields.io/pypi/v/netports.svg
    :target: https://pypi.python.org/pypi/netports
-.. image:: https://img.shields.io/pypi/pyversions/netports.svg
-   :target: https://pypi.python.org/pypi/netports
+.. image:: https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue.svg
+   :target: https://pypi.python.org/pypi/logger-color
 
 
 netports
@@ -15,7 +15,7 @@ Recommended for scripting in telecommunications networks.
 Requirements
 ------------
 
-Python >=3.8
+Python >=3.8,<3.12
 
 
 Installation
