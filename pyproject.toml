@@ -17,10 +17,10 @@ classifiers = [
     "Natural Language :: English",
 ]
 
-## FIX: Package docutils (0.21.post1) not found. #9293
-#[[tool.poetry.source]]
-#name = "pypi-public"
-#url = "https://pypi.org/simple/"
+# FIX: Package docutils (0.21.post1) not found. #9293
+[[tool.poetry.source]]
+name = "pypi-public"
+url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -33,7 +33,7 @@ pytest = "^8.3.2"
 
 [tool.poetry.group.dev.dependencies]
 dictdiffer = "^0.9.0"
-mypy = "^2.0.1"
+mypy = "^1.14.0"
 pygments = "^2.16.1"
 pylint = "^3.2.6"
 pytest = "^8.3.2"
