@@ -1,0 +1,36 @@
+name: Run tests on push event
+on:
+  push:
+    # Triggered by a push event on the following branches
+    branches: [ main ]
+    # Triggered by a tag that starts with "v"
+    tags: [ v* ]
+  # Triggered by any pull requests
+  pull_request: ~
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+         python-version: [ "3.8" ]
+         # python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13" ]
+    steps:
+      # Checkout the code from the following branch
+      - uses: actions/checkout@v2
+
+      # Set up the Python environment (multiple versions) on the virtual machine
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --with test
+
+      - name: Run tests
+        run: poetry run pytest -v -m "not skip" ./tests
+

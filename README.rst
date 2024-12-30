@@ -31,13 +31,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.16.0.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.16.1.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.16.0
+    pip install git+https://github.com/vladimirs-git/netports@0.16.1
 
 
 .. contents:: **Contents**
