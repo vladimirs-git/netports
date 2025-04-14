@@ -18,8 +18,9 @@ class Mac(BaseModel):
 
     line: str = Field(description="MAC address line")
     hex: str = Field(default="", description="MAC address in hex format")
-    cisco: str = Field(default="", description="MAC address in Cisco format")
+    cisco: str = Field(default="", description="MAC address in cisco_ios format")
     colon: str = Field(default="", description="MAC address in colon delimiter format")
+    hp: str = Field(default="", description="MAC address in hp_procurve format")
     integer: int = Field(default=0, description="MAC address in integer format")
 
     def __init__(self, *args, **kwargs):
@@ -73,6 +74,7 @@ class Mac(BaseModel):
         """
         self._parse_hex()
         self._parse_cisco()
+        self._parse_hp()
         self._parse_colon()
         self._parse_integer()
 
@@ -83,7 +85,7 @@ class Mac(BaseModel):
         :raises NetportsValueError: If the line does not match the MAC address pattern.
         """
         # splitter
-        expected = ":."
+        expected = ":.-"
         splitter = set(self.line).difference(set(expected))
         if splitter := splitter.difference(set(string.hexdigits)):
             raise NetportsValueError(f"Invalid {splitter=!r}, {expected=}.")
@@ -96,7 +98,7 @@ class Mac(BaseModel):
         self.hex = "".join(hexdigits)
 
     def _parse_cisco(self) -> None:
-        """Convert MAC address to Cisco format.
+        """Convert MAC address to cisco_ios format.
 
         :return: None. Update data in object.
         """
@@ -106,6 +108,17 @@ class Mac(BaseModel):
             self.hex[8:],
         ]
         self.cisco = ".".join(items)
+
+    def _parse_hp(self) -> None:
+        """Convert MAC address to hp_procurve format.
+
+        :return: None. Update data in object.
+        """
+        items = [
+            self.hex[:6],
+            self.hex[6:],
+        ]
+        self.hp = "-".join(items)
 
     def _parse_colon(self) -> None:
         """Convert MAC address to colon delimiter format.

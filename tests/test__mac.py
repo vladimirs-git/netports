@@ -15,6 +15,7 @@ from tests import params__mac as p
 @pytest.mark.parametrize("line, expected", [
     (p.ZERO, p.ZERO_D),
     (p.CISCO, p.CISCO_D),
+    (p.HP, p.HP_D),
     (p.COLON, p.COLON_D),
     (f"\t{p.ZERO}", NetportsValueError),
     (0, NetportsValueError),

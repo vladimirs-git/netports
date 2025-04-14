@@ -31,13 +31,13 @@ or install the package from github.com release
 
 .. code:: bash
 
-    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.16.1.tar.gz
+    pip install https://github.com/vladimirs-git/netports/archive/refs/tags/0.17.0.tar.gz
 
 or install the package from github.com repository
 
 .. code:: bash
 
-    pip install git+https://github.com/vladimirs-git/netports@0.16.1
+    pip install git+https://github.com/vladimirs-git/netports@0.17.0
 
 
 .. contents:: **Contents**
@@ -647,7 +647,8 @@ Parameter       Type    Description
 =============== ======= ============================================================================
 line            *str*   MAC address line
 hex             *str*   MAC address in hex format
-cisco           *str*   MAC address in Cisco format
+cisco           *str*   MAC address in cisco_ios format
+hp              *str*   MAC address in hp_procurve format
 colon           *str*   MAC address in colon delimiter format
 integer         *int*   MAC address in integer format
 =============== ======= ============================================================================
