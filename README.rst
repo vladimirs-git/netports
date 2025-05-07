@@ -66,10 +66,10 @@ Raises
     *NetportsValueError* If strict=True and the port is outside the valid range.
 
 
-check_port()
-............
+check_ports()
+.............
 **check_ports(ports, strict)**
-heck TCP/UDP ports in the range 1 to 65535.
+Check TCP/UDP ports in the range 1 to 65535.
 
 =============== =========================== ============================================================================
 Parameter       Type                        Description
