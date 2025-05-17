@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netports"
-version = "0.17.0"
+version = "0.17.1"
 description = "Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces"
 authors = ["Vladimirs Prusakovs <vladimir.prusakovs@gmail.com>"]
 readme = "README.rst"
@@ -25,8 +25,8 @@ url = "https://pypi.org/simple/"
 [tool.poetry.dependencies]
 python = "^3.8"
 #
-packaging = "^23.2"
-pydantic = "^2.8.2"
+packaging = ">=23.2"
+pydantic = ">=2.8.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.2"
@@ -53,7 +53,7 @@ test = ["pytest"]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/vladimirs-git/netports/issues"
-"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.17.0.tar.gz"
+"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.17.1.tar.gz"
 
 [tool.mypy]
 python_version = "3.8"
