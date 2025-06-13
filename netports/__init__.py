@@ -23,6 +23,7 @@ from netports.intf_map import (
     shorts,
 )
 from netports.ip import IP_NAMES, IP_NUMBERS, iip, sip, ip_pairs
+from netports.ipv4 import IPv4
 from netports.item import Item
 from netports.mac import Mac
 from netports.ports import inumbers, parse_range, snumbers
@@ -34,6 +35,7 @@ from netports.vlan import ivlan, svlan
 __all__ = [
     "IP_NAMES",
     "IP_NUMBERS",
+    "IPv4",
     "Intf",
     "IntfGM",
     "Item",
