@@ -635,6 +635,7 @@ Parameter       Type    Description
 =============== ======= ============================================================================
 cidr            *str*   Address in CIDR notation with host data under musk bits.
 strict          *str*   If True, IP must be valid network address (not host address).
+=============== ======= ============================================================================
 
 
 Attributes
@@ -646,7 +647,6 @@ Attributes      Type         Description
 addr            *str*        IPv4 address with prefixlen, A.B.C.D/LEN.
 ip              *str*        IPv4 address without prefixlen, A.B.C.D.
 net             *str*        IPv4 network with prefixlen, A.B.C.D/LEN.
-net_            *str*        IPv4 network without prefixlen, A.B.C.D.
 prefixlen       *int*        IPv4 network with prefixlen, A.B.C.D/LEN.
 =============== ============ =======================================================================
 
