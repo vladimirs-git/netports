@@ -1,4 +1,5 @@
 """IntfGM - Interfaces Group Manager."""
+
 from vhelpers import vre
 
 from netports.intf import ULIntf, LIntf, Intf, LStr
@@ -122,6 +123,7 @@ class IntfGM:
 
 # ============================ functions =============================
 
+
 def generate_intfs(start: str, end: str, base: str = "") -> LIntf:
     """Generate list of Intf objects from start to end.
 
@@ -173,7 +175,7 @@ def generate_names(start: str, end: str, base: str = "") -> LStr:
         raise ValueError("Invalid parameter `end`, digit is expected.")
     # base
     if base_first != base_last:
-        raise ValueError(f"Invalid parameters `start` and `end`. The same base name is expected.")
+        raise ValueError("Invalid parameters `start` and `end`. The same base name is expected.")
 
     names: LStr = []
 

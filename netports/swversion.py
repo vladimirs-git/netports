@@ -1,4 +1,5 @@
 """Software Version."""
+from typing import Any
 
 from packaging.version import Version
 
@@ -32,12 +33,12 @@ class SwVersion(Version):
     def __hash__(self) -> int:
         return hash(str(self))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other) -> bool:
         if not isinstance(other, SwVersion):
             return False
         return self._text == other._text
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
     # =========================== property ===========================

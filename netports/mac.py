@@ -151,6 +151,7 @@ ULMac = Optional[Union[str, LStr, Mac, LMac]]
 
 # ============================ functions =============================
 
+
 def _arg_line(*args, **kwargs) -> str:
     """Extract MAC address line from arguments or keyword arguments.
 

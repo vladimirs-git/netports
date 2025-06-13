@@ -4,6 +4,7 @@ import random
 from typing import Any
 
 import pytest
+
 from netports import intf_gm
 from netports.intf import Intf
 from netports.intf_gm import IntfGM

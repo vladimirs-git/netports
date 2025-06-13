@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netports"
-version = "0.17.1"
+version = "0.18.0"
 description = "Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces"
 authors = ["Vladimirs Prusakovs <vladimir.prusakovs@gmail.com>"]
 readme = "README.rst"
@@ -27,33 +27,31 @@ python = "^3.8"
 #
 packaging = ">=23.2"
 pydantic = ">=2.8.2"
+vhelpers = "^0.5.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.2"
 
 [tool.poetry.group.dev.dependencies]
 dictdiffer = "^0.9.0"
-mypy = "^1.14.0"
+mypy = "^1.14.1"
 pygments = "^2.16.1"
-pylint = "^3.2.6"
-pytest = "^8.3.2"
+pylint = "^3.2.7"
+pytest = "^8.3.5"
 pytest-cov = "^5.0.0"
 restructuredtext-lint = "^1.4.0"
-ruff = "^0.6.1"
+ruff = "^0.11.13"
 twine = "^6.1.0"
 types-tabulate = "^0.9.0.20240106"
 typing-extensions = "^4.12.2"
-vhelpers = "^0.3.0"
 
-[tool.setuptools.package-data]
-netports = ["py.typed"]
 
 [tool.poetry.extras]
 test = ["pytest"]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/vladimirs-git/netports/issues"
-"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.17.1.tar.gz"
+"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/0.18.0.tar.gz"
 
 [tool.mypy]
 python_version = "3.8"

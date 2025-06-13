@@ -242,7 +242,7 @@ IP_NUMBERS: DiAny = {
     132: {
         "number": 132,
         "name": "sctp",
-        "description": "Stream Control Transmission Protocol, " "RFC 4960",
+        "description": "Stream Control Transmission Protocol, RFC 4960",
     },
     133: {"number": 133, "name": "fc", "description": "Fibre Channel"},
     134: {
