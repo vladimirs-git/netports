@@ -6,8 +6,9 @@ import pytest
 from netports.ipv4 import IPv4
 
 
-def test__init():
+def test__init__():
     """IPv4.__init__()."""
+    # cidr format
     ipv4 = IPv4("10.0.0.1/24")
     assert ipv4.addr == "10.0.0.1/24"
     assert ipv4.ip == "10.0.0.1"
@@ -33,15 +34,34 @@ def test__init():
     assert ipv4.net_wildcard == "10.0.0.0 0.0.0.255"
     assert ipv4.net_mask == "10.0.0.0 255.255.255.0"
 
-    with pytest.raises(ValueError):
-        IPv4("10.0.0.1/24", strict=True)
-
     ipv4 = IPv4("10.0.0.1/32")
     assert ipv4.ip == "10.0.0.1"
     assert ipv4.addr == "10.0.0.1/32"
     assert ipv4.net == "10.0.0.1/32"
     assert ipv4.prefixlen == 32
     assert ipv4.is_private is True
+
+
+@pytest.mark.parametrize("cidr, strict, expected", [
+    ("10.0.0.0/24", False, "10.0.0.0/24"),
+    ("10.0.0.1/24", False, "10.0.0.1/24"),
+    ("10.0.0.0 255.255.255.0", False, "10.0.0.0/24"),
+    ("10.0.0.1 255.255.255.0", False, "10.0.0.1/24"),
+    # strict
+    ("10.0.0.0/24", True, "10.0.0.0/24"),
+    ("10.0.0.1/24", True, ValueError),
+    ("10.0.0.0 255.255.255.0", True, "10.0.0.0/24"),
+    ("10.0.0.1 255.255.255.0", True, ValueError),
+])
+def test__init__formats(cidr, strict, expected):
+    """IPv4.__init__() cidr, network mask formats."""
+    if isinstance(expected, str):
+        actual = str(IPv4(cidr=cidr, strict=strict))
+
+        assert actual == expected
+    else:
+        with pytest.raises(expected):
+            IPv4(cidr=cidr, strict=strict)
 
 
 @pytest.mark.parametrize("cidr1, cidr2, expected", [

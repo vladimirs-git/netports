@@ -6,6 +6,10 @@ from functools import total_ordering
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address
 from typing import List
 
+from vhelpers import vre
+
+RE_IP = "\d+\.\d+\.\d+\.\d+"
+
 
 @total_ordering
 class IPv4:
@@ -18,9 +22,7 @@ class IPv4:
         :param strict: If True, IP must be valid network address (not host address).
         :raises ValueError: If strict is True and a network address is not supplied.
         """
-        if strict:
-            IPv4Network(cidr, strict=strict)
-        self.interface = IPv4Interface(cidr)
+        self.interface = _init_cidr(cidr, strict)
 
     def __repr__(self):
         """Representation of the object."""
@@ -163,3 +165,22 @@ class IPv4:
 
 
 LIPv4 = List[IPv4]
+
+
+def _init_cidr(cidr: str, strict: bool) -> IPv4Interface:
+    """Initialize a CIDR address, convert network with mask to A.B.C.D/LEN format.
+
+    :param cidr: CIDR address or network with mask.
+    :param strict: If True, IP must be valid network address (not host address).
+    :return: IPv4Interface object representing the CIDR address.
+    :raises ValueError: If strict is True and a network address is not supplied.
+    """
+    addr, mask = vre.find2(rf"({RE_IP})\D({RE_IP})", cidr)
+    if addr and mask:
+        network = IPv4Network(f"0.0.0.0/{mask}")
+        prefixlen = network.prefixlen
+        cidr = f"{addr}/{prefixlen}"
+    if strict:
+        IPv4Network(cidr, strict=strict)
+    interface = IPv4Interface(cidr)
+    return interface
