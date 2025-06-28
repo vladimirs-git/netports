@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from netports.exceptions import NetportsValueError
 from netports.types_ import LStr
 
+DEFAULT_MAC = "000000000000"
 
 @total_ordering
 class Mac(BaseModel):
@@ -129,10 +130,12 @@ def _validate_addr(*args, **kwargs) -> str:
     """
     addr = ""
     if args:
-        addr = str(args[0])
+        addr = str(args[0]).strip()
     if not addr:
-        addr = str(kwargs.get("addr") or "")
-    return addr.strip()
+        addr = str(kwargs.get("addr") or "").strip()
+    if not addr:
+        addr = DEFAULT_MAC
+    return addr
 
 
 def _validate_hex(addr: str) -> str:

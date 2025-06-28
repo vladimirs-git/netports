@@ -17,11 +17,13 @@ def ipv4(addr: str) -> IPv4:
     ("10.0.0.1/24", False, "10.0.0.1/24"),
     ("10.0.0.0 255.255.255.0", False, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", False, "10.0.0.1/24"),
+    ("", False, "0.0.0.0/32"),
     # strict
     ("10.0.0.0/24", True, "10.0.0.0/24"),
     ("10.0.0.1/24", True, ValueError),
     ("10.0.0.0 255.255.255.0", True, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", True, ValueError),
+    ("", True, "0.0.0.0/32"),
 ])
 def test__init__formats(addr, strict, expected):
     """IPv4.__init__() cidr, network mask formats."""
@@ -308,7 +310,7 @@ def test__net_wildcard(ipv4, addr, splitter, expected):
     (["10.0.0.1/255.255.255.0"], {}, "10.0.0.1/24"),  # address mask
     (["10.0.0.1/0.0.0.255"], {}, "10.0.0.1/24"),  # wildcard
     (["10.0.0.1/0.1.0.255"], {}, ValueError),  # complex wildcard
-    ([], {}, ValueError),
+    ([], {}, "0.0.0.0/32"),
     # addr
     ([], {"addr": "10.0.0.0"}, "10.0.0.0/32"),  # address
     ([], {"addr": "10.0.0.1/24"}, "10.0.0.1/24"),  # address with prefixlen
@@ -321,7 +323,7 @@ def test__net_wildcard(ipv4, addr, splitter, expected):
     (["10.0.0.1/255.255.255.0"], {"strict": True}, ValueError),  # address mask
     (["10.0.0.1/0.0.0.255"], {"strict": True}, ValueError),  # wildcard
     (["10.0.0.1/0.1.0.255"], {"strict": True}, ValueError),  # complex wildcard
-    ([], {"strict": True}, ValueError),
+    ([], {"strict": True}, "0.0.0.0/32"),
     # addr strict
     ([], {"addr": "10.0.0.0", "strict": True}, "10.0.0.0/32"),  # address
     ([], {"addr": "10.0.0.1/24", "strict": True}, ValueError),  # address with prefixlen

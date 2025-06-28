@@ -188,10 +188,11 @@ def _validate_addr(*args, **kwargs) -> str:
     """
     addr = ""
     if args:
-        addr = args[0]
+        addr = str(args[0]).strip()
     if not addr:
-        addr = str(kwargs.get("addr") or "")
-    addr = addr.strip()
+        addr = str(kwargs.get("addr") or "").strip()
+    if not addr:
+        addr = "0.0.0.0"
 
     strict = bool(kwargs.get("strict"))
 
