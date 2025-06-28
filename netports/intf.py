@@ -17,7 +17,7 @@ class Intf:
     """An object of interface name, that can contain up to 6 indexes."""
 
     def __init__(self, line: str = "", **kwargs):
-        """Init Intf.
+        """Initialize Intf.
 
         :param line: Interface name that can contain up to 4 indexes.
         :type line: str
@@ -30,28 +30,35 @@ class Intf:
         self._splitter = str(kwargs.get("splitter") or SPLITTER)
         self._line = self._init_line(line)
 
-    def __repr__(self):
-        """__repr__."""
+    def __repr__(self) -> str:
+        """Representation of the object."""
         class_ = self.__class__.__name__
         return f"{class_}({self.line!r})"
 
-    def __str__(self):
-        """__str__."""
-        return self.line
+    def __str__(self) -> str:
+        """String representation."""
+        return str(self.line)
 
     def __hash__(self) -> int:
-        """__hash__."""
+        """Hash value of the object."""
         return hash((self.id0, self.id1, self.id2, self.id3, self.id4, self.id5, self.id6))
 
     def __eq__(self, other) -> bool:
-        """== equality."""
+        """Check if two objects are equal.
+
+        :param other: Another object to compare.
+        :return: True if objects are equal, False otherwise.
+        """
         if self.__class__ == other.__class__:
             if self.__hash__() == other.__hash__():
                 return True
         return False
 
     def __lt__(self, other) -> bool:
-        """< less than."""
+        """Compare two objects.
+
+        :param other: Another object to compare with.
+        """
         if self.__class__ == other.__class__:
             if self.id0 != other.id0:
                 return self.id0 < other.id0

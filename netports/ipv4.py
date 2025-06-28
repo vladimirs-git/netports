@@ -10,7 +10,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from vhelpers import vre
 
-RE_IP = "\d+\.\d+\.\d+\.\d+"
+RE_IP = r"\d+\.\d+\.\d+\.\d+"
 
 
 @total_ordering
@@ -23,14 +23,14 @@ class IPv4(BaseModel):
     len: int = Field(default="", description="Prefix length")
 
     def __init__(self, *args, **kwargs):
-        """Initialize IPv4 object with the given CIDR notation.
+        """Initialize IPv4.
 
         :param addr: IP address in CIDR notation with host data under mask bits.
         :param strict: If True, IP must be valid network address (not host address).
         :raises ValueError: If the CIDR address is invalid
             or cannot be converted from network with mask format.
         """
-        addr: str = _validate_addr(*args, **kwargs)
+        addr = _validate_addr(*args, **kwargs)
         super().__init__(addr=addr)
         self._interface = IPv4Interface(address=addr)
         self.ip = str(self._interface.ip)
@@ -42,12 +42,9 @@ class IPv4(BaseModel):
         class_ = self.__class__.__name__
         return f"{class_}('{self.addr}')"
 
-    def __str__(self):
-        """String representation.
-
-        :return: IPv4 address with prefixlen, A.B.C.D/LEN.
-        """
-        return self.addr
+    def __str__(self) -> str:
+        """String representation."""
+        return str(self.addr)
 
     def __hash__(self) -> int:
         """Hash value of the object."""
@@ -206,7 +203,7 @@ def _validate_addr(*args, **kwargs) -> str:
     else:
         prefix, mask = vre.find2(rf"^({RE_IP})\D({RE_IP})$", addr)
         if not (prefix and mask):
-            raise ValueError(f"Invalid address format")
+            raise ValueError("Invalid address format")
         network = IPv4Network(f"0.0.0.0/{mask}")
         prefixlen = network.prefixlen
         addr = f"{prefix}/{prefixlen}"

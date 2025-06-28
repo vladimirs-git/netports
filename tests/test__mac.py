@@ -2,7 +2,7 @@
 
 from typing import Any
 
-import dictdiffer
+import dictdiffer  # type: ignore[import-untyped]
 import pytest
 
 from netports import NetportsValueError
@@ -140,7 +140,7 @@ def test__hp_procurve(mac, addr, expected):
 
 @pytest.mark.parametrize("args, kwargs, expected", [
     (["ABCDEF123456"], {}, "ABCDEF123456"),
-    ([], {"addr": f" abcdef123456"}, "abcdef123456"),
+    ([], {"addr": " abcdef123456"}, "abcdef123456"),
     ([], {}, ""),
 ])
 def test__validate_addr(args, kwargs, expected):

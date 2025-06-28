@@ -25,33 +25,40 @@ class Mac(BaseModel):
 
         :param line: MAC address line.
         """
-        addr: str = _validate_addr(*args, **kwargs)
-        hex_: str = _validate_hex(addr)
+        addr = _validate_addr(*args, **kwargs)
+        hex_ = _validate_hex(addr)
         integer = int(hex_, 16)
         super().__init__(addr=addr, hex=hex_, integer=integer)
 
-    def __repr__(self):
-        """__repr__."""
+    def __repr__(self) -> str:
+        """Representation of the object."""
         class_ = self.__class__.__name__
         return f"{class_}({self.addr!r})"
 
-    def __str__(self):
-        """__str__."""
-        return self.addr
+    def __str__(self) -> str:
+        """String representation."""
+        return str(self.addr)
 
     def __hash__(self) -> int:
-        """__hash__."""
+        """Hash value of the object."""
         return hash(self.integer)
 
     def __eq__(self, other) -> bool:
-        """== equality."""
+        """Check if two objects are equal.
+
+        :param other: Another object to compare.
+        :return: True if objects are equal, False otherwise.
+        """
         if self.__class__ == other.__class__:
             if self.__hash__() == other.__hash__():
                 return True
         return False
 
     def __lt__(self, other) -> bool:
-        """< less than."""
+        """Compare two objects.
+
+        :param other: Another object to compare with.
+        """
         if self.__class__ == other.__class__:
             return self.integer < other.integer
         return False

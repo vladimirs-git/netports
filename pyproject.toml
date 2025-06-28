@@ -78,6 +78,7 @@ disable = [
     "too-few-public-methods",
     "too-many-public-methods",
     "unsubscriptable-object",
+    "unused-argument",
     "unused-import",
     "use-dict-literal",
     "use-implicit-booleaness-not-comparison",

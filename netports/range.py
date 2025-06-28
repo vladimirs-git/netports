@@ -16,7 +16,7 @@ class Range:
     """Range, object that represents ports range as str and as List[int]."""
 
     def __init__(self, items: StrIInt = "", **kwargs):
-        """Init Range.
+        """Initialize Range.
 
         :param items: Range of numbers. Numbers can be unsorted and duplicated.
         :type items: str or List[int]
@@ -48,10 +48,8 @@ class Range:
 
     # ======================= special methods ========================
 
-    def __str__(self):
-        return self.line
-
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Representation of the object."""
         splitter = self.splitter
         range_splitter = self.range_splitter
         params = [
@@ -63,18 +61,30 @@ class Range:
         class_ = self.__class__.__name__
         return f"{class_}({params_})"
 
+    def __str__(self) -> str:
+        """String representation."""
+        return self.line
+
     def __hash__(self) -> int:
+        """Hash value of the object."""
         return tuple(self.items).__hash__()
 
     def __eq__(self, other) -> bool:
-        """== Equality."""
+        """Check if two objects are equal.
+
+        :param other: Another object to compare.
+        :return: True if objects are equal, False otherwise.
+        """
         if self.__class__ == other.__class__:
             if self.__hash__() == other.__hash__():
                 return True
         return False
 
     def __lt__(self, other: Range) -> bool:
-        """< Less than."""
+        """Compare two objects.
+
+        :param other: Another object to compare with.
+        """
         if self.__class__ == other.__class__:
             self_len = len(self.items)
             other_len = len(other.items)
@@ -121,7 +131,7 @@ class Range:
         return self.numbers()[idx]
 
     def __iter__(self):
-        """Iterator"""
+        """Iterator."""
         return self
 
     def __len__(self) -> int:
