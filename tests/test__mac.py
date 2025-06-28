@@ -18,6 +18,7 @@ def mac(addr: str) -> Mac:
 
 
 @pytest.mark.parametrize("addr, expected", [
+    ("", p.ZERO_D),
     ("000000000000", p.ZERO_D),
     ("FFFFFFFFFFFF", p.FFFFFF_D),
 ])
@@ -30,6 +31,7 @@ def test__init__(mac, addr, expected: Any):
 
 
 @pytest.mark.parametrize("addr, expected", [
+    ("", "Mac('000000000000')"),
     ("0000.0000.0000", "Mac('0000.0000.0000')"),
 ])
 def test__repr__(mac, addr, expected):
@@ -39,6 +41,7 @@ def test__repr__(mac, addr, expected):
 
 
 @pytest.mark.parametrize("addr, expected", [
+    ("", "000000000000"),
     ("0000.0000.0000", "0000.0000.0000"),
 ])
 def test__str__(mac, addr, expected):
@@ -141,7 +144,7 @@ def test__hp_procurve(mac, addr, expected):
 @pytest.mark.parametrize("args, kwargs, expected", [
     (["ABCDEF123456"], {}, "ABCDEF123456"),
     ([], {"addr": " abcdef123456"}, "abcdef123456"),
-    ([], {}, ""),
+    ([], {}, "000000000000"),
 ])
 def test__validate_addr(args, kwargs, expected):
     """mac._validate_addr()."""

@@ -17,14 +17,16 @@ def ipv4(addr: str) -> IPv4:
     ("10.0.0.1/24", False, "10.0.0.1/24"),
     ("10.0.0.0 255.255.255.0", False, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", False, "10.0.0.1/24"),
+    ("", False, "0.0.0.0/32"),
     # strict
     ("10.0.0.0/24", True, "10.0.0.0/24"),
     ("10.0.0.1/24", True, ValueError),
     ("10.0.0.0 255.255.255.0", True, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", True, ValueError),
+    ("", True, "0.0.0.0/32"),
 ])
-def test__init__formats(addr, strict, expected):
-    """IPv4.__init__() cidr, network mask formats."""
+def test__init__(addr, strict, expected):
+    """IPv4.__init__()."""
     if isinstance(expected, str):
         actual = str(IPv4(addr=addr, strict=strict))
 
@@ -32,6 +34,24 @@ def test__init__formats(addr, strict, expected):
     else:
         with pytest.raises(expected):
             IPv4(addr=addr, strict=strict)
+
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.0", "IPv4('10.0.0.0/32')"),
+])
+def test__repr__(ipv4, addr, expected):
+    """Test IPv4.__repr__()."""
+    actual = repr(ipv4)
+    assert actual == expected
+
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.0", "10.0.0.0/32"),
+])
+def test__str__(ipv4, addr, expected):
+    """Test IPv4.__str__()."""
+    actual = str(ipv4)
+    assert actual == expected
 
 
 @pytest.mark.parametrize("addr1, addr2, expected", [
@@ -45,7 +65,6 @@ def test__init__formats(addr, strict, expected):
 def test__eq__(addr1, addr2, expected):
     """Test IPv4.__eq__()."""
     actual = IPv4(addr1) == IPv4(addr2)
-
     assert actual is expected
 
 
@@ -88,7 +107,43 @@ def test__lt__sorting(addrs, expected):
 def test__contains__(subnet, supernet, expected):
     """IPv4.__contains__()."""
     actual = IPv4(subnet) in IPv4(supernet)
+    assert actual == expected
 
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.1/24", "10.0.0.1"),
+])
+def test__ip(ipv4, addr, expected):
+    """Test IPv4.ip()."""
+    actual = ipv4.ip
+    assert actual == expected
+
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.1/32", "10.0.0.1"),
+    ("10.0.0.1/24", "10.0.0.0"),
+])
+def test__net(ipv4, addr, expected):
+    """Test IPv4.net()."""
+    actual = ipv4.net
+    assert actual == expected
+
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.1/24", 24),
+])
+def test__len(ipv4, addr, expected):
+    """Test IPv4.len()."""
+    actual = ipv4.len
+    assert actual == expected
+
+
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.1/24", "10.0.0.0/24"),
+])
+def test__prefix(ipv4, addr, expected):
+    """Test IPv4.prefix()."""
+    actual = ipv4.prefix
     assert actual == expected
 
 
@@ -101,7 +156,7 @@ def test__contains__(subnet, supernet, expected):
 ])
 def test__is_address(ipv4, addr, expected):
     """IPv4.is_address()."""
-    actual = ipv4.is_address()
+    actual = ipv4.is_address
     assert actual == expected
 
 
@@ -112,7 +167,7 @@ def test__is_address(ipv4, addr, expected):
 ])
 def test__is_prefix(ipv4, addr, expected):
     """IPv4.is_prefix()."""
-    actual = ipv4.is_prefix()
+    actual = ipv4.is_prefix
     assert actual == expected
 
 
@@ -128,7 +183,7 @@ def test__is_prefix(ipv4, addr, expected):
 ])
 def test__is_global(ipv4, addr, expected):
     """IPv4.is_global()."""
-    actual = ipv4.is_global()
+    actual = ipv4.is_global
     assert actual == expected
 
 
@@ -143,7 +198,7 @@ def test__is_global(ipv4, addr, expected):
 ])
 def test__is_link_local(ipv4, addr, expected):
     """IPv4.is_link_local()."""
-    actual = ipv4.is_link_local()
+    actual = ipv4.is_link_local
     assert actual == expected
 
 
@@ -155,7 +210,7 @@ def test__is_link_local(ipv4, addr, expected):
 ])
 def test__is_loopback(ipv4, addr, expected):
     """IPv4.is_loopback()."""
-    actual = ipv4.is_loopback()
+    actual = ipv4.is_loopback
     assert actual == expected
 
 
@@ -167,7 +222,7 @@ def test__is_loopback(ipv4, addr, expected):
 ])
 def test__is_multicast(ipv4, addr, expected):
     """IPv4.is_multicast()."""
-    actual = ipv4.is_multicast()
+    actual = ipv4.is_multicast
     assert actual == expected
 
 
@@ -181,7 +236,7 @@ def test__is_multicast(ipv4, addr, expected):
 ])
 def test__is_private(ipv4, addr, expected):
     """IPv4.is_private()."""
-    actual = ipv4.is_private()
+    actual = ipv4.is_private
     assert actual == expected
 
 
@@ -191,7 +246,7 @@ def test__is_private(ipv4, addr, expected):
 ])
 def test__is_reserved(ipv4, addr, expected):
     """IPv4.is_reserved()."""
-    actual = ipv4.is_reserved()
+    actual = ipv4.is_reserved
     assert actual == expected
 
 
@@ -201,7 +256,7 @@ def test__is_reserved(ipv4, addr, expected):
 ])
 def test__is_unspecified(ipv4, addr, expected):
     """IPv4.is_unspecified()."""
-    actual = ipv4.is_unspecified()
+    actual = ipv4.is_unspecified
     assert actual == expected
 
 
@@ -213,7 +268,7 @@ def test__is_unspecified(ipv4, addr, expected):
 ])
 def test__hostmask(ipv4, addr, expected):
     """IPv4.hostmask()."""
-    hostmask = ipv4.hostmask()
+    hostmask = ipv4.hostmask
 
     actual = hostmask.compressed
     assert actual == expected
@@ -225,7 +280,7 @@ def test__hostmask(ipv4, addr, expected):
 ])
 def test__netmask(ipv4, addr, expected):
     """IPv4.netmask()."""
-    netmask = ipv4.netmask()
+    netmask = ipv4.netmask
 
     actual = netmask.compressed
     assert actual == expected
@@ -237,7 +292,7 @@ def test__netmask(ipv4, addr, expected):
 ])
 def test__network(ipv4, addr, expected):
     """IPv4.network()."""
-    network = ipv4.network()
+    network = ipv4.network
 
     actual = network.compressed
     assert actual == expected
@@ -278,16 +333,6 @@ def test__net_mask(ipv4, addr, splitter, expected):
     assert actual == expected
 
 
-@pytest.mark.parametrize("addr, expected", [
-    ("10.0.0.1/32", "10.0.0.1"),
-    ("10.0.0.1/24", "10.0.0.0"),
-])
-def test__net(ipv4, addr, expected):
-    """IPv4.net_wildcard()."""
-    actual = ipv4.net()
-    assert actual == expected
-
-
 @pytest.mark.parametrize("addr, splitter, expected", [
     ("10.0.0.1/32", " ", "10.0.0.1 0.0.0.0"),
     ("10.0.0.1/24", " ", "10.0.0.0 0.0.0.255"),
@@ -308,7 +353,7 @@ def test__net_wildcard(ipv4, addr, splitter, expected):
     (["10.0.0.1/255.255.255.0"], {}, "10.0.0.1/24"),  # address mask
     (["10.0.0.1/0.0.0.255"], {}, "10.0.0.1/24"),  # wildcard
     (["10.0.0.1/0.1.0.255"], {}, ValueError),  # complex wildcard
-    ([], {}, ValueError),
+    ([], {}, "0.0.0.0/32"),
     # addr
     ([], {"addr": "10.0.0.0"}, "10.0.0.0/32"),  # address
     ([], {"addr": "10.0.0.1/24"}, "10.0.0.1/24"),  # address with prefixlen
@@ -321,7 +366,7 @@ def test__net_wildcard(ipv4, addr, splitter, expected):
     (["10.0.0.1/255.255.255.0"], {"strict": True}, ValueError),  # address mask
     (["10.0.0.1/0.0.0.255"], {"strict": True}, ValueError),  # wildcard
     (["10.0.0.1/0.1.0.255"], {"strict": True}, ValueError),  # complex wildcard
-    ([], {"strict": True}, ValueError),
+    ([], {"strict": True}, "0.0.0.0/32"),
     # addr strict
     ([], {"addr": "10.0.0.0", "strict": True}, "10.0.0.0/32"),  # address
     ([], {"addr": "10.0.0.1/24", "strict": True}, ValueError),  # address with prefixlen
