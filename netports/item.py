@@ -26,30 +26,39 @@ class Item:
         """
         self.line = line
 
-    def __str__(self):
+    def __repr__(self) -> str:
+        """Representation of the object."""
+        class_ = self.__class__.__name__
+        return f"{class_}({self.line!r})"
+
+    def __str__(self) -> str:
+        """String representation."""
         return self.line
 
-    def __repr__(self):
-        name = self.__class__.__name__
-        return f"{name}({self.line!r})"
-
     def __hash__(self) -> int:
+        """Hash value of the object."""
         return hash((self.min, self.max))
 
     def __eq__(self, other) -> bool:
-        """== equality."""
-        if self.__class__ == other.__class__:
-            if self.__hash__() == other.__hash__():
-                return True
-        return False
+        """Check if two objects are equal.
+
+        :param other: Another object to compare.
+        :return: True if objects are equal, False otherwise.
+        """
+        if self.__class__ != other.__class__:
+            return False
+        return self.__hash__() == other.__hash__()
 
     def __lt__(self, other) -> bool:
-        """< less than."""
-        if self.__class__ == other.__class__:
-            if self.min != other.min:
-                return self.min < other.min
-            return self.max < other.max
-        return self.line < str(other)
+        """Compare two objects.
+
+        :param other: Another object to compare with.
+        """
+        if self.__class__ != other.__class__:
+            return self.line < str(other)
+        if self.min != other.min:
+            return self.min < other.min
+        return self.max < other.max
 
     # =========================== property ===========================
 

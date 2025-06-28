@@ -19,9 +19,9 @@ class IntfGM:
         self.items = items
 
     def __repr__(self):
-        name = self.__class__.__name__
+        class_ = self.__class__.__name__
         items = len(self.items)
-        return f"<{name}: {items=}>"
+        return f"<{class_}: {items=}>"
 
     # =========================== property ===========================
 

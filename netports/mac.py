@@ -1,4 +1,4 @@
-"""An object representing a MAC address in different formats."""
+"""MAC address representation in different formats."""
 
 from __future__ import annotations
 
@@ -14,32 +14,30 @@ from netports.types_ import LStr
 
 @total_ordering
 class Mac(BaseModel):
-    """An object representing a MAC address in different formats."""
+    """MAC address representation in different formats."""
 
-    line: str = Field(description="MAC address line")
-    hex: str = Field(default="", description="MAC address in hex format")
-    cisco: str = Field(default="", description="MAC address in cisco_ios format")
-    colon: str = Field(default="", description="MAC address in colon delimiter format")
-    hp: str = Field(default="", description="MAC address in hp_procurve format")
-    integer: int = Field(default=0, description="MAC address in integer format")
+    addr: str = Field(description="MAC address")
+    hex: str = Field(description="MAC address as 12-character hexadecimal string")
+    integer: int = Field(description="MAC address as integer")
 
     def __init__(self, *args, **kwargs):
-        """Init Mac.
+        """Initialize Mac.
 
         :param line: MAC address line.
         """
-        line: str = _arg_line(*args, **kwargs)
-        super().__init__(line=line)
-        self._parse()
-
-    def __str__(self):
-        """__str__."""
-        return self.line
+        addr: str = _validate_addr(*args, **kwargs)
+        hex_: str = _validate_hex(addr)
+        integer = int(hex_, 16)
+        super().__init__(addr=addr, hex=hex_, integer=integer)
 
     def __repr__(self):
         """__repr__."""
-        name = self.__class__.__name__
-        return f"{name}({self.line!r})"
+        class_ = self.__class__.__name__
+        return f"{class_}({self.addr!r})"
+
+    def __str__(self):
+        """__str__."""
+        return self.addr
 
     def __hash__(self) -> int:
         """__hash__."""
@@ -63,84 +61,47 @@ class Mac(BaseModel):
 
         :return: A copy of the current object.
         """
-        return type(self)(line=self.line)
+        return type(self)(line=self.addr)
 
-    # ============================== parse ===============================
+    # ============================= methods ==============================
 
-    def _parse(self) -> None:
-        """Init MAC address with given value.
+    def format(self, size: int, splitter: str) -> str:
+        """Format MAC address, split into chunks of given size.
 
-        :return: None. Update data in object.
+        :param size: Integer value to determine the grouping size.
+        :param splitter: String to use as a separator.
+        :return: Formatted string.
+        :raises NetportsValueError: If invalid size.
         """
-        self._parse_hex()
-        self._parse_cisco()
-        self._parse_hp()
-        self._parse_colon()
-        self._parse_integer()
+        if size not in [2, 4, 6]:
+            raise NetportsValueError(f"Invalid {size=}")
+        chunks = [self.hex[i:i + size] for i in range(0, 12, size)]
+        return splitter.join(chunks)
 
-    def _parse_hex(self) -> None:
-        """Convert MAC address to hex string.
+    def cisco(self) -> str:
+        """Return MAC in Cisco dot format: 0000.0000.0000."""
+        addr = self.format(size=4, splitter=".")
+        return addr.lower()
 
-        :return: None. Update data in object.
-        :raises NetportsValueError: If the line does not match the MAC address pattern.
-        """
-        # splitter
-        expected = ":.-"
-        splitter = set(self.line).difference(set(expected))
-        if splitter := splitter.difference(set(string.hexdigits)):
-            raise NetportsValueError(f"Invalid {splitter=!r}, {expected=}.")
+    def hp_comware(self) -> str:
+        """Return MAC in hp_comware dash format: 0000-0000-0000."""
+        addr = self.format(size=4, splitter="-")
+        return addr.lower()
 
-        # hex
-        hexdigits: LStr = [s for s in self.line.lower() if s in string.hexdigits]
-        line = "".join(hexdigits)
-        if len(line) != 12:
-            raise NetportsValueError("12 hexdigits expected.")
-        self.hex = "".join(hexdigits)
+    def hp_procurve(self) -> str:
+        """Return MAC in hp_procurve dash format: 000000-000000."""
+        addr = self.format(size=6, splitter="-")
+        return addr.lower()
 
-    def _parse_cisco(self) -> None:
-        """Convert MAC address to cisco_ios format.
+    def linux(self) -> str:
+        """Return MAC in Linux colon format: 00:00:00:00:00:00."""
+        addr = self.format(size=2, splitter=":")
+        return addr.lower()
 
-        :return: None. Update data in object.
-        """
-        items = [
-            self.hex[:4],
-            self.hex[4:8],
-            self.hex[8:],
-        ]
-        self.cisco = ".".join(items)
-
-    def _parse_hp(self) -> None:
-        """Convert MAC address to hp_procurve format.
-
-        :return: None. Update data in object.
-        """
-        items = [
-            self.hex[:6],
-            self.hex[6:],
-        ]
-        self.hp = "-".join(items)
-
-    def _parse_colon(self) -> None:
-        """Convert MAC address to colon delimiter format.
-
-        :return: None. Update data in object.
-        """
-        items = [
-            self.hex[:2],
-            self.hex[2:4],
-            self.hex[4:6],
-            self.hex[6:8],
-            self.hex[8:10],
-            self.hex[10:],
-        ]
-        self.colon = ":".join(items)
-
-    def _parse_integer(self) -> None:
-        """Convert MAC address to integer format.
-
-        :return: None. Update data in object.
-        """
-        self.integer = int(self.hex, 16)
+    def windows(self) -> str:
+        """Return MAC in Windows dash format: 00-00-00-00-00-00."""
+        addr = self.format(size=2, splitter="-")
+        return addr.lower()
 
 
 LMac = List[Mac]
@@ -149,19 +110,40 @@ TMac = Tuple[Mac]
 ULMac = Optional[Union[str, LStr, Mac, LMac]]
 
 
-# ============================ functions =============================
+# ============================= helpers ==============================
 
 
-def _arg_line(*args, **kwargs) -> str:
+def _validate_addr(*args, **kwargs) -> str:
     """Extract MAC address line from arguments or keyword arguments.
 
     :param args: Tuple of arguments.
     :param kwargs: Dictionary of keyword arguments.
     :return: MAC address as a string.
     """
-    line = ""
+    addr = ""
     if args:
-        line = str(args[0])
-    elif "line" in kwargs:
-        line = str(kwargs["line"])
-    return line
+        addr = str(args[0])
+    if not addr:
+        addr = str(kwargs.get("addr") or "")
+    return addr.strip()
+
+
+def _validate_hex(addr: str) -> str:
+    """Convert MAC address to hex string.
+
+    :param addr: MAC address as a string.
+    :return: MAC address as a 12-character hex string.
+    :raises NetportsValueError: If the line does not match the MAC address pattern.
+    """
+    # splitter
+    expected = ":.-"
+    splitter = set(addr).difference(set(expected))
+    if splitter := splitter.difference(set(string.hexdigits)):
+        raise NetportsValueError(f"Invalid {splitter=!r}, {expected=}.")
+
+    # hex
+    hexdigits: LStr = [s for s in addr if s in string.hexdigits]
+    line = "".join(hexdigits)
+    if len(line) != 12:
+        raise NetportsValueError("12 hexdigits expected.")
+    return "".join(hexdigits)

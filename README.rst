@@ -627,65 +627,29 @@ splitter        *str*   Separator of characters between indexes (default ",./:")
 
 IPv4()
 ......
-**IPv4(cidr, strict)**
-IPv4 address representation in CIDR notation with host data under musk bits.
+**IPv4(addr, strict)**
+IPv4 address representation in CIDR notation with host data under mask bits.
 
 =============== ======= ============================================================================
 Parameter       Type    Description
 =============== ======= ============================================================================
-cidr            *str*   Address in CIDR notation with host data under musk bits.
+addr            *str*   IPv4 address with host data under mask bits. A.B.C.D/LEN.
 strict          *str*   If True, IP must be valid network address (not host address).
 =============== ======= ============================================================================
 
 
-Attributes
-::::::::::
-
-=============== ============ =======================================================================
-Attributes      Type         Description
-=============== ============ =======================================================================
-addr            *str*        IPv4 address with prefixlen, A.B.C.D/LEN.
-ip              *str*        IPv4 address without prefixlen, A.B.C.D.
-net             *str*        IPv4 network with prefixlen, A.B.C.D/LEN.
-prefixlen       *int*        IPv4 network with prefixlen, A.B.C.D/LEN.
-=============== ============ =======================================================================
-
-
 Mac()
 .....
-**Mac(line)**
-An object representing a MAC address in different formats.
+**Mac(addr)**
+MAC address representation in different formats
 
 =============== ======= ============================================================================
 Parameter       Type    Description
 =============== ======= ============================================================================
-line            *str*   MAC address line
-hex             *str*   MAC address in hex format
-cisco           *str*   MAC address in cisco_ios format
-hp              *str*   MAC address in hp_procurve format
-colon           *str*   MAC address in colon delimiter format
+addr            *str*   MAC address
+hex             *str*   MAC address as 12-character hexadecimal string
 integer         *int*   MAC address in integer format
 =============== ======= ============================================================================
-
-
-Attributes
-::::::::::
-
-=============== ============ =======================================================================
-Attributes      Type         Description
-=============== ============ =======================================================================
-delimiters                   Interface all delimiters
-id0             *str*        Interface name. Line without IDs
-id1             *int*        Interface 1st ID
-id2             *int*        Interface 2nd ID
-id3             *int*        Interface 3rd ID
-id4             *int*        Interface 4th ID
-ids                          Interface all IDs
-line            *str*        Interface line
-name            *str*        Interface name with IDs
-splitter        *str*        Separator of characters between indexes
-device_type     *str*        Netmiko device_type
-=============== ============ =======================================================================
 
 
 last_idx()

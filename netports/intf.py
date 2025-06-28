@@ -30,14 +30,14 @@ class Intf:
         self._splitter = str(kwargs.get("splitter") or SPLITTER)
         self._line = self._init_line(line)
 
+    def __repr__(self):
+        """__repr__."""
+        class_ = self.__class__.__name__
+        return f"{class_}({self.line!r})"
+
     def __str__(self):
         """__str__."""
         return self.line
-
-    def __repr__(self):
-        """__repr__."""
-        name = self.__class__.__name__
-        return f"{name}({self.line!r})"
 
     def __hash__(self) -> int:
         """__hash__."""
@@ -457,23 +457,23 @@ class Intf:
         """
         part1 = self._ids[0] + self._ids[1]
         len1 = len(part1)
-        delim1 = self._line[len1 : len1 + 1]
+        delim1 = self._line[len1: len1 + 1]
 
         part2 = part1 + delim1 + self._ids[2]
         len2 = len(part2)
-        delim2 = self._line[len2 : len2 + 1]
+        delim2 = self._line[len2: len2 + 1]
 
         part3 = part2 + delim2 + self._ids[3]
         len3 = len(part3)
-        delim3 = self._line[len3 : len3 + 1]
+        delim3 = self._line[len3: len3 + 1]
 
         part4 = part3 + delim3 + self._ids[4]
         len4 = len(part4)
-        delim4 = self._line[len4 : len4 + 1]
+        delim4 = self._line[len4: len4 + 1]
 
         part5 = part4 + delim4 + self._ids[5]
         len5 = len(part5)
-        delim5 = self._line[len5 : len5 + 1]
+        delim5 = self._line[len5: len5 + 1]
         return delim1, delim2, delim3, delim4, delim5
 
     def _init_line(self, line: str) -> str:

@@ -1,5 +1,4 @@
 """Software Version."""
-from typing import Any
 
 from packaging.version import Version
 
@@ -23,9 +22,9 @@ class SwVersion(Version):
     # ========================== redefined ===========================
 
     def __repr__(self) -> str:
-        name = self.__class__.__name__
+        class_ = self.__class__.__name__
         params = h.repr_params(self._text)
-        return f"{name}({params})"
+        return f"{class_}({params})"
 
     def __str__(self) -> str:
         return self._text
