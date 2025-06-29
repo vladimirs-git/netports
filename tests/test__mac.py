@@ -1,14 +1,11 @@
 """Tests mac.py"""
 
-from typing import Any
-
 import dictdiffer  # type: ignore[import-untyped]
 import pytest
 
 from netports import NetportsValueError
 from netports import mac as mac_
 from netports.mac import Mac
-from tests import params__mac as p
 
 
 @pytest.fixture
@@ -18,20 +15,23 @@ def mac(addr: str) -> Mac:
 
 
 @pytest.mark.parametrize("addr, expected", [
-    ("", p.ZERO_D),
-    ("000000000000", p.ZERO_D),
-    ("FFFFFFFFFFFF", p.FFFFFF_D),
+    ("000000-000000", "000000000000"),
+    ("FF:FF:FF:FF:FF:FF", "FFFFFFFFFFFF"),
+    ("", NetportsValueError),
 ])
-def test__init__(mac, addr, expected: Any):
+def test__init__(addr, expected):
     """Mac.__init__()."""
-    actual = mac.model_dump()
+    if isinstance(expected, str):
+        obj = Mac(addr)
 
-    diff = list(dictdiffer.diff(actual, expected))
-    assert not diff
+        assert obj.addr == addr
+        assert obj.hex == expected
+    else:
+        with pytest.raises(expected):
+            Mac(addr=addr)
 
 
 @pytest.mark.parametrize("addr, expected", [
-    ("", "Mac('000000000000')"),
     ("0000.0000.0000", "Mac('0000.0000.0000')"),
 ])
 def test__repr__(mac, addr, expected):
@@ -41,7 +41,6 @@ def test__repr__(mac, addr, expected):
 
 
 @pytest.mark.parametrize("addr, expected", [
-    ("", "000000000000"),
     ("0000.0000.0000", "0000.0000.0000"),
 ])
 def test__str__(mac, addr, expected):
@@ -52,9 +51,7 @@ def test__str__(mac, addr, expected):
 
 @pytest.mark.parametrize("addr, expected", [
     ("0000.0000.0000", 0),
-    ("000000000000", 0),
     ("FFFF.FFFF.FFFF", 281474976710655),
-    ("FFFFFFFFFFFF", 281474976710655),
 ])
 def test__hash__(mac, addr, expected):
     """Mac.__hash__()"""
@@ -64,7 +61,7 @@ def test__hash__(mac, addr, expected):
 
 @pytest.mark.parametrize("addr1, addr2, expected", [
     ("abcd.ef12.3456", "abcdef123456", True),
-    ("abcd.ef12.3456", "000000000000", False),
+    ("000000000000", "000000000001", False),
 ])
 def test__eq__(addr1, addr2, expected):
     """Mac.__eq__()"""
@@ -107,7 +104,7 @@ def test__format(mac, addr, size, splitter, expected):
 ])
 def test__windows(mac, addr, expected):
     """Mac.windows()."""
-    actual = mac.windows()
+    actual = mac.windows
     assert actual == expected
 
 
@@ -116,7 +113,7 @@ def test__windows(mac, addr, expected):
 ])
 def test__cisco(mac, addr, expected):
     """Mac.cisco()."""
-    actual = mac.cisco()
+    actual = mac.cisco
     assert actual == expected
 
 
@@ -125,7 +122,7 @@ def test__cisco(mac, addr, expected):
 ])
 def test__hp_comware(mac, addr, expected):
     """Mac.hp_comware()."""
-    actual = mac.hp_comware()
+    actual = mac.hp_comware
     assert actual == expected
 
 
@@ -134,7 +131,7 @@ def test__hp_comware(mac, addr, expected):
 ])
 def test__hp_procurve(mac, addr, expected):
     """Mac.hp_procurve()."""
-    actual = mac.hp_procurve()
+    actual = mac.hp_procurve
     assert actual == expected
 
 
@@ -142,24 +139,30 @@ def test__hp_procurve(mac, addr, expected):
 
 
 @pytest.mark.parametrize("args, kwargs, expected", [
-    (["ABCDEF123456"], {}, "ABCDEF123456"),
-    ([], {"addr": " abcdef123456"}, "abcdef123456"),
-    ([], {}, "000000000000"),
+    # args
+    (["Abcdef123456"], {}, ("Abcdef123456", "Abcdef123456")),
+    (["000000000000"], {}, ("000000000000", "000000000000")),
+    (["000000.000000"], {}, ("000000.000000", "000000000000")),
+    (["000000:000000"], {}, ("000000:000000", "000000000000")),
+    (["000000-000000"], {}, ("000000-000000", "000000000000")),
+    (["0000.0000.0000"], {}, ("0000.0000.0000", "000000000000")),
+    (["0000:0000:0000"], {}, ("0000:0000:0000", "000000000000")),
+    (["0000-0000-0000"], {}, ("0000-0000-0000", "000000000000")),
+    (["00.00.00.00.00.00"], {}, ("00.00.00.00.00.00", "000000000000")),
+    (["00:00:00:00:00:00"], {}, ("00:00:00:00:00:00", "000000000000")),
+    (["00-00-00-00-00-00"], {}, ("00-00-00-00-00-00", "000000000000")),
+    # kwargs
+    ([], {"addr": "0000.0000.0000"}, ("0000.0000.0000", "000000000000")),
+    # error
+    ([], {}, NetportsValueError),  # empty
+    (["000000_000000"], {}, NetportsValueError),  # splitter
+    (["000000.000000A"], {}, NetportsValueError),  # len
 ])
 def test__validate_addr(args, kwargs, expected):
     """mac._validate_addr()."""
-    actual = mac_._validate_addr(*args, **kwargs)
-    assert actual == expected
-
-
-@pytest.mark.parametrize("addr, expected", [
-    ("000000000000", "000000000000"),
-    ("0000.0000.0000", "000000000000"),
-    ("00:00:00:00:00:00", "000000000000"),
-    ("abcdef123456", "abcdef123456"),
-    ("ABCDEF123456", "ABCDEF123456"),
-])
-def test__validate_hex(addr, expected):
-    """mac._validate_hex()."""
-    actual = mac_._validate_hex(addr=addr)
-    assert actual == expected
+    if isinstance(expected, tuple):
+        actual = mac_._validate_addr(*args, **kwargs)
+        assert actual == expected
+    else:
+        with pytest.raises(expected):
+            mac_._validate_addr(*args, **kwargs)

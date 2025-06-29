@@ -4,32 +4,30 @@ from __future__ import annotations
 
 import string
 from functools import total_ordering
-from typing import List, Optional, Set, Tuple, Union
+from typing import List, Dict
 
 from pydantic import BaseModel, Field
 
 from netports.exceptions import NetportsValueError
-from netports.types_ import LStr
+from netports.types_ import LStr, T2Str
 
-DEFAULT_MAC = "000000000000"
 
 @total_ordering
 class Mac(BaseModel):
     """MAC address representation in different formats."""
 
     addr: str = Field(description="MAC address")
-    hex: str = Field(description="MAC address as 12-character hexadecimal string")
-    integer: int = Field(description="MAC address as integer")
 
     def __init__(self, *args, **kwargs):
         """Initialize Mac.
 
-        :param line: MAC address line.
+        :param addr: MAC address.
+        :raises NetportsValueError: If the MAC address is invalid or empty.
         """
-        addr = _validate_addr(*args, **kwargs)
-        hex_ = _validate_hex(addr)
-        integer = int(hex_, 16)
-        super().__init__(addr=addr, hex=hex_, integer=integer)
+        addr, hex_ = _validate_addr(*args, **kwargs)
+        kwargs_ = {k: v for k, v in kwargs.items() if k != "addr"}
+        super().__init__(addr=addr, **kwargs_)
+        self._hex = hex_
 
     def __repr__(self) -> str:
         """Representation of the object."""
@@ -71,6 +69,48 @@ class Mac(BaseModel):
         """
         return type(self)(line=self.addr)
 
+    # ============================= property =============================
+
+    @property
+    def hex(self) -> str:
+        """MAC address as 12-character hexadecimal string."""
+        return self._hex
+
+    @property
+    def integer(self) -> int:
+        """MAC address as integer."""
+        return int(self.hex, 16)
+
+    @property
+    def cisco(self) -> str:
+        """Return MAC in Cisco dot format: 0000.0000.0000."""
+        addr = self.format(size=4, splitter=".")
+        return addr.lower()
+
+    @property
+    def hp_comware(self) -> str:
+        """Return MAC in hp_comware dash format: 0000-0000-0000."""
+        addr = self.format(size=4, splitter="-")
+        return addr.lower()
+
+    @property
+    def hp_procurve(self) -> str:
+        """Return MAC in hp_procurve dash format: 000000-000000."""
+        addr = self.format(size=6, splitter="-")
+        return addr.lower()
+
+    @property
+    def linux(self) -> str:
+        """Return MAC in Linux colon format: 00:00:00:00:00:00."""
+        addr = self.format(size=2, splitter=":")
+        return addr.lower()
+
+    @property
+    def windows(self) -> str:
+        """Return MAC in Windows dash format: 00-00-00-00-00-00."""
+        addr = self.format(size=2, splitter="-")
+        return addr.lower()
+
     # ============================= methods ==============================
 
     def format(self, size: int, splitter: str) -> str:
@@ -86,74 +126,40 @@ class Mac(BaseModel):
         chunks = [self.hex[i:i + size] for i in range(0, 12, size)]
         return splitter.join(chunks)
 
-    def cisco(self) -> str:
-        """Return MAC in Cisco dot format: 0000.0000.0000."""
-        addr = self.format(size=4, splitter=".")
-        return addr.lower()
-
-    def hp_comware(self) -> str:
-        """Return MAC in hp_comware dash format: 0000-0000-0000."""
-        addr = self.format(size=4, splitter="-")
-        return addr.lower()
-
-    def hp_procurve(self) -> str:
-        """Return MAC in hp_procurve dash format: 000000-000000."""
-        addr = self.format(size=6, splitter="-")
-        return addr.lower()
-
-    def linux(self) -> str:
-        """Return MAC in Linux colon format: 00:00:00:00:00:00."""
-        addr = self.format(size=2, splitter=":")
-        return addr.lower()
-
-    def windows(self) -> str:
-        """Return MAC in Windows dash format: 00-00-00-00-00-00."""
-        addr = self.format(size=2, splitter="-")
-        return addr.lower()
-
 
 LMac = List[Mac]
-SMac = Set[Mac]
-TMac = Tuple[Mac]
-ULMac = Optional[Union[str, LStr, Mac, LMac]]
+DMac = Dict[str, Mac]
 
 
 # ============================= helpers ==============================
 
 
-def _validate_addr(*args, **kwargs) -> str:
+def _validate_addr(*args, **kwargs) -> T2Str:
     """Extract MAC address line from arguments or keyword arguments.
 
     :param args: Tuple of arguments.
     :param kwargs: Dictionary of keyword arguments.
     :return: MAC address as a string.
     """
+    # addr
     addr = ""
     if args:
-        addr = str(args[0]).strip()
+        addr = str(args[0])
     if not addr:
-        addr = str(kwargs.get("addr") or "").strip()
+        addr = str(kwargs.get("addr") or "")
     if not addr:
-        addr = DEFAULT_MAC
-    return addr
+        raise NetportsValueError("MAC address is empty.")
 
-
-def _validate_hex(addr: str) -> str:
-    """Convert MAC address to hex string.
-
-    :param addr: MAC address as a string.
-    :return: MAC address as a 12-character hex string.
-    :raises NetportsValueError: If the line does not match the MAC address pattern.
-    """
     # splitter
-    expected = ":.-"
-    splitter = set(addr).difference(set(expected))
-    if splitter := splitter.difference(set(string.hexdigits)):
-        raise NetportsValueError(f"Invalid {splitter=!r}, {expected=}.")
+    expected = string.hexdigits + ":.-"
+    if set(addr).difference(set(expected)):
+        raise NetportsValueError("Invalid MAC address splitter")
 
     # hex
     hexdigits: LStr = [s for s in addr if s in string.hexdigits]
     line = "".join(hexdigits)
     if len(line) != 12:
-        raise NetportsValueError("12 hexdigits expected.")
-    return "".join(hexdigits)
+        raise NetportsValueError("Invalid MAC address format, 12 hexdigits expected.")
+    hex_ = "".join(hexdigits)
+
+    return addr, hex_

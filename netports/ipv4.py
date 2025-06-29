@@ -5,11 +5,12 @@ from __future__ import annotations
 import re
 from functools import total_ordering
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address
-from typing import List
+from typing import List, Dict
 
 from pydantic import BaseModel, Field
 from vhelpers import vre
 
+from netports import NetportsValueError
 from netports.types_ import T2Str
 
 RE_IP = r"\d+\.\d+\.\d+\.\d+"
@@ -27,7 +28,7 @@ class IPv4(BaseModel):
 
         :param addr: IP address in CIDR notation with host data under mask bits.
         :param strict: If True, IP must be valid network address (not host address).
-        :raises ValueError: If the CIDR address is invalid
+        :raises NetportsValueError: If the CIDR address is invalid
             or cannot be converted from network with mask format.
         """
         addr, addr_len = _validate_addr(*args, **kwargs)
@@ -70,6 +71,8 @@ class IPv4(BaseModel):
     def __contains__(self, other: IPv4) -> bool:
         """Check if all IPs in the other subnet are part of this network."""
         return other._interface.network.subnet_of(self._interface.network)
+
+    # ============================= property =============================
 
     @property
     def ip(self) -> str:
@@ -206,6 +209,7 @@ class IPv4(BaseModel):
 
 
 LIPv4 = List[IPv4]
+DIPv4 = Dict[str, IPv4]
 
 
 def _validate_addr(*args, **kwargs) -> T2Str:
@@ -215,7 +219,8 @@ def _validate_addr(*args, **kwargs) -> T2Str:
     :param addr: IP address in CIDR notation with host data under mask bits.
     :param strict: If True, IP must be valid network address (not host address).
     :return: IPv4 address representation in CIDR notation with host data under mask bits.
-    :raises ValueError: If the address is invalid or cannot be converted from network/mask format.
+    :raises NetportsValueError: If the address is invalid
+        or cannot be converted from network/mask format.
     """
     # addr
     addr = ""
@@ -230,9 +235,10 @@ def _validate_addr(*args, **kwargs) -> T2Str:
     elif re.search(rf"^{RE_IP}$", addr):
         addr_len = f"{addr}/32"
     else:
-        _addr, mask = vre.find2(rf"^({RE_IP})\D({RE_IP})$", addr)
+        splitter = r"[\s\\/]"
+        _addr, mask = vre.find2(rf"^({RE_IP}){splitter}({RE_IP})$", addr)
         if not (_addr and mask):
-            raise ValueError("Invalid address format")
+            raise NetportsValueError("Invalid IP address format")
         network = IPv4Network(f"0.0.0.0/{mask}")
         addr_len = f"{_addr}/{network.prefixlen}"
 
