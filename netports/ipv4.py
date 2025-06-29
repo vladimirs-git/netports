@@ -10,7 +10,10 @@ from typing import List
 from pydantic import BaseModel, Field
 from vhelpers import vre
 
+from netports.types_ import T2Str
+
 RE_IP = r"\d+\.\d+\.\d+\.\d+"
+RE_PREFIX = r"\d+\.\d+\.\d+\.\d+/\d+"
 
 
 @total_ordering
@@ -27,10 +30,10 @@ class IPv4(BaseModel):
         :raises ValueError: If the CIDR address is invalid
             or cannot be converted from network with mask format.
         """
-        addr = _validate_addr(*args, **kwargs)
+        addr, addr_len = _validate_addr(*args, **kwargs)
         kwargs_ = {k: v for k, v in kwargs.items() if k not in ["addr", "strict"]}
         super().__init__(addr=addr, **kwargs_)
-        self._interface = IPv4Interface(address=addr)
+        self._interface = IPv4Interface(address=addr_len)
 
     def __repr__(self) -> str:
         """Representation of the object."""
@@ -70,8 +73,13 @@ class IPv4(BaseModel):
 
     @property
     def ip(self) -> str:
-        """IPv4 address without prefixlen, A.B.C.D"""
+        """IPv4 address without prefixlen, A.B.C.D."""
         return str(self._interface.ip)
+
+    @property
+    def ip_len(self) -> str:
+        """IPv4 address with prefixlen, A.B.C.D/LEN."""
+        return str(self._interface)
 
     @property
     def net(self) -> str:
@@ -80,12 +88,12 @@ class IPv4(BaseModel):
 
     @property
     def len(self) -> int:
-        """Prefix length"""
+        """Prefix length."""
         return int(self._interface.network.prefixlen)
 
     @property
     def prefix(self) -> str:
-        """IPv4 prefix without host data, A.B.C.D/LEN"""
+        """IPv4 prefix without host data, A.B.C.D/LEN."""
         return str(self._interface.network)
 
     # ================================ is ================================
@@ -200,7 +208,7 @@ class IPv4(BaseModel):
 LIPv4 = List[IPv4]
 
 
-def _validate_addr(*args, **kwargs) -> str:
+def _validate_addr(*args, **kwargs) -> T2Str:
     """Validate IPv4 address, convert address or network with mask to CIDR A.B.C.D/LEN format.
 
     :param args: Arguments containing the address value.
@@ -209,28 +217,27 @@ def _validate_addr(*args, **kwargs) -> str:
     :return: IPv4 address representation in CIDR notation with host data under mask bits.
     :raises ValueError: If the address is invalid or cannot be converted from network/mask format.
     """
+    # addr
     addr = ""
     if args:
-        addr = str(args[0]).strip()
+        addr = str(args[0])
     if not addr:
-        addr = str(kwargs.get("addr") or "").strip()
-    if not addr:
-        addr = "0.0.0.0"
+        addr = str(kwargs.get("addr") or "")
 
-    strict = bool(kwargs.get("strict"))
-
-    # addr
-    if re.search(rf"^{RE_IP}/\d+$", addr):
-        pass
+    # addr_len
+    if re.search(rf"^{RE_PREFIX}$", addr):
+        addr_len = addr
     elif re.search(rf"^{RE_IP}$", addr):
-        addr = f"{addr}/32"
+        addr_len = f"{addr}/32"
     else:
-        prefix, mask = vre.find2(rf"^({RE_IP})\D({RE_IP})$", addr)
-        if not (prefix and mask):
+        _addr, mask = vre.find2(rf"^({RE_IP})\D({RE_IP})$", addr)
+        if not (_addr and mask):
             raise ValueError("Invalid address format")
         network = IPv4Network(f"0.0.0.0/{mask}")
-        prefixlen = network.prefixlen
-        addr = f"{prefix}/{prefixlen}"
+        addr_len = f"{_addr}/{network.prefixlen}"
 
-    _ = IPv4Network(addr, strict=strict)
-    return addr
+    # strict
+    strict = bool(kwargs.get("strict"))
+    _ = IPv4Network(addr_len, strict=strict)
+
+    return addr, addr_len

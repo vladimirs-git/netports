@@ -13,31 +13,35 @@ def ipv4(addr: str) -> IPv4:
 
 
 @pytest.mark.parametrize("addr, strict, expected", [
+    ("10.0.0.1", False, "10.0.0.1/32"),
     ("10.0.0.0/24", False, "10.0.0.0/24"),
     ("10.0.0.1/24", False, "10.0.0.1/24"),
     ("10.0.0.0 255.255.255.0", False, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", False, "10.0.0.1/24"),
-    ("", False, "0.0.0.0/32"),
+    ("", False, ValueError),
     # strict
+    ("10.0.0.1", True, "10.0.0.1/32"),
     ("10.0.0.0/24", True, "10.0.0.0/24"),
     ("10.0.0.1/24", True, ValueError),
     ("10.0.0.0 255.255.255.0", True, "10.0.0.0/24"),
     ("10.0.0.1 255.255.255.0", True, ValueError),
-    ("", True, "0.0.0.0/32"),
+    ("", True, ValueError),
 ])
 def test__init__(addr, strict, expected):
     """IPv4.__init__()."""
     if isinstance(expected, str):
-        actual = str(IPv4(addr=addr, strict=strict))
+        obj = IPv4(addr=addr, strict=strict)
 
-        assert actual == expected
+        assert obj.addr == addr
+        assert obj.ip_len == expected
     else:
         with pytest.raises(expected):
             IPv4(addr=addr, strict=strict)
 
 
 @pytest.mark.parametrize("addr, expected", [
-    ("10.0.0.0", "IPv4('10.0.0.0/32')"),
+    ("10.0.0.1", "IPv4('10.0.0.1')"),
+    ("10.0.0.1/24", "IPv4('10.0.0.1/24')"),
 ])
 def test__repr__(ipv4, addr, expected):
     """Test IPv4.__repr__()."""
@@ -46,7 +50,8 @@ def test__repr__(ipv4, addr, expected):
 
 
 @pytest.mark.parametrize("addr, expected", [
-    ("10.0.0.0", "10.0.0.0/32"),
+    ("10.0.0.1", "10.0.0.1"),
+    ("10.0.0.1/24", "10.0.0.1/24"),
 ])
 def test__str__(ipv4, addr, expected):
     """Test IPv4.__str__()."""
@@ -57,7 +62,9 @@ def test__str__(ipv4, addr, expected):
 @pytest.mark.parametrize("addr1, addr2, expected", [
     ("10.0.0.0/24", "10.0.0.0/24", True),  # same prefix
     ("10.0.0.1/24", "10.0.0.1/24", True),  # same address
-    ("10.0.0.1/24", "10.0.0.0/24", False),  # different IPs, same prefix
+    ("10.0.0.1", "10.0.0.1/32", True),  # same address
+    ("10.0.0.1", "10.0.0.1/24", False),  # different address
+    ("10.0.0.1/24", "10.0.0.0/24", False),  # different address, same prefix
     ("10.0.0.0/24", "10.0.0.0/25", False),  # different prefix
     ("10.0.0.1/24", "10.0.0.1/25", False),  # different prefix
     ("10.0.1.0/24", "10.0.0.0/24", False),  # different prefix
@@ -118,6 +125,14 @@ def test__ip(ipv4, addr, expected):
     actual = ipv4.ip
     assert actual == expected
 
+@pytest.mark.parametrize("addr, expected", [
+    ("10.0.0.1", "10.0.0.1/32"),
+    ("10.0.0.1/24", "10.0.0.1/24"),
+])
+def test__ip_len(ipv4, addr, expected):
+    """Test IPv4.ip_len()."""
+    actual = ipv4.ip_len
+    assert actual == expected
 
 @pytest.mark.parametrize("addr, expected", [
     ("10.0.0.1/32", "10.0.0.1"),
@@ -345,35 +360,35 @@ def test__net_wildcard(ipv4, addr, splitter, expected):
 
 
 @pytest.mark.parametrize("args, kwargs, expected", [
-    (["10.0.0.0"], {}, "10.0.0.0/32"),  # address
-    (["10.0.0.0/24"], {}, "10.0.0.0/24"),  # prefix
-    (["10.0.0.1/24"], {}, "10.0.0.1/24"),  # address with prefixlen
-    (["10.0.0.0/255.255.255.0"], {}, "10.0.0.0/24"),  # net mask
-    (["10.0.0.0 255.255.255.0"], {}, "10.0.0.0/24"),  # net mask
-    (["10.0.0.1/255.255.255.0"], {}, "10.0.0.1/24"),  # address mask
-    (["10.0.0.1/0.0.0.255"], {}, "10.0.0.1/24"),  # wildcard
+    (["10.0.0.0"], {}, ("10.0.0.0", "10.0.0.0/32")),  # address
+    (["10.0.0.0/24"], {}, ("10.0.0.0/24", "10.0.0.0/24")),  # prefix
+    (["10.0.0.1/24"], {}, ("10.0.0.1/24", "10.0.0.1/24")),  # address with prefixlen
+    (["10.0.0.0/255.255.255.0"], {}, ("10.0.0.0/255.255.255.0", "10.0.0.0/24")),  # net mask
+    (["10.0.0.0 255.255.255.0"], {}, ("10.0.0.0 255.255.255.0", "10.0.0.0/24")),  # net mask
+    (["10.0.0.1/255.255.255.0"], {}, ("10.0.0.1/255.255.255.0", "10.0.0.1/24")),  # address mask
+    (["10.0.0.1/0.0.0.255"], {}, ("10.0.0.1/0.0.0.255", "10.0.0.1/24")),  # wildcard
     (["10.0.0.1/0.1.0.255"], {}, ValueError),  # complex wildcard
-    ([], {}, "0.0.0.0/32"),
-    # addr
-    ([], {"addr": "10.0.0.0"}, "10.0.0.0/32"),  # address
-    ([], {"addr": "10.0.0.1/24"}, "10.0.0.1/24"),  # address with prefixlen
+    ([], {}, ValueError),  # empty
+    # kwargs
+    ([], {"addr": "10.0.0.0"}, ("10.0.0.0", "10.0.0.0/32")),  # address
+    ([], {"addr": "10.0.0.1/24"}, ("10.0.0.1/24", "10.0.0.1/24")),  # address with prefixlen
     # strict
-    (["10.0.0.0"], {"strict": True}, "10.0.0.0/32"),  # address
-    (["10.0.0.0/24"], {"strict": True}, "10.0.0.0/24"),  # prefix
+    (["10.0.0.0"], {"strict": True}, ("10.0.0.0", "10.0.0.0/32")),  # address
+    (["10.0.0.0/24"], {"strict": True}, ("10.0.0.0/24", "10.0.0.0/24")),  # prefix
     (["10.0.0.1/24"], {"strict": True}, ValueError),  # address with prefix
-    (["10.0.0.0/255.255.255.0"], {"strict": True}, "10.0.0.0/24"),  # net mask
-    (["10.0.0.0 255.255.255.0"], {"strict": True}, "10.0.0.0/24"),  # net mask
+    (["10.0.0.0/255.255.255.0"], {"strict": True}, ("10.0.0.0/255.255.255.0", "10.0.0.0/24")),
+    (["10.0.0.0 255.255.255.0"], {"strict": True}, ("10.0.0.0 255.255.255.0", "10.0.0.0/24")),
     (["10.0.0.1/255.255.255.0"], {"strict": True}, ValueError),  # address mask
     (["10.0.0.1/0.0.0.255"], {"strict": True}, ValueError),  # wildcard
     (["10.0.0.1/0.1.0.255"], {"strict": True}, ValueError),  # complex wildcard
-    ([], {"strict": True}, "0.0.0.0/32"),
-    # addr strict
-    ([], {"addr": "10.0.0.0", "strict": True}, "10.0.0.0/32"),  # address
+    ([], {"strict": True}, ValueError),  # empty
+    # kwargs strict
+    ([], {"addr": "10.0.0.0", "strict": True}, ("10.0.0.0", "10.0.0.0/32")),  # address
     ([], {"addr": "10.0.0.1/24", "strict": True}, ValueError),  # address with prefixlen
 ])
 def test__validate_addr(args, kwargs, expected):
     """ipv4._validate_addr()."""
-    if isinstance(expected, str):
+    if isinstance(expected, tuple):
         actual = ipv4_._validate_addr(*args, **kwargs)
         assert actual == expected
     else:
