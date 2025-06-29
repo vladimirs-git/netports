@@ -123,7 +123,7 @@ class Mac(BaseModel):
         """
         if size not in [2, 4, 6]:
             raise NetportsValueError(f"Invalid {size=}")
-        chunks = [self.hex[i:i + size] for i in range(0, 12, size)]
+        chunks = [self.hex[i : i + size] for i in range(0, 12, size)]
         return splitter.join(chunks)
 
 

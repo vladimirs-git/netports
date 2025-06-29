@@ -82,6 +82,7 @@ disable = [
     "unused-import",
     "use-dict-literal",
     "use-implicit-booleaness-not-comparison",
+    "too-many-arguments",
 ]
 
 

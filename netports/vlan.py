@@ -6,13 +6,15 @@ from netports import Range
 from netports import helpers as h
 from netports.exceptions import NetportsValueError
 from netports.ports import inumbers, parse_range
-from netports.static import BRIEF_ALL_I, RANGE_SPLITTER, RANGE_SPLITTER_HPE, SPLITTER, SPLITTER_HPE
+from netports.static import BRIEF_ALL_I, RANGE_SPLITTER, SPLITTER
 from netports.types_ import LInt
 
 MIN_VLAN = 1
 MAX_VLAN = 4094
 ALL_VLANS_L = list(range(MIN_VLAN, MAX_VLAN + 1))
 ALL_VLANS_S = f"{MIN_VLAN}-{MAX_VLAN}"
+SPLITTER_HPE = " "
+RANGE_SPLITTER_HPE = " to "
 
 
 # noinspection PyIncorrectDocstring

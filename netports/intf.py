@@ -1,20 +1,28 @@
-"""An object of interface name, that can contain up to 6 indexes."""
+"""Network interface representation with up to 6 numerical indices."""
 
 import re
 from functools import total_ordering
 from typing import List, Optional, Set, Tuple, Union
 
-from netports import intf_map, helpers as h
+from vhelpers import vlist
+
+from netports import intf_map
 from netports.exceptions import NetportsValueError
-from netports.static import DEVICE_TYPES
 from netports.types_ import T5Str, LStr, SStr, DStr, T7Str, OLT2Str, OLStr
 
+DEVICE_TYPES = [
+    "cisco_ios",
+    "cisco_nxos",
+    "cisco_xr",
+    "hp_comware",
+    "hp_procurve",
+]
 SPLITTER = ",./:"
 
 
 @total_ordering
 class Intf:
-    """An object of interface name, that can contain up to 6 indexes."""
+    """Network interface representation with up to 6 numerical indices."""
 
     def __init__(self, line: str = "", **kwargs):
         """Initialize Intf.
@@ -26,9 +34,11 @@ class Intf:
         :param splitter: Separator of characters between indexes (default ",./:").
         :type splitter: str
         """
-        self._device_type = self._init_device_type(**kwargs)
-        self._splitter = str(kwargs.get("splitter") or SPLITTER)
-        self._line = self._init_line(line)
+        self._device_type = _init_device_type(**kwargs)
+        self._splitter = _init_splitter(**kwargs)
+        self._ids: T7Str = self._init_ids(line)
+        self._delimiters: T5Str = self._init_delimiters(line)
+        self.line = self._init_line()
 
     def __repr__(self) -> str:
         """Representation of the object."""
@@ -41,7 +51,8 @@ class Intf:
 
     def __hash__(self) -> int:
         """Hash value of the object."""
-        return hash((self.id0, self.id1, self.id2, self.id3, self.id4, self.id5, self.id6))
+        ids = (self.id0, self.id1, self.id2, self.id3, self.id4, self.id5, self.id6)
+        return hash(ids)
 
     def __eq__(self, other) -> bool:
         """Check if two objects are equal.
@@ -49,10 +60,9 @@ class Intf:
         :param other: Another object to compare.
         :return: True if objects are equal, False otherwise.
         """
-        if self.__class__ == other.__class__:
-            if self.__hash__() == other.__hash__():
-                return True
-        return False
+        if self.__class__ != other.__class__:
+            return False
+        return self.__hash__() == other.__hash__()
 
     def __lt__(self, other) -> bool:
         """Compare two objects.
@@ -80,7 +90,7 @@ class Intf:
     @property
     def delimiters(self) -> T5Str:
         """Interface all delimiters."""
-        return self._dels
+        return self._delimiters
 
     @property
     def id0(self) -> str:
@@ -156,15 +166,6 @@ class Intf:
         return self._ids
 
     @property
-    def line(self) -> str:
-        """Interface line.
-
-        :example:
-            Intf("interface Ethernet1/2/3.4").line -> "interface Ethernet1/2/3.4"
-        """
-        return self._line
-
-    @property
     def name(self) -> str:
         """Interface name with IDs.
 
@@ -203,7 +204,7 @@ class Intf:
         results: SStr = set()
 
         names_: LStr = [self.line, self.name, self.name_full(), self.name_long(), self.name_short()]
-        names_ = h.no_dupl(names_)
+        names_ = vlist.no_dupl(names_)
         for name_ in names_:
             results.add(name_)
             if not name_.startswith("interface "):
@@ -213,7 +214,7 @@ class Intf:
         intf_map_upper: DStr = intf_map.short_to_long(self._device_type)
         intf_map_lower: DStr = intf_map.short_to_long(self._device_type, key_lower=True)
         names: LStr = [self.name, self.name_short()]
-        names = h.no_dupl(names)
+        names = vlist.no_dupl(names)
         for name in names:
             intf_o = Intf(line=name, device_type=self.device_type)
             for id0_short, intf_map_d in [
@@ -349,34 +350,34 @@ class Intf:
         parts = self._ids[6]
         if idx == 5:
             if splitter:
-                return self._dels[4] + parts
+                return self._delimiters[4] + parts
             return parts
 
-        parts = self._ids[5] + self._dels[4] + parts
+        parts = self._ids[5] + self._delimiters[4] + parts
         if idx == 4:
             if splitter:
-                return self._dels[3] + parts
+                return self._delimiters[3] + parts
             return parts
 
-        parts = self._ids[4] + self._dels[3] + parts
+        parts = self._ids[4] + self._delimiters[3] + parts
         if idx == 3:
             if splitter:
-                return self._dels[2] + parts
+                return self._delimiters[2] + parts
             return parts
 
-        parts = self._ids[3] + self._dels[2] + parts
+        parts = self._ids[3] + self._delimiters[2] + parts
         if idx == 2:
             if splitter:
-                return self._dels[1] + parts
+                return self._delimiters[1] + parts
             return parts
 
-        parts = self._ids[2] + self._dels[1] + parts
+        parts = self._ids[2] + self._delimiters[1] + parts
         if idx == 1:
             if splitter:
-                return self._dels[0] + parts
+                return self._delimiters[0] + parts
             return parts
 
-        parts = self._ids[1] + self._dels[0] + parts
+        parts = self._ids[1] + self._delimiters[0] + parts
         if idx == 0:
             return parts
 
@@ -406,45 +407,67 @@ class Intf:
         parts += self._ids[1]
         if idx == 2:
             if splitter:
-                return parts + self._dels[0]
+                return parts + self._delimiters[0]
             return parts
 
-        parts += self._dels[0] + self._ids[2]
+        parts += self._delimiters[0] + self._ids[2]
         if idx == 3:
             if splitter:
-                return parts + self._dels[1]
+                return parts + self._delimiters[1]
             return parts
 
-        parts += self._dels[1] + self._ids[3]
+        parts += self._delimiters[1] + self._ids[3]
         if idx == 4:
             if splitter:
-                return parts + self._dels[2]
+                return parts + self._delimiters[2]
             return parts
 
-        parts += self._dels[2] + self._ids[4]
+        parts += self._delimiters[2] + self._ids[4]
         if idx == 5:
             if splitter:
-                return parts + self._dels[3]
+                return parts + self._delimiters[3]
             return parts
 
-        parts += self._dels[3] + self._ids[5]
+        parts += self._delimiters[3] + self._ids[5]
         if idx == 6:
             if splitter:
-                return parts + self._dels[4]
+                return parts + self._delimiters[4]
             return parts
 
-        return self._line
+        return self.line
 
     # =========================== helpers ============================
 
-    def _get_ids(self) -> T7Str:
+    def _init_line(self) -> str:
+        """Parse Interface line.
+
+        :return: Interface line with IDs and delimiters.
+        """
+        items: LStr = [
+            self._ids[0],
+            self._ids[1],
+            self._delimiters[0],
+            self._ids[2],
+            self._delimiters[1],
+            self._ids[3],
+            self._delimiters[2],
+            self._ids[4],
+            self._delimiters[3],
+            self._ids[5],
+            self._delimiters[4],
+            self._ids[6],
+        ]
+        items = [s for s in items if s]
+        return "".join(items)
+
+    def _init_ids(self, intf: str) -> T7Str:
         """Split interface line to name and IDs.
 
+        :param intf: Interface line to split.
         :example:
             self.line: "interface Ethernet1/2/3.4"
             return: ("interface Ethernet", "1", "2", "3", "4")
         """
-        intf = self._line
         for splitter in self._splitter:
             intf = intf.replace(splitter, ",")
 
@@ -455,70 +478,35 @@ class Intf:
         ids: T7Str = (re.findall(pattern, intf) or [("", "", "", "", "", "", "")])[0]
         return ids
 
-    def _get_delimiters(self) -> T5Str:
+    def _init_delimiters(self, intf: str) -> T5Str:  # pylint: disable=too-many-locals
         """Split interface line to splitters of IDs.
 
+        :param intf: Interface line to split.
+        :return: Tuple of up to 5 delimiters between IDs.
         :example:
             self.line: "interface Ethernet1/2/3.4"
-            return: ("/, "/", ".")
+            return: ("/", "/", ".", "", "")
         """
         part1 = self._ids[0] + self._ids[1]
         len1 = len(part1)
-        delim1 = self._line[len1: len1 + 1]
+        delim1 = intf[len1 : len1 + 1]
 
         part2 = part1 + delim1 + self._ids[2]
         len2 = len(part2)
-        delim2 = self._line[len2: len2 + 1]
+        delim2 = intf[len2 : len2 + 1]
 
         part3 = part2 + delim2 + self._ids[3]
         len3 = len(part3)
-        delim3 = self._line[len3: len3 + 1]
+        delim3 = intf[len3 : len3 + 1]
 
         part4 = part3 + delim3 + self._ids[4]
         len4 = len(part4)
-        delim4 = self._line[len4: len4 + 1]
+        delim4 = intf[len4 : len4 + 1]
 
         part5 = part4 + delim4 + self._ids[5]
         len5 = len(part5)
-        delim5 = self._line[len5: len5 + 1]
+        delim5 = intf[len5 : len5 + 1]
         return delim1, delim2, delim3, delim4, delim5
-
-    def _init_line(self, line: str) -> str:
-        """Parse Interface line."""
-        if not isinstance(line, str):
-            raise TypeError(f"{line=} {str} expected.")
-        self._line = line
-        self._ids: T7Str = self._get_ids()
-        self._dels = self._get_delimiters()
-
-        items = [
-            self._ids[0],
-            self._ids[1],
-            self._dels[0],
-            self._ids[2],
-            self._dels[1],
-            self._ids[3],
-            self._dels[2],
-            self._ids[4],
-            self._dels[3],
-            self._ids[5],
-            self._dels[4],
-            self._ids[6],
-        ]
-        return "".join(items)
-
-    @staticmethod
-    def _init_device_type(**kwargs) -> str:
-        """Init Netmiko device type.
-
-        :return: Netmiko device type.
-        :raises NetportsValueError: if the device type is unknown.
-        """
-        device_type = str(kwargs.get("device_type") or "")
-        expected = ["", *DEVICE_TYPES]
-        if device_type not in expected:
-            raise NetportsValueError(f"{device_type=} {expected=}")
-        return device_type
 
 
 LIntf = List[Intf]
@@ -570,3 +558,29 @@ def sort_names(names: LStr, reverse: bool = False) -> LStr:
     """
     intfs: LIntf = sorted([Intf(s) for s in names], reverse=reverse)
     return [o.line for o in intfs]
+
+
+# ============================= helpers ==============================
+
+
+def _init_device_type(**kwargs) -> str:
+    """Validate Netmiko device type.
+
+    :return: Device type.
+    :raises NetportsValueError: if the device type is unsupported.
+    """
+    device_type = str(kwargs.get("device_type") or "")
+    expected = ["", *DEVICE_TYPES]
+    if device_type not in expected:
+        raise NetportsValueError(f"{device_type=} {expected=}")
+    return device_type
+
+
+def _init_splitter(**kwargs) -> str:
+    """Validate splitter between interface IDs.
+
+    :return: Splitters pattern.
+    """
+    if splitter := str(kwargs.get("splitter") or ""):
+        return splitter
+    return SPLITTER

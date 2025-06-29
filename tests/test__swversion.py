@@ -28,6 +28,15 @@ def test__init__(text, expected):
         assert actual == expected_
 
 
+@pytest.mark.parametrize("text, expected", [
+    ("11.22(33)SE44", "SwVersion('11.22(33)se44')"),
+])
+def test__repr__(text, expected):
+    """SwVersion.__repr__()"""
+    actual = repr(SwVersion(text))
+    assert actual == expected
+
+
 @pytest.mark.parametrize("text1, text2, expected", [
     # cisco_ios
     ("11.22(33)SE44", "11.22(33)SE44", True),

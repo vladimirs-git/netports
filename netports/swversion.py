@@ -1,8 +1,8 @@
 """Software Version."""
 
 from packaging.version import Version
+from vhelpers import vre, vstr
 
-from netports import helpers as h
 from netports.types_ import TStrInt
 
 
@@ -23,7 +23,7 @@ class SwVersion(Version):
 
     def __repr__(self) -> str:
         class_ = self.__class__.__name__
-        params = h.repr_params(self._text)
+        params = vstr.repr_params(self._text)
         return f"{class_}({params})"
 
     def __str__(self) -> str:
@@ -73,15 +73,15 @@ class SwVersion(Version):
     def _parse_version(text: str) -> TStrInt:
         """Init SwVersion. Split `text` to *Version* and `nano` (4th digit)."""
         nano = 0
-        items = list(h.findall4(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)", text))
+        items = list(vre.find4(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)", text))
         if items[3]:
             nano = int(items[3])
         else:
-            items = list(h.findall3(r"(\d+)\D+(\d+)\D+(\d+)", text))
+            items = list(vre.find3(r"(\d+)\D+(\d+)\D+(\d+)", text))
         if not items[0]:
-            items = list(h.findall2(r"(\d+)\D+(\d+)", text))
+            items = list(vre.find2(r"(\d+)\D+(\d+)", text))
             if not items[0]:
-                if version := h.findall1(r"(\d+)", text):
+                if version := vre.find1(r"(\d+)", text):
                     items = [version]
                 else:
                     items = []

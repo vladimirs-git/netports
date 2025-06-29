@@ -10,7 +10,7 @@ from typing import List, Dict
 from pydantic import BaseModel, Field
 from vhelpers import vre
 
-from netports import NetportsValueError
+from netports.exceptions import NetportsValueError
 from netports.types_ import T2Str
 
 RE_IP = r"\d+\.\d+\.\d+\.\d+"

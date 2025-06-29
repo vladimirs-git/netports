@@ -125,6 +125,7 @@ def test__ip(ipv4, addr, expected):
     actual = ipv4.ip
     assert actual == expected
 
+
 @pytest.mark.parametrize("addr, expected", [
     ("10.0.0.1", "10.0.0.1/32"),
     ("10.0.0.1/24", "10.0.0.1/24"),
@@ -133,6 +134,7 @@ def test__ip_len(ipv4, addr, expected):
     """Test IPv4.ip_len()."""
     actual = ipv4.ip_len
     assert actual == expected
+
 
 @pytest.mark.parametrize("addr, expected", [
     ("10.0.0.1/32", "10.0.0.1"),

@@ -4,38 +4,55 @@ import difflib
 
 import pytest
 
-from netports import intf as netport_intf
+from netports import intf as netport_intf, NetportsValueError
 from netports.intf import Intf
+from netports.types_ import DAny
 from tests import params__intf as p
 
 
-# ========================== redefined ===========================
+@pytest.fixture
+def intf(line: str) -> Intf:
+    """Create Intf objects."""
+    return Intf(line=line)
 
-@pytest.mark.parametrize("line, expected, id0, id1, id2", [
-    ("", "", "", 0, 0),
-    (" ", " ", " ", 0, 0),
-    ("Eth1/2", "Eth1/2", "Eth", 1, 2),
-    (" Eth1/2 ", " Eth1/2 ", " Eth", 1, 2),
-    ("interface Eth1/2", "interface Eth1/2", "interface Eth", 1, 2),
-    (" interface Eth1/2 ", " interface Eth1/2 ", " interface Eth", 1, 2),
+
+@pytest.fixture
+def intf_(line: str, kwargs: DAny) -> Intf:
+    """Create Intf objects with kwargs."""
+    return Intf(line=line, **kwargs)
+
+
+@pytest.mark.parametrize("line, kwargs, exp_line, exp_id1, exp_id2", [
+    ("Eth1/2", {}, "Eth1/2", 1, 2),
+    ("Eth1/2", {"device_type": "cisco_ios"}, "Eth1/2", 1, 2),
+    ("Eth1-2", {"splitter": "-"}, "Eth1-2", 1, 2),
 ])
-def test__str__(line, expected, id0, id1, id2):
-    """Intf.__str__()"""
-    intf = Intf(line)
-    actual = str(intf)
-    assert actual == expected
-    assert intf.id0 == id0
-    assert intf.id1 == id1
-    assert intf.id2 == id2
+def test__init__(intf_, line, kwargs, exp_line, exp_id1, exp_id2):
+    """Intf.__repr__()"""
+    assert intf_.line == exp_line
+    assert intf_.id1 == exp_id1
+    assert intf_.id2 == exp_id2
 
 
 @pytest.mark.parametrize("line, expected", [
     ("Eth1/2", "Intf('Eth1/2')"),
 ])
-def test__repr__(line, expected):
+def test__repr__(intf, line, expected):
     """Intf.__repr__()"""
-    intf = Intf(line)
     actual = repr(intf)
+    assert actual == expected
+
+
+@pytest.mark.parametrize("line, expected", [
+    ("Eth1/2", "Eth1/2"),
+    (" Eth1/2 ", " Eth1/2 "),
+    (" interface Eth1/2 ", " interface Eth1/2 "),
+    ("", ""),
+    (" ", " "),
+])
+def test__str__(intf, line, expected):
+    """Intf.__str__()"""
+    actual = str(intf)
     assert actual == expected
 
 
@@ -43,9 +60,8 @@ def test__repr__(line, expected):
     ("", hash(("", 0, 0, 0, 0, 0, 0))),
     ("Eth1/2/3/4/5.6.7", hash(("Eth", 1, 2, 3, 4, 5, 6))),
 ])
-def test__hash__(line, expected):
+def test__hash__(intf, line, expected):
     """Intf.__hash__()"""
-    intf = Intf(line)
     actual = hash(intf)
     assert actual == expected
 
@@ -58,9 +74,7 @@ def test__hash__(line, expected):
 ])
 def test__eq__(line1, line2, expected):
     """Intf.__eq__()"""
-    intf1 = Intf(line1)
-    intf2 = Intf(line2)
-    actual = bool(intf1 == intf2)
+    actual = Intf(line1) == Intf(line2)
     assert actual == expected
 
 
@@ -99,23 +113,20 @@ def test__eq__(line1, line2, expected):
 ])
 def test__lt__(line1, line2, expected):
     """Intf.__lt__()"""
-    intf1 = Intf(line1)
-    intf2 = Intf(line2)
-    actual = bool(intf1 < intf2)
+    actual = Intf(line1) < Intf(line2)
     assert actual == expected
 
 
 # =========================== property ===========================
 
 @pytest.mark.parametrize("line, expected", [
-    ("", ('', '', '', '', '')),
-    ("interface Eth1/2/3.4", ('/', '/', '.', '', '')),
-    ("interface Eth1/2/3/4/5.6", ('/', '/', '/', '/', '.')),
-    ("interface Eth1,2.3/4:5/6/7", (',', '.', '/', ':', '/')),
+    ("", ("", "", "", "", "")),
+    ("interface Eth1/2/3.4", ("/", "/", ".", "", "")),
+    ("interface Eth1/2/3/4/5.6", ("/", "/", "/", "/", ".")),
+    ("interface Eth1,2.3/4:5/6/7", (",", ".", "/", ":", "/")),
 ])
-def test__delimiters(line, expected):
+def test__delimiters(intf, line, expected):
     """Intf.delimiters"""
-    intf = Intf(line)
     actual = intf.delimiters
     assert actual == expected
 
@@ -136,9 +147,8 @@ def test__delimiters(line, expected):
     ("interface Eth1/2/3/4/5.6", "interface Eth"),
     ("interface Eth1/2/3/4/5/6.7", "interface Eth"),
 ])
-def test__id0(line, expected):
+def test__id0(intf, line, expected):
     """Intf.id0"""
-    intf = Intf(line)
     actual = intf.id0
     assert actual == expected
 
@@ -159,9 +169,8 @@ def test__id0(line, expected):
     ("interface Eth1/2/3/4/5.6", 1),
     ("interface Eth1/2/3/4/5/6.7", 1),
 ])
-def test__id1(line, expected):
+def test__id1(intf, line, expected):
     """Intf.id1"""
-    intf = Intf(line)
     actual = intf.id1
     assert actual == expected
 
@@ -182,9 +191,8 @@ def test__id1(line, expected):
     ("interface Eth1/2/3/4/5.6", 2),
     ("interface Eth1/2/3/4/5/6.7", 2),
 ])
-def test__id2(line, expected):
+def test__id2(intf, line, expected):
     """Intf.id2"""
-    intf = Intf(line)
     actual = intf.id2
     assert actual == expected
 
@@ -205,9 +213,8 @@ def test__id2(line, expected):
     ("interface Eth1/2/3/4/5.6", 3),
     ("interface Eth1/2/3/4/5/6.7", 3),
 ])
-def test__id3(line, expected):
+def test__id3(intf, line, expected):
     """Intf.id3"""
-    intf = Intf(line)
     actual = intf.id3
     assert actual == expected
 
@@ -228,9 +235,8 @@ def test__id3(line, expected):
     ("interface Eth1/2/3/4/5.6", 4),
     ("interface Eth1/2/3/4/5/6.7", 4),
 ])
-def test__id4(line, expected):
+def test__id4(intf, line, expected):
     """Intf.id4"""
-    intf = Intf(line)
     actual = intf.id4
     assert actual == expected
 
@@ -251,9 +257,8 @@ def test__id4(line, expected):
     ("interface Eth1/2/3/4/5.6", 5),
     ("interface Eth1/2/3/4/5/6.7", 5),
 ])
-def test__id5(line, expected):
+def test__id5(intf, line, expected):
     """Intf.id5"""
-    intf = Intf(line)
     actual = intf.id5
     assert actual == expected
 
@@ -274,9 +279,8 @@ def test__id5(line, expected):
     ("interface Eth1/2/3/4/5.6", 6),
     ("interface Eth1/2/3/4/5/6.7", 6),
 ])
-def test__id6(line, expected):
+def test__id6(intf, line, expected):
     """Intf.id6"""
-    intf = Intf(line)
     actual = intf.id6
     assert actual == expected
 
@@ -298,9 +302,8 @@ def test__id6(line, expected):
     ("interface Eth1/2/3/4/5/6.7", "interface Eth1/2/3/4/5/6"),
     ("interface lag 1", "interface lag 1"),
 ])
-def test__line(line, expected):
+def test__line(intf, line, expected):
     """Intf.line"""
-    intf = Intf(line)
     actual = intf.line
     assert actual == expected
 
@@ -322,36 +325,33 @@ def test__line(line, expected):
     ("interface Eth1/2/3/4/5/6.7", "Eth1/2/3/4/5/6"),
     ("interface lag 1", "lag 1"),
 ])
-def test__name(line, expected):
+def test__name(intf, line, expected):
     """Intf.name"""
-    intf = Intf(line)
     actual = intf.name
     assert actual == expected
 
 
-@pytest.mark.parametrize("line, device_type", [
-    ("Eth", ""),
-    ("Eth", "cisco_ios"),
+@pytest.mark.parametrize("line, kwargs, expected", [
+    ("Eth", {}, ""),
+    ("Eth", {"device_type": "cisco_ios"}, "cisco_ios"),
 ])
-def test__device_type(line, device_type):
+def test__device_type(intf_, line, kwargs, expected):
     """Intf.device_type"""
-    intf = Intf(line=line, device_type=device_type)
-    actual = intf.device_type
-    assert actual == device_type
-
-
-@pytest.mark.parametrize("line, splitter, expected, id0, id1, id2", [
-    ("Eth1-2", "", ",./:", "Eth", 1, 0),
-    ("Eth1-2", "-", "-", "Eth", 1, 2),
-])
-def test__splitter(line, splitter, expected, id0, id1, id2):
-    """Intf.splitter"""
-    intf = Intf(line=line, splitter=splitter)
-    actual = intf.splitter
+    actual = intf_.device_type
     assert actual == expected
-    assert intf.id0 == id0
-    assert intf.id1 == id1
-    assert intf.id2 == id2
+
+
+@pytest.mark.parametrize("line, kwargs, expected, id0, id1, id2", [
+    ("Eth1-2", {}, ",./:", "Eth", 1, 0),
+    ("Eth1-2", {"splitter": "-"}, "-", "Eth", 1, 2),
+])
+def test__splitter(intf_, line, kwargs, expected, id0, id1, id2):
+    """Intf.splitter"""
+    actual = intf_.splitter
+    assert actual == expected
+    assert intf_.id0 == id0
+    assert intf_.id1 == id1
+    assert intf_.id2 == id2
 
 
 # =========================== methods ============================
@@ -385,13 +385,11 @@ def test__splitter(line, splitter, expected, id0, id1, id2):
     ("lag 1", ["interface lag 1", "lag 1"]),  # aruba_os
     ("1", ["interface 1", "1"]),
 ])
-def test__all_names(line, expected):
+def test__all_names(intf, line, expected):
     """Intf.all_names()"""
-    intf = Intf(line=line)
-
     actual = intf.all_names()
 
-    diff = list(difflib.unified_diff(actual, expected, lineterm=""))
+    diff = list(difflib.unified_diff(actual, expected))
     diff = [s for s in diff if s.startswith("-") or s.startswith("+")]
     assert not diff
 
@@ -418,12 +416,9 @@ def test__all_names(line, expected):
     ("interface lag 1", 1),
     ("lag 1", 1),
 ])
-def test__last_idx(line, expected):
+def test__last_idx(intf, line, expected):
     """Intf.last_idx()"""
-    intf = Intf(line=line)
-
     actual = intf.last_idx()
-
     assert actual == expected
 
 
@@ -451,12 +446,9 @@ def test__last_idx(line, expected):
     ("interface lag 1", "lag"),
     ("lag 1", "lag"),
 ])
-def test__name_base(line, expected):
+def test__name_base(intf, line, expected):
     """Intf.name_base()"""
-    intf = Intf(line=line)
-
     actual = intf.name_base()
-
     assert actual == expected
 
 
@@ -486,29 +478,23 @@ def test__name_base(line, expected):
     ("interface lag  1", "interface lag  1"),
     ("lag  1", "interface lag  1"),
 ])
-def test__name_full(line, expected):
+def test__name_full(intf, line, expected):
     """Intf.name_full()"""
-    intf = Intf(line=line)
-
     actual = intf.name_full()
-
     assert actual == expected
 
 
-@pytest.mark.parametrize("line, expected", [
+@pytest.mark.parametrize("line, kwargs, expected", [
     # cisco_xr
-    ("interface tunnel-ip1", "interface tunnel-ip1"),
-    ("tunnel-ip1", "interface tunnel-ip1"),
-    ("Tu1", "interface tunnel-ip1"),
-    ("tu1", "interface tunnel-ip1"),
-    ("ti1", "interface tunnel-ip1"),
+    ("interface tunnel-ip1", {"device_type": "cisco_xr"}, "interface tunnel-ip1"),
+    ("tunnel-ip1", {"device_type": "cisco_xr"}, "interface tunnel-ip1"),
+    ("Tu1", {"device_type": "cisco_xr"}, "interface tunnel-ip1"),
+    ("tu1", {"device_type": "cisco_xr"}, "interface tunnel-ip1"),
+    ("ti1", {"device_type": "cisco_xr"}, "interface tunnel-ip1"),
 ])
-def test__name_full__cisco_xr(line, expected):
+def test__name_full__cisco_xr(intf_, line, kwargs, expected):
     """Intf.name_full(device_type="cisco_xr")"""
-    intf = Intf(line=line, device_type="cisco_xr")
-
-    actual = intf.name_full()
-
+    actual = intf_.name_full()
     assert actual == expected
 
 
@@ -538,29 +524,23 @@ def test__name_full__cisco_xr(line, expected):
     ("interface lag  1", "lag  1"),
     ("lag  1", "lag  1"),
 ])
-def test__name_long(line, expected):
+def test__name_long(intf, line, expected):
     """Intf.name_long()"""
-    intf = Intf(line=line)
-
     actual = intf.name_long()
-
     assert actual == expected
 
 
-@pytest.mark.parametrize("line, expected", [
+@pytest.mark.parametrize("line, kwargs, expected", [
     # cisco_xr
-    ("interface tunnel-ip1", "tunnel-ip1"),
-    ("tunnel-ip1", "tunnel-ip1"),
-    ("Tu1", "tunnel-ip1"),
-    ("tu1", "tunnel-ip1"),
-    ("ti1", "tunnel-ip1"),
+    ("interface tunnel-ip1", {"device_type": "cisco_xr"}, "tunnel-ip1"),
+    ("tunnel-ip1", {"device_type": "cisco_xr"}, "tunnel-ip1"),
+    ("Tu1", {"device_type": "cisco_xr"}, "tunnel-ip1"),
+    ("tu1", {"device_type": "cisco_xr"}, "tunnel-ip1"),
+    ("ti1", {"device_type": "cisco_xr"}, "tunnel-ip1"),
 ])
-def test__name_long__cisco_xr(line, expected):
+def test__name_long__cisco_xr(intf_, line, kwargs, expected):
     """Intf.name_long(device_type="cisco_xr")"""
-    intf = Intf(line=line, device_type="cisco_xr")
-
-    actual = intf.name_long()
-
+    actual = intf_.name_long()
     assert actual == expected
 
 
@@ -590,43 +570,37 @@ def test__name_long__cisco_xr(line, expected):
     ("interface lag  1", "lag  1"),
     ("lag  1", "lag  1"),
 ])
-def test__name_short(line, expected):
+def test__name_short(intf, line, expected):
     """Intf.name_short()"""
-    intf = Intf(line=line)
-
     actual = intf.name_short()
-
     assert actual == expected
 
 
-@pytest.mark.parametrize("line, device_type, expected", [
+@pytest.mark.parametrize("line, kwargs, expected", [
     # vlan
-    ("interface Vlan1", "", "V1"),
-    ("interface Vlan1", "cisco_ios", "Vlan1"),
-    ("interface Vlan1", "cisco_nxos", "Vlan1"),
-    ("interface Vlan1", "cisco_xr", "Vlan1"),
-    ("interface Vlan1", "hp_comware", "V1"),
-    ("interface Vlan1", "hp_procurve", "Vlan1"),
+    ("interface Vlan1", {}, "V1"),
+    ("interface Vlan1", {"device_type": "cisco_ios"}, "Vlan1"),
+    ("interface Vlan1", {"device_type": "cisco_nxos"}, "Vlan1"),
+    ("interface Vlan1", {"device_type": "cisco_xr"}, "Vlan1"),
+    ("interface Vlan1", {"device_type": "hp_comware"}, "V1"),
+    ("interface Vlan1", {"device_type": "hp_procurve"}, "Vlan1"),
     # GigabitEthernet
-    ("interface GigabitEthernet1", "", "Gi1"),
-    ("interface GigabitEthernet1", "cisco_ios", "Gi1"),
-    ("interface GigabitEthernet1", "cisco_nxos", "Gi1"),
-    ("interface GigabitEthernet1", "cisco_xr", "Gi1"),
-    ("interface GigabitEthernet1", "hp_comware", "GE1"),
-    ("interface GigabitEthernet1", "hp_procurve", "Gi1"),
+    ("interface GigabitEthernet1", {}, "Gi1"),
+    ("interface GigabitEthernet1", {"device_type": "cisco_ios"}, "Gi1"),
+    ("interface GigabitEthernet1", {"device_type": "cisco_nxos"}, "Gi1"),
+    ("interface GigabitEthernet1", {"device_type": "cisco_xr"}, "Gi1"),
+    ("interface GigabitEthernet1", {"device_type": "hp_comware"}, "GE1"),
+    ("interface GigabitEthernet1", {"device_type": "hp_procurve"}, "Gi1"),
     # cisco_xr
-    ("interface tunnel-ip1", "cisco_xr", "ti1"),
-    ("tunnel-ip1", "cisco_xr", "ti1"),
-    ("Tu1", "cisco_xr", "ti1"),
-    ("tu1", "cisco_xr", "ti1"),
-    ("ti1", "cisco_xr", "ti1"),
+    ("interface tunnel-ip1", {"device_type": "cisco_xr"}, "ti1"),
+    ("tunnel-ip1", {"device_type": "cisco_xr"}, "ti1"),
+    ("Tu1", {"device_type": "cisco_xr"}, "ti1"),
+    ("tu1", {"device_type": "cisco_xr"}, "ti1"),
+    ("ti1", {"device_type": "cisco_xr"}, "ti1"),
 ])
-def test__name_short__device_type(line, device_type, expected):
+def test__name_short__device_type(intf_, line, kwargs, expected):
     """Intf.name_short(device_type)"""
-    intf = Intf(line=line, device_type=device_type)
-
-    actual = intf.name_short()
-
+    actual = intf_.name_short()
     assert actual == expected
 
 
@@ -639,12 +613,9 @@ def test__name_short__device_type(line, device_type, expected):
     ("interface Ethernet1", [("typo", "Fa"), ("Eth", "Fa")], "Fa1"),
     ("interface Ethernet1", [("Eth", "FA"), ("Eth", "Fa")], "FA1"),
 ])
-def test__name_short__replace(line, replace, expected):
+def test__name_short__replace(intf, line, replace, expected):
     """Intf.name_short(replace)"""
-    intf = Intf(line=line)
-
     actual = intf.name_short(replace=replace)
-
     assert actual == expected
 
 
@@ -689,12 +660,9 @@ def test__name_short__replace(line, replace, expected):
     ("interface Ethernet1/2/3/4/5.6", 6, ""),
     ("interface Ethernet1/2/3/4/5/6.7", 7, ""),
 ])
-def test__part_after(line, idx, expected):
+def test__part_after(intf, line, idx, expected):
     """Intf.part_after()"""
-    intf = Intf(line=line)
-
     actual = intf.part_after(idx=idx)
-
     assert actual == expected
 
 
@@ -747,12 +715,9 @@ def test__part_after(line, idx, expected):
     ("interface Ethernet1/2/3/4/5.6", 6, "interface Ethernet1/2/3/4/5."),
     ("interface Ethernet1/2/3/4/5/6.7", 7, "interface Ethernet1/2/3/4/5/6"),
 ])
-def test__part_before(line, idx, expected):
+def test__part_before(intf, line, idx, expected):
     """Intf.part_before()"""
-    intf = Intf(line=line)
-
     actual = intf.part_before(idx=idx)
-
     assert actual == expected
 
 
@@ -783,4 +748,35 @@ def test__sort_names(names, reverse, expected):
     """intf.sort_names()"""
     actual = netport_intf.sort_names(names=names, reverse=reverse)
 
+    assert actual == expected
+
+
+# ============================= helpers ==============================
+
+@pytest.mark.parametrize("kwargs, expected", [
+    ({"device_type": "cisco_ios"}, "cisco_ios"),
+    ({"device_type": "cisco_nxos"}, "cisco_nxos"),
+    ({"device_type": "cisco_xr"}, "cisco_xr"),
+    ({"device_type": "hp_comware"}, "hp_comware"),
+    ({"device_type": "hp_procurve"}, "hp_procurve"),
+    ({"device_type": "fortinet"}, NetportsValueError),
+    ({}, ""),
+])
+def test__validate_device_type(kwargs, expected):
+    """intf._validate_device_type()"""
+    if isinstance(expected, str):
+        actual = netport_intf._init_device_type(**kwargs)
+        assert actual == expected
+    else:
+        with pytest.raises(expected):
+            netport_intf._init_device_type(**kwargs)
+
+
+@pytest.mark.parametrize("kwargs, expected", [
+    ({"splitter": "."}, "."),
+    ({}, ",./:"),
+])
+def test__validate_splitter(kwargs, expected):
+    """intf._validate_splitter()"""
+    actual = netport_intf._init_splitter(**kwargs)
     assert actual == expected
