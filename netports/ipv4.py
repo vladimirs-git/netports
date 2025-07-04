@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from functools import total_ordering
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address
-from typing import List, Dict
+from typing import List, Dict, Iterator
 
 from pydantic import BaseModel, Field
 from vhelpers import vre
@@ -15,6 +15,7 @@ from netports.types_ import T2Str
 
 RE_IP = r"\d+\.\d+\.\d+\.\d+"
 RE_PREFIX = r"\d+\.\d+\.\d+\.\d+/\d+"
+MASK_SPLITTER = r"[\s\\/]"
 
 
 @total_ordering
@@ -98,6 +99,31 @@ class IPv4(BaseModel):
     def prefix(self) -> str:
         """IPv4 prefix without host data, A.B.C.D/LEN."""
         return str(self._interface.network)
+
+    @property
+    def representation(self) -> str:
+        """Representations of the IPv4 address format.
+
+        - cidr: CIDR notation A.B.C.D/LEN
+        - host: Host address A.B.C.D
+        - mask: Network mask A.B.C.D 255.255.255.0
+        - wildcard: Wildcard mask A.B.C.D 0.0.0.255
+        """
+        if re.fullmatch(RE_PREFIX, self.addr):
+            return "cidr"
+        if re.fullmatch(RE_IP, self.addr):
+            return "host"
+
+        _addr, mask = vre.find2(rf"^({RE_IP}){MASK_SPLITTER}({RE_IP})$", self.addr)
+        if not _addr or not mask:
+            return "host"  # fallback
+
+        mask_ = str(self.netmask)
+        if mask == mask_:
+            if mask == "0.0.0.0":
+                return "wildcard"
+            return "mask"
+        return "wildcard"
 
     # ================================ is ================================
 
@@ -207,6 +233,25 @@ class IPv4(BaseModel):
         hostmask = self._interface.network.hostmask
         return f"{network_address}{splitter}{hostmask}"
 
+    # ============================== other ===============================
+
+    def hosts(self) -> Iterator[IPv4]:
+        """List of all usable hosts in the network."""
+        representation = self.representation
+        if representation == "wildcard":
+            raise NetportsValueError(f"Invalid {representation=}")
+        generator_ = self._interface.network.hosts()
+        for address in generator_:
+            if representation == "cidr":
+                addr = f"{address}/{self.len}"
+            elif representation == "host":
+                addr = str(address)
+            elif representation == "mask":
+                addr = f"{address} {self.netmask}"
+            else:
+                raise NetportsValueError(f"Invalid {representation=}")
+            yield IPv4(addr)
+
 
 LIPv4 = List[IPv4]
 DIPv4 = Dict[str, IPv4]
@@ -235,8 +280,7 @@ def _validate_addr(*args, **kwargs) -> T2Str:
     elif re.search(rf"^{RE_IP}$", addr):
         addr_len = f"{addr}/32"
     else:
-        splitter = r"[\s\\/]"
-        _addr, mask = vre.find2(rf"^({RE_IP}){splitter}({RE_IP})$", addr)
+        _addr, mask = vre.find2(rf"^({RE_IP}){MASK_SPLITTER}({RE_IP})$", addr)
         if not (_addr and mask):
             raise NetportsValueError("Invalid IP address format")
         network = IPv4Network(f"0.0.0.0/{mask}")

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netports"
-version = "1.0.3"
+version = "1.1.0"
 description = "Python tools for managing ranges of VLANs, TCP/UDP ports, IP protocols, Interfaces"
 authors = ["Vladimirs Prusakovs <vladimir.prusakovs@gmail.com>"]
 readme = "README.rst"
@@ -20,7 +20,7 @@ classifiers = [
 homepage = "https://github.com/vladimirs-git/netports"
 repository = "https://github.com/vladimirs-git/netports"
 "Bug Tracker" = "https://github.com/vladimirs-git/netports/issues"
-"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/1.0.3.tar.gz"
+"Download URL" = "https://github.com/vladimirs-git/netports/archive/refs/tags/1.1.0.tar.gz"
 
 [tool.poetry.dependencies]
 python = "^3.8"

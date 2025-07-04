@@ -4,6 +4,7 @@ import pytest
 
 from netports import ipv4 as ipv4_
 from netports.ipv4 import IPv4
+from netports.exceptions import NetportsValueError
 
 
 @pytest.fixture
@@ -161,6 +162,28 @@ def test__len(ipv4, addr, expected):
 def test__prefix(ipv4, addr, expected):
     """Test IPv4.prefix()."""
     actual = ipv4.prefix
+    assert actual == expected
+
+
+@pytest.mark.parametrize("addr, expected", [
+    # host
+    ("10.0.0.0", "host"),
+    # cidr
+    ("10.0.0.1/30", "cidr"),
+    # mask
+    ("10.0.0.0 255.255.255.0", "mask"),
+    ("10.0.0.0 255.255.255.252", "mask"),
+    ("10.0.0.0 255.255.255.254", "mask"),
+    ("10.0.0.0 255.255.255.255", "mask"),
+    # wildcard
+    ("10.0.0.0 0.0.0.255", "wildcard"),
+    ("10.0.0.0 0.0.0.3", "wildcard"),
+    ("10.0.0.0 0.0.0.1", "wildcard"),
+    ("10.0.0.0 0.0.0.0", "wildcard"),
+])
+def test__representations(ipv4, addr, expected):
+    """IPv4.representations()."""
+    actual = ipv4.representation
     assert actual == expected
 
 
@@ -400,3 +423,39 @@ def test__validate_addr(args, kwargs, expected):
     else:
         with pytest.raises(expected):
             ipv4_._validate_addr(*args, **kwargs)
+
+
+# ============================== other ===============================
+
+@pytest.mark.parametrize("addr, expected", [
+    # host
+    ("10.0.0.0", ["10.0.0.0"]),
+    # cidr
+    ("10.0.0.0/30", ['10.0.0.1/30', '10.0.0.2/30']),
+    ("10.0.0.0/31", ['10.0.0.0/31', '10.0.0.1/31']),
+    ("10.0.0.0/32", ["10.0.0.0/32"]),
+    # mask network
+    ("10.0.0.0 255.255.255.252", ['10.0.0.1 255.255.255.252', '10.0.0.2 255.255.255.252']),
+    ("10.0.0.0 255.255.255.254", ['10.0.0.0 255.255.255.254', '10.0.0.1 255.255.255.254']),
+    ("10.0.0.0 255.255.255.255", ['10.0.0.0 255.255.255.255']),
+    # mask host
+    ("10.0.0.1 255.255.255.252", ['10.0.0.1 255.255.255.252', '10.0.0.2 255.255.255.252']),
+    ("10.0.0.1 255.255.255.254", ['10.0.0.0 255.255.255.254', '10.0.0.1 255.255.255.254']),
+    ("10.0.0.1 255.255.255.255", ['10.0.0.1 255.255.255.255']),
+    # wildcard network
+    ("10.0.0.0 0.0.0.3", NetportsValueError),
+    ("10.0.0.0 0.0.0.0", NetportsValueError),
+    # wildcard host
+    ("10.0.0.1 0.0.0.3", NetportsValueError),
+    ("10.0.0.1 0.0.0.0", NetportsValueError),
+])
+def test__hosts(ipv4, addr, expected):
+    """IPv4.hosts()."""
+    if isinstance(expected, list):
+        result = ipv4.hosts()
+
+        actual = [o.addr for o in result]
+        assert actual == expected
+    else:
+        with pytest.raises(expected):
+            list(ipv4.hosts())
