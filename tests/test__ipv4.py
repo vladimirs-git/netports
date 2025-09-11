@@ -273,6 +273,7 @@ def test__is_multicast(ipv4, addr, expected):
     ("127.0.0.0", True),
     ("172.16.0.0", True),
     ("192.168.0.0", True),
+    ("224.0.0.0", False),  # multicast
 ])
 def test__is_private(ipv4, addr, expected):
     """IPv4.is_private()."""
