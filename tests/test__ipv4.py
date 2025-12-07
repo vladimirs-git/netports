@@ -13,31 +13,32 @@ def ipv4(addr: str) -> IPv4:
     return IPv4(addr=addr)
 
 
-@pytest.mark.parametrize("addr, strict, expected", [
-    ("10.0.0.1", False, "10.0.0.1/32"),
-    ("10.0.0.0/24", False, "10.0.0.0/24"),
-    ("10.0.0.1/24", False, "10.0.0.1/24"),
-    ("10.0.0.0 255.255.255.0", False, "10.0.0.0/24"),
-    ("10.0.0.1 255.255.255.0", False, "10.0.0.1/24"),
-    ("", False, ValueError),
+@pytest.mark.parametrize("addr, strict, description, exp_ip_len", [
+    ("10.0.0.1", False, "a", "10.0.0.1/32"),
+    ("10.0.0.0/24", False, "a", "10.0.0.0/24"),
+    ("10.0.0.1/24", False, "a", "10.0.0.1/24"),
+    ("10.0.0.0 255.255.255.0", False, "a", "10.0.0.0/24"),
+    ("10.0.0.1 255.255.255.0", False, "a", "10.0.0.1/24"),
+    ("", False, "", ValueError),
     # strict
-    ("10.0.0.1", True, "10.0.0.1/32"),
-    ("10.0.0.0/24", True, "10.0.0.0/24"),
-    ("10.0.0.1/24", True, ValueError),
-    ("10.0.0.0 255.255.255.0", True, "10.0.0.0/24"),
-    ("10.0.0.1 255.255.255.0", True, ValueError),
-    ("", True, ValueError),
+    ("10.0.0.1", True, "a", "10.0.0.1/32"),
+    ("10.0.0.0/24", True, "a", "10.0.0.0/24"),
+    ("10.0.0.1/24", True, "a", ValueError),
+    ("10.0.0.0 255.255.255.0", True, "a", "10.0.0.0/24"),
+    ("10.0.0.1 255.255.255.0", True, "a", ValueError),
+    ("", True, "", ValueError),
 ])
-def test__init__(addr, strict, expected):
+def test__init__(addr, strict, description, exp_ip_len):
     """IPv4.__init__()."""
-    if isinstance(expected, str):
-        obj = IPv4(addr=addr, strict=strict)
+    if isinstance(exp_ip_len, str):
+        obj = IPv4(addr=addr, strict=strict, description=description)
 
         assert obj.addr == addr
-        assert obj.ip_len == expected
+        assert obj.description == description
+        assert obj.ip_len == exp_ip_len
     else:
-        with pytest.raises(expected):
-            IPv4(addr=addr, strict=strict)
+        with pytest.raises(exp_ip_len):
+            IPv4(addr=addr, strict=strict, description=description)
 
 
 @pytest.mark.parametrize("addr, expected", [
@@ -454,6 +455,8 @@ def test__hosts(ipv4, addr, expected):
     # kwargs strict
     ([], {"addr": "10.0.0.0", "strict": True}, ("10.0.0.0", "10.0.0.0/32")),  # address
     ([], {"addr": "10.0.0.1/24", "strict": True}, ValueError),  # address with prefixlen
+    # description
+    ([], {"addr": "10.0.0.0", "description": "a"}, ("10.0.0.0", "10.0.0.0/32")),  # address
 ])
 def test__validate_addr(args, kwargs, expected):
     """ipv4._validate_addr()."""

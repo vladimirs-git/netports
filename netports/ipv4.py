@@ -23,6 +23,7 @@ class IPv4(BaseModel):
     """IPv4 address representation in CIDR notation with host data under mask bits."""
 
     addr: str = Field(description="IPv4 address with host data under mask bits. A.B.C.D/LEN")
+    description: str = Field(default="", description="Description")
 
     def __init__(self, *args, **kwargs):
         """Initialize IPv4.
