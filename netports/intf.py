@@ -203,7 +203,16 @@ class Intf:
         """
         results: SStr = set()
 
-        names_: LStr = [self.line, self.name, self.name_full(), self.name_long(), self.name_short()]
+        name_short = self.name_short()
+        name_short_wo_spaces = "".join(name_short.split())
+        names_: LStr = [
+            self.line,
+            self.name,
+            self.name_full(),
+            self.name_long(),
+            name_short,
+            name_short_wo_spaces,
+        ]
         names_ = vlist.no_dupl(names_)
         for name_ in names_:
             results.add(name_)

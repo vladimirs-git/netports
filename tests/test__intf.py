@@ -382,7 +382,7 @@ def test__splitter(intf_, line, kwargs, expected, id0, id1, id2):
     ("mgmt0", p.ALL_NAMES_MGMT),
     # only lower
     ("interface 1", ["interface 1", "1"]),  # hpc
-    ("lag 1", ["interface lag 1", "lag 1"]),  # aruba_os
+    ("lag 1", ["interface lag 1", "interface lag1", "lag 1", "lag1"]),  # aruba_os
     ("1", ["interface 1", "1"]),
 ])
 def test__all_names(intf, line, expected):
